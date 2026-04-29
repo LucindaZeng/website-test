@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contact WFX for custom CNC machining services. Get a quote, talk to an engineer, or visit our facility.">
+    <title>Contact Us | WFX - Get in Touch</title>
+    <link rel="canonical" href="https://wanfuxin.com/contact.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .page-hero {
+            background: var(--gradient-dark);
+            padding: 180px 0 100px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .page-hero-content {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .page-hero h1 {
+            font-size: 3.5rem;
+            color: var(--white);
+            margin-bottom: 20px;
+        }
+
+        .page-hero p {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .breadcrumb {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .breadcrumb a:hover {
+            color: var(--white);
+        }
+
+        .breadcrumb span {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .contact-section {
+            padding: var(--section-padding) 0;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 60px;
+        }
+
+        .contact-info h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .contact-info > p {
+            color: var(--gray);
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 40px;
+        }
+
+        .contact-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .contact-method {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            padding: 24px;
+            background: var(--off-white);
+            border-radius: var(--radius-lg);
+            transition: var(--transition);
+        }
+
+        .contact-method:hover {
+            background: var(--white);
+            box-shadow: var(--shadow-lg);
+            transform: translateX(5px);
+        }
+
+        .contact-method i {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient-primary);
+            color: var(--white);
+            font-size: 1.125rem;
+            border-radius: var(--radius);
+            flex-shrink: 0;
+        }
+
+        .contact-method h4 {
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+        }
+
+        .contact-method p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .contact-method a {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .contact-method a:hover {
+            color: var(--primary-dark);
+        }
+
+        .business-hours {
+            background: var(--dark);
+            color: var(--white);
+            padding: 30px;
+            border-radius: var(--radius-lg);
+        }
+
+        .business-hours h4 {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .business-hours h4 i {
+            color: var(--primary-light);
+        }
+
+        .hours-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .hours-item {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hours-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .hours-item span:first-child {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .hours-item span:last-child {
+            font-weight: 600;
+        }
+
+        .contact-form-wrapper {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 50px;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .contact-form-wrapper h3 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .contact-form-wrapper > p {
+            color: var(--gray);
+            margin-bottom: 30px;
+        }
+
+        .contact-form .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .contact-form .form-group {
+            margin-bottom: 20px;
+        }
+
+        .contact-form .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .contact-form label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--dark-gray);
+            margin-bottom: 8px;
+        }
+
+        .contact-form label span {
+            color: #dc2626;
+        }
+
+        .contact-form input,
+        .contact-form select,
+        .contact-form textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--light-gray);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .contact-form input:focus,
+        .contact-form select:focus,
+        .contact-form textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.1);
+        }
+
+        .contact-form textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .form-note {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+
+        .locations-section {
+            padding: var(--section-padding) 0;
+            background: var(--off-white);
+        }
+
+        .locations-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .location-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .location-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .location-card-content {
+            padding: 30px;
+        }
+
+        .location-card h3 {
+            font-size: 1.125rem;
+            margin-bottom: 4px;
+        }
+
+        .location-card .location-type {
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .location-card address {
+            font-style: normal;
+            color: var(--gray);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .location-card .location-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .location-card .location-link:hover {
+            gap: 12px;
+        }
+
+        .map-section {
+            height: 450px;
+            background: var(--light-gray);
+            position: relative;
+        }
+
+        .map-section iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .map-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 22, 40, 0.03);
+            pointer-events: none;
+        }
+
+        .faq-section {
+            padding: var(--section-padding) 0;
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: var(--off-white);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+        }
+
+        .faq-item h4 {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .faq-item h4 i {
+            color: var(--primary);
+            margin-top: 4px;
+        }
+
+        .faq-item p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            padding-left: 32px;
+        }
+
+        @media (max-width: 1024px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .locations-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .contact-form-wrapper {
+                padding: 30px;
+            }
+
+            .contact-form .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .locations-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .faq-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="top-bar-content">
+                <div class="top-bar-left">
+                    <span><i class="fas fa-phone"></i> +86 13431451998</span>
+                    <span><i class="fas fa-envelope"></i> lucindaz@wanfuxin.com</span>
+                </div>
+                <div class="top-bar-right">
+                    <a href="index.html#quote">Request a Quote</a>
+                    <a href="contact.html">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">
+                    <img src="logo.png" alt="WFX - Wanfuxin" class="logo-img">
+                </a>
+                
+                <ul class="nav-menu" id="nav-menu">
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link">Services <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-menu mega-menu">
+                            <div class="mega-menu-content">
+                                <div class="mega-menu-section">
+                                    <h4>CNC Machining</h4>
+                                    <ul>
+                                        <li><a href="cnc-milling.html"><i class="fas fa-cube"></i> CNC Milling</a></li>
+                                        <li><a href="cnc-turning.html"><i class="fas fa-sync-alt"></i> CNC Turning</a></li>
+                                        <li><a href="5-axis.html"><i class="fas fa-dice-d6"></i> 5-Axis Machining</a></li>
+                                        <li><a href="precision-inspection.html"><i class="fas fa-compress-arrows-alt"></i> Precision Inspection</a></li>
+                                    </ul>
+                                </div>
+                                <div class="mega-menu-section">
+                                    <h4>Additional Services</h4>
+                                    <ul>
+                                        <li><a href="prototyping.html"><i class="fas fa-drafting-compass"></i> Rapid Prototyping</a></li>
+                                        <li><a href="production.html"><i class="fas fa-industry industry-icon"></i> Production Runs</a></li>
+                                        <li><a href="finishing.html"><i class="fas fa-spray-can"></i> Surface Finishing</a></li>
+                                        <li><a href="assembly.html"><i class="fas fa-puzzle-piece"></i> Assembly Services</a></li>
+                                    </ul>
+                                </div>
+                                <div class="mega-menu-section">
+                                    <h4>Metal Forming</h4>
+                                    <ul>
+                                        <li><a href="die-casting.html"><i class="fas fa-fill-drip"></i> Die Casting</a></li>
+                                        <li><a href="forging.html"><i class="fas fa-hammer"></i> Forging</a></li>
+                                        <li><a href="stamping.html"><i class="fas fa-compress-alt"></i> Stamping</a></li>
+                                        <li><a href="sheet-metal.html"><i class="fas fa-layer-group"></i> Sheet Metal</a></li>
+                                        <li><a href="investment-casting.html"><i class="fas fa-gem"></i> Investment Casting</a></li>
+                                    </ul>
+                                </div>
+                                <div class="mega-menu-section">
+                                    <h4>Quick Links</h4>
+                                    <ul>
+                                        <li><a href="index.html#quote"><i class="fas fa-calculator"></i> Request a Quote</a></li>
+                                        <li><a href="materials.html"><i class="fas fa-layer-group"></i> Material Selection</a></li>
+                                        <li><a href="tolerances.html"><i class="fas fa-ruler-combined"></i> Tolerances Guide</a></li>
+                                    </ul>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="materials.html" class="nav-link">Materials <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-menu">
+                            <ul>
+                                <li><a href="metals.html">Metals & Alloys</a></li>
+                                <li><a href="forging.html">Forging</a></li>
+                                <li><a href="die-casting.html">Die Casting</a></li>
+                                <li><a href="material-guide.html">Material Selection Guide</a></li>
+                                <li><a href="finishing.html">Surface Finishing</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="industries.html" class="nav-link">Industries <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-menu">
+                            <ul>
+                                <li><a href="aerospace.html">Aerospace Parts</a></li>
+                                <li><a href="liquid-cooling.html">Liquid Cooling Parts</a></li>
+                                <li><a href="medical.html">Medical Devices</a></li>
+                                <li><a href="electronics.html">Electronics</a></li>
+                                <li><a href="industrial.html">Industrial Equipment</a></li>
+                                <li><a href="robotics.html">Robotics & Automation</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="resources.html" class="nav-link">Resources <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-menu">
+                            <ul>
+                                <li><a href="design-guide.html">Design Guidelines</a></li>
+                                <li><a href="blog.html">Blog & News</a></li>
+                                <li><a href="case-studies.html">Case Studies</a></li>
+                                <li><a href="faq.html">FAQ</a></li>
+                                <li><a href="downloads.html">Downloads</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a href="about.html" class="nav-link">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="contact.html" class="nav-link">Contact</a>
+                    </li>
+                </ul>
+
+                <div class="nav-actions">
+                    <a href="index.html#quote" class="btn btn-primary">Get Quote</a>
+                    <button class="mobile-toggle" id="mobile-toggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Hero -->
+    <section class="page-hero">
+        <div class="container">
+            <div class="page-hero-content">
+                <nav class="breadcrumb">
+                    <a href="index.html">Home</a>
+                    <span>/</span>
+                    <span>Contact Us</span>
+                </nav>
+                <h1>Get in Touch</h1>
+                <p>Have questions about our CNC machining services? Our team is ready to help you with your next project.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section">
+        <div class="container">
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <h2>Let's Start a Conversation</h2>
+                    <p>Whether you need a quick quote, technical guidance, or want to discuss a complex project, we're here to help. Reach out using any of the methods below.</p>
+
+                    <div class="contact-methods">
+                        <div class="contact-method">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <h4>Call Us</h4>
+                                <p>Speak directly with our team</p>
+                                <a href="tel:+8613431451998">+86 13431451998</a>
+                            </div>
+                        </div>
+                        <div class="contact-method">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <h4>Email Us</h4>
+                                <p>We respond within 8 hours</p>
+                                <a href="mailto:lucindaz@wanfuxin.com">lucindaz@wanfuxin.com</a>
+                            </div>
+                        </div>
+                        <div class="contact-method">
+                            <i class="fas fa-calculator"></i>
+                            <div>
+                                <h4>Request a Quote</h4>
+                                <p>Upload your CAD file for competitive pricing</p>
+                                <a href="index.html#quote">Request a Quote →</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="business-hours">
+                        <h4><i class="fas fa-clock"></i> Business Hours <small style="font-weight: 400; color: var(--gray); font-size: 0.85rem;">(China Time, GMT+8)</small></h4>
+                        <div class="hours-list">
+                            <div class="hours-item">
+                                <span>Monday &ndash; Friday</span>
+                                <span>8:00 &ndash; 17:30</span>
+                            </div>
+                            <div class="hours-item">
+                                <span>Saturday</span>
+                                <span>8:00 &ndash; 17:30</span>
+                            </div>
+                            <div class="hours-item">
+                                <span>Sunday</span>
+                                <span>Closed</span>
+                            </div>
+                            <div class="hours-item">
+                                <span>Lunch Break</span>
+                                <span>12:00 &ndash; 13:30</span>
+                            </div>
+                            <div class="hours-item">
+                                <span>Production</span>
+                                <span>24/7 Operations</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-form-wrapper">
+                    <h3>Send Us a Message</h3>
+                    <p>Fill out the form below and we'll get back to you within 2 business hours.</p>
+
+                    <form class="contact-form" id="contact-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="first-name">First Name <span>*</span></label>
+                                <input type="text" id="first-name" name="first-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="last-name">Last Name <span>*</span></label>
+                                <input type="text" id="last-name" name="last-name" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email Address <span>*</span></label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="company">Company Name</label>
+                                <input type="text" id="company" name="company">
+                            </div>
+                            <div class="form-group">
+                                <label for="inquiry-type">Inquiry Type <span>*</span></label>
+                                <select id="inquiry-type" name="inquiry-type" required>
+                                    <option value="">Select an option</option>
+                                    <option value="quote">Request a Quote</option>
+                                    <option value="technical">Technical Question</option>
+                                    <option value="capabilities">Capabilities Inquiry</option>
+                                    <option value="quality">Quality Documentation</option>
+                                    <option value="partnership">Partnership Opportunity</option>
+                                    <option value="careers">Career Inquiry</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="message">Message <span>*</span></label>
+                            <textarea id="message" name="message" placeholder="Tell us about your project or question..." required></textarea>
+                        </div>
+
+                        <p class="form-note">
+                            <i class="fas fa-lock"></i> Your information is secure and will never be shared with third parties.
+                        </p>
+
+                        <button type="submit" class="btn btn-primary btn-large btn-block">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Locations Section -->
+    <section class="locations-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Our Location</span>
+                <h2 class="section-title">Visit Our Facility</h2>
+                <p class="section-description">Our manufacturing facility is located in Dongguan, the heart of China's precision manufacturing hub.</p>
+            </div>
+
+            <div class="locations-grid">
+                <div class="location-card">
+                    <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=200&fit=crop" alt="Headquarters" loading="lazy" decoding="async" width="400" height="200">
+                    <div class="location-card-content">
+                        <h3>Manufacturing Headquarters</h3>
+                        <p class="location-type">Main Production Facility</p>
+                        <address>
+                            3 Fuxin West Road<br>
+                            Qingxi Town, Dongguan City<br>
+                            Guangdong Province, China
+                        </address>
+                        <a href="https://www.google.com/maps/place/22.85,114.17/@22.85,114.17,17.5z" target="_blank" rel="noopener" class="location-link">Get Directions <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <div class="location-card">
+                    <img src="https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&h=200&fit=crop" alt="Factory Floor" loading="lazy" decoding="async" width="400" height="200">
+                    <div class="location-card-content">
+                        <h3>Production Capabilities</h3>
+                        <p class="location-type">20,000+ sq.m. Self-Built Facility</p>
+                        <address>
+                            300+ CNC Machines<br>
+                            24/7 Production Capability<br>
+                            ISO9001 & IATF16949 Certified
+                        </address>
+                        <a href="about.html" class="location-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <div class="location-card">
+                    <img src="https://images.unsplash.com/photo-1537462715879-360eeb61a0ad?w=400&h=200&fit=crop" alt="Quality Lab" loading="lazy" decoding="async" width="400" height="200">
+                    <div class="location-card-content">
+                        <h3>Quality Assurance</h3>
+                        <p class="location-type">Precision Inspection Center</p>
+                        <address>
+                            Zeiss & Hexagon CMM<br>
+                            0.0009mm Measurement Accuracy<br>
+                            First Article & Full Inspection
+                        </address>
+                        <a href="quality.html" class="location-link">View Certifications <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+    <section class="map-section">
+        <iframe src="https://maps.google.com/maps?q=22.85,114.17&hl=en&z=17&output=embed" title="WFX Wanfuxin Manufacturing Facility - Qingxi, Dongguan" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <div class="map-overlay"></div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">FAQ</span>
+                <h2 class="section-title">Frequently Asked Questions</h2>
+            </div>
+
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h4><i class="fas fa-question-circle"></i> What file formats do you accept?</h4>
+                    <p>We accept all major CAD formats including STEP (.STEP/.STP), IGES (.IGES/.IGS), STL, SolidWorks (.SLDPRT), Parasolid (.X_T), ACIS (.SAT), AutoCAD (.DWG/.DXF), and PDF drawings. You can also send a ZIP archive with multiple files. If you have a different format, contact us.</p>
+                </div>
+                <div class="faq-item">
+                    <h4><i class="fas fa-question-circle"></i> What's your typical lead time?</h4>
+                    <p>Standard lead time is 7&ndash;10 business days. Expedited service is available at 10&ndash;15 days, and extended timelines (15&ndash;25 days) offer the most competitive pricing. Choose "Flexible" on the quote form for the best price.</p>
+                </div>
+                <div class="faq-item">
+                    <h4><i class="fas fa-question-circle"></i> Do you offer design assistance?</h4>
+                    <p>Yes! Our engineering team provides free DFM (Design for Manufacturability) feedback with every quote to help optimize your design.</p>
+                </div>
+                <div class="faq-item">
+                    <h4><i class="fas fa-question-circle"></i> What certifications do you hold?</h4>
+                    <p>We are ISO9001 and IATF16949 certified. We can provide all necessary quality documentation.</p>
+                </div>
+                <div class="faq-item">
+                    <h4><i class="fas fa-question-circle"></i> Is there a minimum order quantity?</h4>
+                    <p>No minimum order required. We handle everything from single prototypes to production runs of 100,000+ parts.</p>
+                </div>
+                <div class="faq-item">
+                    <h4><i class="fas fa-question-circle"></i> Do you offer finishing services?</h4>
+                    <p>Yes, we offer anodizing, powder coating, plating, passivation, bead blasting, and more. All done in-house for quality control.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-background"></div>
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Get Started?</h2>
+                <p>Upload your CAD file and receive an quote request, or speak with one of our engineers today.</p>
+                <div class="cta-actions">
+                    <a href="index.html#quote" class="btn btn-primary btn-large">
+                        <i class="fas fa-upload"></i> Request a Quote
+                    </a>
+                    <a href="tel:+8613431451998" class="btn btn-outline-light btn-large">
+                        <i class="fas fa-phone"></i> +86 13431451998
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+        <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <a href="index.html" class="footer-logo">
+                        <img src="logo.png" alt="WFX - Wanfuxin" class="logo-img footer-logo-visible">
+                    </a>
+                    <p>Industry-leading CNC machining services delivering precision parts from prototype to production. Trusted by engineers worldwide.</p>
+                    <div class="footer-social">
+                        <!-- Social links: Add real URLs when available -->
+                        
+                        
+                        
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="cnc-milling.html">CNC Milling</a></li>
+                            <li><a href="cnc-turning.html">CNC Turning</a></li>
+                            <li><a href="5-axis.html">5-Axis Machining</a></li>
+                            <li><a href="precision-inspection.html">Precision Inspection</a></li>
+                            <li><a href="prototyping.html">Rapid Prototyping</a></li>
+                            <li><a href="production.html">Production Runs</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Industries</h4>
+                        <ul>
+                            <li><a href="aerospace.html">Aerospace Parts</a></li>
+                            <li><a href="liquid-cooling.html">Liquid Cooling Parts</a></li>
+                            <li><a href="medical.html">Medical Devices</a></li>
+                            <li><a href="electronics.html">Electronics</a></li>
+                            <li><a href="robotics.html">Robotics</a></li>
+                            <li><a href="industrial.html">Industrial</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Resources</h4>
+                        <ul>
+                            <li><a href="materials.html">Materials Guide</a></li>
+                            <li><a href="design-guide.html">Design Guidelines</a></li>
+                            <li><a href="tolerances.html">Tolerances</a></li>
+                            <li><a href="finishing.html">Surface Finishes</a></li>
+                            <li><a href="blog.html">Blog</a></li>
+                            <li><a href="faq.html">FAQ</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="about.html">About Us</a></li>
+                            <li><a href="quality.html">Quality & Certifications</a></li>
+                            <li><a href="careers.html">Careers</a></li>
+                            <li><a href="contact.html">Contact Us</a></li>
+                            <li><a href="privacy.html">Privacy Policy</a></li>
+                            <li><a href="terms.html">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="footer-contact">
+                    <h4>Contact Us</h4>
+                    <address>
+                        <p><i class="fas fa-map-marker-alt"></i> 3 Fuxin West Road<br>QingXi Town, Dongguan City, Guangdong, China</p>
+                        <p><i class="fas fa-phone"></i> <a href="tel:+8613431451998">+86 13431451998</a></p>
+                        <p><i class="fas fa-envelope"></i> <a href="mailto:lucindaz@wanfuxin.com">lucindaz@wanfuxin.com</a></p>
+                    </address>
+                    <div class="footer-hours">
+                        <h5>Business Hours</h5>
+                        <p>Mon - Sat: 8:00 AM - 12:00 PM, 1:30 PM - 5:30 PM (China Time)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    <p>&copy; 2025 WFX. All rights reserved.</p>
+                </div>
+                <div class="footer-certifications">
+                    <span>Certifications:</span>
+                    <span class="cert-badge">ISO9001</span>
+                    <span class="cert-badge">IATF16949</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <script defer src="content-loader.js"></script>
+    <script defer src="script.js"></script>
+</body>
+</html>

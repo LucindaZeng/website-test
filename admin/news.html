@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Management | WFX Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../logo.png" alt="WFX">
+            <h2>Admin Panel</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard.html" class="nav-item">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Content Management</div>
+                <a href="content-editor.html" class="nav-item">
+                    <i class="fas fa-edit"></i> Content Editor
+                </a>
+                <a href="videos.html" class="nav-item">
+                    <i class="fas fa-video"></i> Video Manager
+                </a>
+                <a href="pages.html" class="nav-item">
+                    <i class="fas fa-file-alt"></i> Pages & Text
+                </a>
+                <a href="page-images.html" class="nav-item">
+                    <i class="fas fa-image"></i> Page Images
+                </a>
+                <a href="products.html" class="nav-item">
+                    <i class="fas fa-boxes"></i> Industry Products
+                </a>
+                <a href="categories.html" class="nav-item">
+                    <i class="fas fa-folder-open"></i> Categories
+                </a>
+                <a href="media.html" class="nav-item">
+                    <i class="fas fa-images"></i> Media Library
+                </a>
+                <a href="blog.html" class="nav-item">
+                    <i class="fas fa-blog"></i> Blog Posts
+                </a>
+                <a href="news.html" class="nav-item active">
+                    <i class="fas fa-newspaper"></i> News
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+                <a href="users.html" class="nav-item">
+                    <i class="fas fa-users"></i> User Management
+                </a>
+                <a href="activity-log.html" class="nav-item">
+                    <i class="fas fa-history"></i> Activity Log
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+            </div>
+            <div class="nav-section">
+                <a href="../index.html" class="nav-item" target="_blank">
+                    <i class="fas fa-external-link-alt"></i> View Website
+                </a>
+                <a href="#" class="nav-item" onclick="AdminCore.logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <header class="admin-header">
+            <div class="header-left">
+                <h1>News Management</h1>
+            </div>
+            <div class="header-right">
+                <div class="user-menu">
+                    <div class="user-avatar" id="user-avatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="user-name">Admin</div>
+                        <div class="user-role" id="user-role">Administrator</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="admin-content">
+            <div id="alert-container"></div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-news" placeholder="Search news...">
+                </div>
+                <button class="btn btn-primary" onclick="openNewsModal()">
+                    <i class="fas fa-plus"></i> Add News Article
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-newspaper"></i> All News Articles</h3>
+                    <span id="news-count">0 articles</span>
+                </div>
+                <div class="card-body" style="padding: 0;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Author</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="news-table">
+                            <tr><td colspan="6" style="text-align: center; padding: 40px;">No news yet. Add your first article!</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- News Modal -->
+    <div class="modal-overlay" id="news-modal">
+        <div class="modal" style="max-width: 900px;">
+            <div class="modal-header">
+                <h3 id="modal-title">Add News Article</h3>
+                <button class="modal-close" onclick="closeNewsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="news-form">
+                    <input type="hidden" id="news-id">
+                    
+                    <div class="form-group">
+                        <label class="form-label">Title *</label>
+                        <input type="text" class="form-control" id="news-title" required placeholder="Enter news title">
+                    </div>
+                    
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <select class="form-control" id="news-category">
+                                <!-- Options populated dynamically from Categories admin -->
+                            </select>
+                            <small style="color: var(--gray); font-size: 0.85rem;">
+                                Manage categories in <a href="categories.html" style="color: var(--primary);">Categories</a>
+                            </small>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Status</label>
+                            <select class="form-control" id="news-status">
+                                <option value="draft">Draft</option>
+                                <option value="published">Published</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Excerpt</label>
+                        <textarea class="form-control" id="news-excerpt" rows="2" placeholder="Brief summary of the news"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Content *</label>
+                        <div class="editor-toolbar">
+                            <button type="button" onclick="formatText('bold')"><i class="fas fa-bold"></i></button>
+                            <button type="button" onclick="formatText('italic')"><i class="fas fa-italic"></i></button>
+                            <button type="button" onclick="formatText('underline')"><i class="fas fa-underline"></i></button>
+                            <button type="button" onclick="formatText('insertUnorderedList')"><i class="fas fa-list-ul"></i></button>
+                            <button type="button" onclick="formatText('insertOrderedList')"><i class="fas fa-list-ol"></i></button>
+                            <button type="button" onclick="formatText('createLink')"><i class="fas fa-link"></i></button>
+                        </div>
+                        <div class="editor-content" id="news-content" contenteditable="true"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Featured Image URL</label>
+                        <input type="url" class="form-control" id="news-image" placeholder="https://example.com/image.jpg">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeNewsModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveNews()">Save Article</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="modal-overlay" id="delete-modal">
+        <div class="modal" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Delete Article</h3>
+                <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete "<strong id="delete-title"></strong>"?</p>
+                <p style="color: var(--admin-danger); margin-top: 10px;">This action cannot be undone.</p>
+                <input type="hidden" id="delete-news-id">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/admin-core.js"></script>
+    <script>
+        if (!AdminCore.checkAuth()) {
+            window.location.href = 'index.html';
+        }
+
+        const currentUser = AdminCore.getCurrentUser();
+        if (currentUser) {
+            document.getElementById('user-name').textContent = currentUser.name || currentUser.username;
+            document.getElementById('user-role').textContent = currentUser.role === 'super_admin' ? 'Super Admin' : 'Editor';
+            document.getElementById('user-avatar').textContent = (currentUser.name || currentUser.username).charAt(0).toUpperCase();
+        }
+
+        function loadNews() {
+            const news = AdminCore.getNews();
+            const tbody = document.getElementById('news-table');
+            document.getElementById('news-count').textContent = `${news.length} articles`;
+            
+            if (news.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px;">No news yet. Add your first article!</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = news.map(item => `
+                <tr>
+                    <td>
+                        <strong>${item.title}</strong>
+                        ${item.excerpt ? `<div style="font-size: 0.85rem; color: var(--admin-gray); margin-top: 5px;">${item.excerpt.substring(0, 60)}...</div>` : ''}
+                    </td>
+                    <td>${item.category || '-'}</td>
+                    <td>${item.author}</td>
+                    <td><span class="status-badge status-${item.status}">${item.status}</span></td>
+                    <td>${AdminCore.formatDate(item.createdAt)}</td>
+                    <td>
+                        <div style="display: flex; gap: 5px;">
+                            <button class="btn btn-sm btn-secondary btn-icon" onclick="editNews(${item.id})" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger btn-icon" onclick="deleteNews(${item.id}, '${item.title.replace(/'/g, "\\'")}')" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        loadNews();
+
+        // Load categories dynamically from the Categories admin page
+        function loadNewsCategoriesIntoDropdown() {
+            const select = document.getElementById('news-category');
+            if (!select) return;
+
+            let cats = [];
+            try {
+                const stored = JSON.parse(localStorage.getItem('wfx_categories') || '{}');
+                cats = stored.news || [];
+            } catch (e) {}
+
+            // Fallback if categories haven't been initialized yet
+            if (cats.length === 0) {
+                cats = [
+                    { name: 'Company News',         slug: 'company-news' },
+                    { name: 'Industry Insights',    slug: 'industry-insights' },
+                    { name: 'Technical Articles',   slug: 'technical-articles' },
+                    { name: 'Case Studies',         slug: 'case-studies' },
+                    { name: 'Events & Exhibitions', slug: 'events' }
+                ];
+            }
+
+            const currentValue = select.value;
+            select.innerHTML = cats.map(c =>
+                `<option value="${c.slug}">${c.name}</option>`
+            ).join('');
+            if (currentValue) select.value = currentValue;
+        }
+        loadNewsCategoriesIntoDropdown();
+
+        document.getElementById('search-news').addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const news = AdminCore.getNews();
+            const filtered = news.filter(n => 
+                n.title.toLowerCase().includes(query) ||
+                (n.content && n.content.toLowerCase().includes(query))
+            );
+            
+            const tbody = document.getElementById('news-table');
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px;">No news found</td></tr>';
+            } else {
+                tbody.innerHTML = filtered.map(item => `
+                    <tr>
+                        <td><strong>${item.title}</strong></td>
+                        <td>${item.category || '-'}</td>
+                        <td>${item.author}</td>
+                        <td><span class="status-badge status-${item.status}">${item.status}</span></td>
+                        <td>${AdminCore.formatDate(item.createdAt)}</td>
+                        <td>
+                            <div style="display: flex; gap: 5px;">
+                                <button class="btn btn-sm btn-secondary btn-icon" onclick="editNews(${item.id})"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm btn-danger btn-icon" onclick="deleteNews(${item.id}, '${item.title.replace(/'/g, "\\'")}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        });
+
+        function formatText(command, value = null) {
+            if (command === 'createLink') {
+                value = prompt('Enter URL:');
+                if (!value) return;
+            }
+            document.execCommand(command, false, value);
+            document.getElementById('news-content').focus();
+        }
+
+        function openNewsModal() {
+            document.getElementById('modal-title').textContent = 'Add News Article';
+            document.getElementById('news-form').reset();
+            document.getElementById('news-id').value = '';
+            document.getElementById('news-content').innerHTML = '';
+            document.getElementById('news-modal').classList.add('active');
+        }
+
+        function editNews(newsId) {
+            const news = AdminCore.getNews();
+            const item = news.find(n => n.id === newsId);
+            
+            if (item) {
+                document.getElementById('modal-title').textContent = 'Edit News Article';
+                document.getElementById('news-id').value = item.id;
+                document.getElementById('news-title').value = item.title;
+                document.getElementById('news-category').value = item.category || '';
+                document.getElementById('news-status').value = item.status;
+                document.getElementById('news-excerpt').value = item.excerpt || '';
+                document.getElementById('news-content').innerHTML = item.content || '';
+                document.getElementById('news-image').value = item.featuredImage || '';
+                document.getElementById('news-modal').classList.add('active');
+            }
+        }
+
+        function closeNewsModal() {
+            document.getElementById('news-modal').classList.remove('active');
+        }
+
+        function saveNews() {
+            const newsId = document.getElementById('news-id').value;
+            const newsData = {
+                title: document.getElementById('news-title').value,
+                category: document.getElementById('news-category').value,
+                status: document.getElementById('news-status').value,
+                excerpt: document.getElementById('news-excerpt').value,
+                content: document.getElementById('news-content').innerHTML,
+                featuredImage: document.getElementById('news-image').value
+            };
+            
+            if (!newsData.title) {
+                showAlert('Title is required', 'danger');
+                return;
+            }
+            
+            let result;
+            if (newsId) {
+                result = AdminCore.updateNews(parseInt(newsId), newsData);
+            } else {
+                result = AdminCore.addNews(newsData);
+            }
+            
+            if (result.success) {
+                showAlert(newsId ? 'Article updated successfully' : 'Article created successfully', 'success');
+                closeNewsModal();
+                loadNews();
+            }
+        }
+
+        function deleteNews(newsId, title) {
+            document.getElementById('delete-news-id').value = newsId;
+            document.getElementById('delete-title').textContent = title;
+            document.getElementById('delete-modal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('delete-modal').classList.remove('active');
+        }
+
+        function confirmDelete() {
+            const newsId = parseInt(document.getElementById('delete-news-id').value);
+            AdminCore.deleteNews(newsId);
+            showAlert('Article deleted successfully', 'success');
+            closeDeleteModal();
+            loadNews();
+        }
+
+        function showAlert(message, type) {
+            const container = document.getElementById('alert-container');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+            container.appendChild(alert);
+            setTimeout(() => alert.remove(), 3000);
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('action') === 'new') openNewsModal();
+        if (urlParams.get('edit')) editNews(parseInt(urlParams.get('edit')));
+    </script>
+</body>
+</html>

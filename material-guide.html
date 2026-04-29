@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete material selection guide with international material equivalents. Compare China GB, USA ASTM/SAE, UK BS, Germany DIN, Europe EN, and Australia AS standards.">
+    <title>Material Selection Guide | International Material Standards | WFX</title>
+    <link rel="canonical" href="https://wanfuxin.com/material-guide.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .material-table { width: 100%; border-collapse: collapse; background: var(--white); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); margin-bottom: 30px; font-size: 0.9rem; }
+        .material-table th { background: var(--primary); color: white; padding: 15px 12px; text-align: left; font-weight: 600; white-space: nowrap; }
+        .material-table td { padding: 12px; border-bottom: 1px solid var(--light-gray); }
+        .material-table tr:nth-child(even) { background: var(--off-white); }
+        .material-table tr:hover { background: #e3f2fd; }
+        .category-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; }
+        .category-header td { color: white; font-weight: 600; font-size: 1rem; padding: 15px 12px; }
+        .table-container { overflow-x: auto; margin-bottom: 40px; }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="top-bar-content">
+                <div class="top-bar-left">
+                    <span><i class="fas fa-phone"></i> +86 13431451998</span>
+                    <span><i class="fas fa-envelope"></i> lucindaz@wanfuxin.com</span>
+                </div>
+                <div class="top-bar-right">
+                    <a href="index.html#quote">Request a Quote</a>
+                    <a href="contact.html">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">
+                    <img src="logo.png" alt="WFX - Wanfuxin" class="logo-img">
+                </a>
+                <ul class="nav-menu" id="nav-menu">
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link">Services <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-menu mega-menu">
+                            <div class="mega-menu-content">
+                                <div class="mega-menu-section">
+                                    <h4>CNC Machining</h4>
+                                    <ul>
+                                        <li><a href="cnc-milling.html"><i class="fas fa-cube"></i> CNC Milling</a></li>
+                                        <li><a href="cnc-turning.html"><i class="fas fa-sync-alt"></i> CNC Turning</a></li>
+                                        <li><a href="5-axis.html"><i class="fas fa-dice-d6"></i> 5-Axis Machining</a></li>
+                                        <li><a href="precision-inspection.html"><i class="fas fa-compress-arrows-alt"></i> Precision Inspection</a></li>
+                                    </ul>
+                                </div>
+                                <div class="mega-menu-section">
+                                    <h4>Additional Services</h4>
+                                    <ul>
+                                        <li><a href="prototyping.html"><i class="fas fa-drafting-compass"></i> Rapid Prototyping</a></li>
+                                        <li><a href="production.html"><i class="fas fa-industry industry-icon"></i> Production Runs</a></li>
+                                        <li><a href="finishing.html"><i class="fas fa-spray-can"></i> Surface Finishing</a></li>
+                                        <li><a href="assembly.html"><i class="fas fa-puzzle-piece"></i> Assembly Services</a></li>
+                                    </ul>
+                                </div>
+                                <div class="mega-menu-section">
+                                    <h4>Metal Forming</h4>
+                                    <ul>
+                                        <li><a href="die-casting.html"><i class="fas fa-fill-drip"></i> Die Casting</a></li>
+                                        <li><a href="forging.html"><i class="fas fa-hammer"></i> Forging</a></li>
+                                        <li><a href="stamping.html"><i class="fas fa-compress-alt"></i> Stamping</a></li>
+                                        <li><a href="sheet-metal.html"><i class="fas fa-layer-group"></i> Sheet Metal</a></li>
+                                        <li><a href="investment-casting.html"><i class="fas fa-gem"></i> Investment Casting</a></li>
+                                    </ul>
+                                </div>
+                                <div class="mega-menu-section">
+                                    <h4>Quick Links</h4>
+                                    <ul>
+                                        <li><a href="index.html#quote"><i class="fas fa-calculator"></i> Request a Quote</a></li>
+                                        <li><a href="materials.html"><i class="fas fa-layer-group"></i> Material Selection</a></li>
+                                        <li><a href="tolerances.html"><i class="fas fa-ruler-combined"></i> Tolerances Guide</a></li>
+                                    </ul>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="materials.html" class="nav-link">Materials <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-menu">
+                            <ul>
+                                <li><a href="metals.html">Metals & Alloys</a></li>
+                                <li><a href="forging.html">Forging</a></li>
+                                <li><a href="die-casting.html">Die Casting</a></li>
+                                <li><a href="material-guide.html">Material Selection Guide</a></li>
+                                <li><a href="finishing.html">Surface Finishing</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="industries.html" class="nav-link">Industries <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-menu">
+                            <ul>
+                                <li><a href="aerospace.html">Aerospace Parts</a></li>
+                                <li><a href="liquid-cooling.html">Liquid Cooling Parts</a></li>
+                                <li><a href="medical.html">Medical Devices</a></li>
+                                <li><a href="electronics.html">Electronics</a></li>
+                                <li><a href="industrial.html">Industrial Equipment</a></li>
+                                <li><a href="robotics.html">Robotics & Automation</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="resources.html" class="nav-link">Resources <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-menu">
+                            <ul>
+                                <li><a href="design-guide.html">Design Guidelines</a></li>
+                                <li><a href="blog.html">Blog & News</a></li>
+                                <li><a href="case-studies.html">Case Studies</a></li>
+                                <li><a href="faq.html">FAQ</a></li>
+                                <li><a href="downloads.html">Downloads</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item"><a href="about.html" class="nav-link">About Us</a></li>
+                    <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <a href="index.html#quote" class="btn btn-primary">Get Quote</a>
+                    <button class="mobile-toggle" id="mobile-toggle"><span></span><span></span><span></span></button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Hero -->
+    <section class="page-hero" style="background: linear-gradient(135deg, #1a2942 0%, #2d5a87 100%); padding: 180px 0 100px;">
+        <div class="container">
+            <div style="max-width: 900px;">
+                <span class="section-badge" style="background: rgba(255,255,255,0.15); color: #fff;">International Standards</span>
+                <h1 style="font-size: 3.5rem; color: var(--white); margin-bottom: 20px;">Material Selection Guide</h1>
+                <p style="font-size: 1.25rem; color: rgba(255,255,255,0.85); margin-bottom: 30px; line-height: 1.7;">
+                    Complete international material equivalents chart. Compare material standards across China (GB), USA (ASTM/SAE/UNS), UK (BS), Germany (DIN/W.Nr.), Europe (EN), and Australia (AS).
+                </p>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <a href="index.html#quote" class="btn btn-primary btn-large"><i class="fas fa-upload"></i> Request a Quote</a>
+                    <a href="metals.html" class="btn btn-outline-light btn-large">View All Materials</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Navigation -->
+    <section style="padding: 40px 0; background: var(--off-white); border-bottom: 1px solid var(--light-gray);">
+        <div class="container">
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;">
+                <a href="#aluminum" class="btn btn-small" style="background: #e3f2fd; color: var(--primary);">🔷 Aluminum</a>
+                <a href="#magnesium" class="btn btn-small" style="background: #f3e5f5; color: #7b1fa2;">🔮 Magnesium</a>
+                <a href="#stainless" class="btn btn-small" style="background: #e8f5e9; color: #2e7d32;">🟢 Stainless Steel</a>
+                <a href="#copper" class="btn btn-small" style="background: #fff8e1; color: #f57c00;">🟠 Copper & Brass</a>
+                <a href="#steel" class="btn btn-small" style="background: #fce4ec; color: #c2185b;">🔴 Carbon & Alloy Steel</a>
+                <a href="#titanium" class="btn btn-small" style="background: #e0f7fa; color: #0097a7;">🔵 Titanium</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Aluminum Alloys -->
+    <section id="aluminum" style="padding: 80px 0; background: var(--white);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge" style="background: #e3f2fd; color: var(--primary);">Lightweight & Versatile</span>
+                <h2 class="section-title">Aluminum Alloys - International Equivalents</h2>
+                <p class="section-description">Complete cross-reference of aluminum grades (1xxx-7xxx series) across major international standards.</p>
+            </div>
+            <div class="table-container">
+                <table class="material-table">
+                    <thead>
+                        <tr>
+                            <th>🇨🇳 China (GB)</th>
+                            <th>🇺🇸 USA (AA/UNS)</th>
+                            <th>🇬🇧 UK (BS)</th>
+                            <th>🇩🇪 Germany (DIN/W.Nr.)</th>
+                            <th>🇪🇺 Europe (EN)</th>
+                            <th>🇦🇺 Australia (AS)</th>
+                            <th>Applications</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 1xxx Series -->
+                        <tr class="category-header"><td colspan="7">1xxx Series - Pure Aluminum (≥99% Al) - Excellent Corrosion Resistance & Conductivity</td></tr>
+                        <tr><td><strong>L1 / 1050</strong></td><td>1050 / A91050</td><td>1B</td><td>Al99.5 / 3.0255</td><td>EN AW-1050A</td><td>1050</td><td>Chemical equipment, reflectors</td></tr>
+                        <tr><td><strong>L2 / 1060</strong></td><td>1060 / A91060</td><td>1A</td><td>Al99.6 / 3.0205</td><td>EN AW-1060</td><td>1060</td><td>Electrical conductors, lighting</td></tr>
+                        <tr><td><strong>L3 / 1100</strong></td><td>1100 / A91100</td><td>1C</td><td>Al99.0Cu / 3.0205</td><td>EN AW-1100</td><td>1100</td><td>Food containers, heat exchangers</td></tr>
+                        <tr><td><strong>L4 / 1200</strong></td><td>1200 / A91200</td><td>1050A</td><td>Al99.0 / 3.0205</td><td>EN AW-1200</td><td>1200</td><td>General sheet metal, fin stock</td></tr>
+                        
+                        <!-- 2xxx Series -->
+                        <tr class="category-header"><td colspan="7">2xxx Series - Al-Cu Alloys - High Strength Aircraft Grade</td></tr>
+                        <tr><td><strong>LY16 / 2011</strong></td><td>2011 / A92011</td><td>FC1</td><td>AlCu6BiPb / 3.1655</td><td>EN AW-2011</td><td>2011</td><td>Screw machine products, fittings</td></tr>
+                        <tr><td><strong>LY11 / 2017</strong></td><td>2017 / A92017</td><td>L78</td><td>AlCu4MgSi / 3.1325</td><td>EN AW-2017</td><td>2017</td><td>Rivets, general machining</td></tr>
+                        <tr><td><strong>LY12 / 2024</strong></td><td>2024 / A92024</td><td>DTD 5070</td><td>AlCu4Mg1 / 3.1355</td><td>EN AW-2024</td><td>2024</td><td>Aircraft skins, fuselage, truck wheels</td></tr>
+                        <tr><td><strong>2A12</strong></td><td>2024 / A92024</td><td>2L97/2L98</td><td>AlCu4Mg1 / 3.1355</td><td>EN AW-2024</td><td>2024</td><td>Aerospace structural parts</td></tr>
+                        <tr><td><strong>LY6 / 2014</strong></td><td>2014 / A92014</td><td>L86</td><td>AlCu4SiMg / 3.1255</td><td>EN AW-2014</td><td>2014</td><td>Heavy duty structures, forgings</td></tr>
+                        
+                        <!-- 3xxx Series -->
+                        <tr class="category-header"><td colspan="7">3xxx Series - Al-Mn Alloys - Good Formability & Corrosion Resistance</td></tr>
+                        <tr><td><strong>LF21 / 3003</strong></td><td>3003 / A93003</td><td>N3</td><td>AlMn1Cu / 3.0517</td><td>EN AW-3003</td><td>3003</td><td>Heat exchangers, cooking utensils</td></tr>
+                        <tr><td><strong>3004</strong></td><td>3004 / A93004</td><td>N31</td><td>AlMn1Mg1 / 3.0526</td><td>EN AW-3004</td><td>3004</td><td>Beverage cans, roofing sheets</td></tr>
+                        <tr><td><strong>3105</strong></td><td>3105 / A93105</td><td>N32</td><td>AlMn0.5Mg0.5 / 3.0505</td><td>EN AW-3105</td><td>3105</td><td>Building products, caps, closures</td></tr>
+                        <tr><td><strong>3A21</strong></td><td>3003 / A93003</td><td>N3</td><td>AlMn1Cu / 3.0517</td><td>EN AW-3003</td><td>3003</td><td>Tank trucks, pressure vessels</td></tr>
+                        
+                        <!-- 4xxx Series -->
+                        <tr class="category-header"><td colspan="7">4xxx Series - Al-Si Alloys - Low Melting Point, Wear Resistant</td></tr>
+                        <tr><td><strong>4032</strong></td><td>4032 / A94032</td><td>-</td><td>AlSi12.5MgCuNi / 3.4365</td><td>EN AW-4032</td><td>4032</td><td>Pistons, engine components</td></tr>
+                        <tr><td><strong>4043</strong></td><td>4043 / A94043</td><td>NG21</td><td>AlSi5 / 3.2245</td><td>EN AW-4043</td><td>4043</td><td>Welding wire, brazing filler</td></tr>
+                        <tr><td><strong>4047</strong></td><td>4047 / A94047</td><td>NG2</td><td>AlSi12 / 3.2585</td><td>EN AW-4047</td><td>4047</td><td>Laser welding, semiconductor packaging</td></tr>
+                        <tr><td><strong>4A01</strong></td><td>4043 / A94043</td><td>NG21</td><td>AlSi5 / 3.2245</td><td>EN AW-4043</td><td>4043</td><td>Building panels, welding electrodes</td></tr>
+                        
+                        <!-- 5xxx Series -->
+                        <tr class="category-header"><td colspan="7">5xxx Series - Al-Mg Alloys - Marine Grade, Excellent Corrosion Resistance</td></tr>
+                        <tr><td><strong>LF2 / 5052</strong></td><td>5052 / A95052</td><td>N4</td><td>AlMg2.5 / 3.3523</td><td>EN AW-5052</td><td>5052</td><td>Marine, fuel tanks, sheet metal</td></tr>
+                        <tr><td><strong>LF4 / 5083</strong></td><td>5083 / A95083</td><td>N8</td><td>AlMg4.5Mn / 3.3547</td><td>EN AW-5083</td><td>5083</td><td>Ship hulls, pressure vessels, LNG tanks</td></tr>
+                        <tr><td><strong>5086</strong></td><td>5086 / A95086</td><td>N6</td><td>AlMg4 / 3.3545</td><td>EN AW-5086</td><td>5086</td><td>Marine, armor plate, unfired vessels</td></tr>
+                        <tr><td><strong>5754</strong></td><td>5754 / A95754</td><td>N51</td><td>AlMg3 / 3.3535</td><td>EN AW-5754</td><td>5754</td><td>Automotive body panels, welded structures</td></tr>
+                        <tr><td><strong>5A06</strong></td><td>5456 / A95456</td><td>N61</td><td>AlMg5Mn / 3.3555</td><td>EN AW-5456</td><td>5456</td><td>Welded structures, pressure vessels</td></tr>
+                        <tr><td><strong>5A02</strong></td><td>5052 / A95052</td><td>N4</td><td>AlMg2.5 / 3.3523</td><td>EN AW-5052</td><td>5052</td><td>Aircraft fuel tanks, pipework</td></tr>
+                        
+                        <!-- 6xxx Series -->
+                        <tr class="category-header"><td colspan="7">6xxx Series - Al-Mg-Si Alloys - Heat Treatable, Good Formability</td></tr>
+                        <tr><td><strong>LD30 / 6061</strong></td><td>6061 / A96061</td><td>HE20</td><td>AlMg1SiCu / 3.3211</td><td>EN AW-6061</td><td>6061</td><td>General purpose, structural, fixtures</td></tr>
+                        <tr><td><strong>LD31 / 6063</strong></td><td>6063 / A96063</td><td>HE9</td><td>AlMgSi0.5 / 3.3206</td><td>EN AW-6063</td><td>6063</td><td>Architectural extrusions, window frames</td></tr>
+                        <tr><td><strong>6082</strong></td><td>6082 / A96082</td><td>HE30</td><td>AlMgSi1 / 3.2315</td><td>EN AW-6082</td><td>6082</td><td>Structural applications, bridges, trusses</td></tr>
+                        <tr><td><strong>6005</strong></td><td>6005 / A96005</td><td>HE15</td><td>AlMgSi0.7 / 3.3210</td><td>EN AW-6005A</td><td>6005</td><td>Ladders, scaffolding, profiles</td></tr>
+                        <tr><td><strong>6101</strong></td><td>6101 / A96101</td><td>91E</td><td>AlMgSi0.5 / 3.3207</td><td>EN AW-6101</td><td>6101</td><td>Electrical conductors, bus bars</td></tr>
+                        
+                        <!-- 7xxx Series -->
+                        <tr class="category-header"><td colspan="7">7xxx Series - Al-Zn Alloys - Highest Strength Aerospace Grade</td></tr>
+                        <tr><td><strong>7050</strong></td><td>7050 / A97050</td><td>-</td><td>AlZn6CuMgZr / 3.4144</td><td>EN AW-7050</td><td>7050</td><td>Aircraft bulkheads, fuselage frames</td></tr>
+                        <tr><td><strong>LC4 / 7075</strong></td><td>7075 / A97075</td><td>DTD 5124</td><td>AlZnMgCu1.5 / 3.4365</td><td>EN AW-7075</td><td>7075</td><td>Aerospace, high-stress structural parts</td></tr>
+                        <tr><td><strong>7A04</strong></td><td>7075 / A97075</td><td>DTD 5124</td><td>AlZnMgCu1.5 / 3.4365</td><td>EN AW-7075</td><td>7075</td><td>Aircraft beams, landing gear, military</td></tr>
+                        <tr><td><strong>7A09</strong></td><td>7175 / A97175</td><td>-</td><td>AlZnMgCu2.5 / 3.4365</td><td>EN AW-7175</td><td>7175</td><td>Forged aerospace parts, die forgings</td></tr>
+                        <tr><td><strong>LC9 / 7A09</strong></td><td>7075-T7351</td><td>-</td><td>AlZnMgCu1.5 / 3.4365</td><td>EN AW-7075</td><td>7075</td><td>High strength forgings, aerospace</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Magnesium Alloys -->
+    <section id="magnesium" style="padding: 80px 0; background: var(--off-white);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge" style="background: #f3e5f5; color: #7b1fa2;">Ultra Lightweight</span>
+                <h2 class="section-title">Magnesium Alloys - International Equivalents</h2>
+                <p class="section-description">The lightest structural metal - 33% lighter than aluminum. Excellent for weight-critical applications.</p>
+            </div>
+            <div class="table-container">
+                <table class="material-table">
+                    <thead>
+                        <tr>
+                            <th>🇨🇳 China (GB)</th>
+                            <th>🇺🇸 USA (ASTM)</th>
+                            <th>🇬🇧 UK (BS)</th>
+                            <th>🇩🇪 Germany (DIN/W.Nr.)</th>
+                            <th>🇪🇺 Europe (EN)</th>
+                            <th>🇦🇺 Australia (AS)</th>
+                            <th>Applications</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="category-header"><td colspan="7">Wrought Magnesium Alloys (Sheet, Plate, Extrusions)</td></tr>
+                        <tr><td><strong>MB2 / AZ31B</strong></td><td>AZ31B / M11311</td><td>MAG-S-111</td><td>MgAl3Zn1 / 3.5312</td><td>EN-MB10020</td><td>AZ31B</td><td>Aircraft parts, laptops, cameras</td></tr>
+                        <tr><td><strong>MB3 / AZ61A</strong></td><td>AZ61A / M11610</td><td>MAG-E-121</td><td>MgAl6Zn1 / 3.5612</td><td>EN-MB10030</td><td>AZ61A</td><td>Extrusions, forgings, high strength</td></tr>
+                        <tr><td><strong>MB5 / AZ80A</strong></td><td>AZ80A / M11800</td><td>MAG-E-131</td><td>MgAl8Zn / 3.5812</td><td>EN-MB10050</td><td>AZ80A</td><td>High strength forgings, aerospace</td></tr>
+                        <tr><td><strong>MB1</strong></td><td>AZ31B</td><td>MAG-S-111</td><td>MgAl3Zn1 / 3.5312</td><td>EN-MB10020</td><td>AZ31B</td><td>General purpose wrought alloy</td></tr>
+                        
+                        <tr class="category-header"><td colspan="7">Cast Magnesium Alloys (Die Casting, Sand Casting)</td></tr>
+                        <tr><td><strong>ZM5 / AZ91D</strong></td><td>AZ91D / M11916</td><td>MAG-C-111</td><td>MgAl9Zn1 / 3.5912</td><td>EN-MC21120</td><td>AZ91D</td><td>Die cast housings, automotive, power tools</td></tr>
+                        <tr><td><strong>AZ91C</strong></td><td>AZ91C / M11914</td><td>MAG-C-110</td><td>MgAl9Zn1 / 3.5912</td><td>EN-MC21110</td><td>AZ91C</td><td>Sand castings, general purpose</td></tr>
+                        <tr><td><strong>AM60B</strong></td><td>AM60B / M10600</td><td>-</td><td>MgAl6Mn / 3.5662</td><td>EN-MC21230</td><td>AM60B</td><td>Automotive, high ductility & energy absorption</td></tr>
+                        <tr><td><strong>AM50A</strong></td><td>AM50A / M10500</td><td>-</td><td>MgAl5Mn / 3.5560</td><td>EN-MC21220</td><td>AM50A</td><td>Steering wheels, seat frames</td></tr>
+                        
+                        <tr class="category-header"><td colspan="7">Special Performance Magnesium Alloys</td></tr>
+                        <tr><td><strong>WE43</strong></td><td>WE43 / M18430</td><td>-</td><td>MgY4RE3Zr</td><td>EN-MC60000</td><td>WE43</td><td>Aerospace, biomedical implants</td></tr>
+                        <tr><td><strong>ZK60A</strong></td><td>ZK60A / M16600</td><td>-</td><td>MgZn6Zr</td><td>EN-MB60010</td><td>ZK60A</td><td>High strength forgings, bicycle parts</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stainless Steel -->
+    <section id="stainless" style="padding: 80px 0; background: var(--white);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge" style="background: #e8f5e9; color: #2e7d32;">Corrosion Resistant</span>
+                <h2 class="section-title">Stainless Steel - International Equivalents</h2>
+                <p class="section-description">Complete reference for austenitic (300 series), ferritic, martensitic (400 series), and precipitation hardening grades.</p>
+            </div>
+            <div class="table-container">
+                <table class="material-table">
+                    <thead>
+                        <tr>
+                            <th>🇨🇳 China (GB)</th>
+                            <th>🇺🇸 USA (AISI/UNS)</th>
+                            <th>🇬🇧 UK (BS)</th>
+                            <th>🇩🇪 Germany (DIN/W.Nr.)</th>
+                            <th>🇪🇺 Europe (EN)</th>
+                            <th>🇦🇺 Australia (AS)</th>
+                            <th>Applications</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="category-header"><td colspan="7">Austenitic Stainless Steel (300 Series) - Non-Magnetic, Excellent Corrosion Resistance</td></tr>
+                        <tr><td><strong>Y1Cr18Ni9</strong></td><td>303 / S30300</td><td>303S31</td><td>X8CrNiS18-9 / 1.4305</td><td>EN 1.4305</td><td>303</td><td>Free machining, screws, fittings</td></tr>
+                        <tr><td><strong>0Cr18Ni9 / 06Cr19Ni10</strong></td><td>304 / S30400</td><td>304S31</td><td>X5CrNi18-10 / 1.4301</td><td>EN 1.4301</td><td>304</td><td>Food grade, kitchen, medical, general</td></tr>
+                        <tr><td><strong>00Cr19Ni10 / 022Cr19Ni10</strong></td><td>304L / S30403</td><td>304S11</td><td>X2CrNi19-11 / 1.4306</td><td>EN 1.4306</td><td>304L</td><td>Welded structures, tanks, low-carbon</td></tr>
+                        <tr><td><strong>0Cr17Ni12Mo2 / 06Cr17Ni12Mo2</strong></td><td>316 / S31600</td><td>316S31</td><td>X5CrNiMo17-12-2 / 1.4401</td><td>EN 1.4401</td><td>316</td><td>Marine, surgical implants, chemical</td></tr>
+                        <tr><td><strong>00Cr17Ni14Mo2 / 022Cr17Ni12Mo2</strong></td><td>316L / S31603</td><td>316S11</td><td>X2CrNiMo17-12-2 / 1.4404</td><td>EN 1.4404</td><td>316L</td><td>Medical devices, welded chemical equipment</td></tr>
+                        <tr><td><strong>0Cr18Ni10Ti</strong></td><td>321 / S32100</td><td>321S31</td><td>X6CrNiTi18-10 / 1.4541</td><td>EN 1.4541</td><td>321</td><td>Aircraft exhaust, high temp applications</td></tr>
+                        <tr><td><strong>0Cr25Ni20</strong></td><td>310S / S31008</td><td>310S31</td><td>X12CrNi25-20 / 1.4842</td><td>EN 1.4842</td><td>310S</td><td>Heat treatment fixtures, furnace parts</td></tr>
+                        
+                        <tr class="category-header"><td colspan="7">Martensitic Stainless Steel (400 Series) - Hardenable, Magnetic</td></tr>
+                        <tr><td><strong>1Cr13 / 12Cr13</strong></td><td>410 / S41000</td><td>410S21</td><td>X12Cr13 / 1.4006</td><td>EN 1.4006</td><td>410</td><td>Cutlery, valves, fasteners</td></tr>
+                        <tr><td><strong>2Cr13 / 20Cr13</strong></td><td>420 / S42000</td><td>420S37</td><td>X20Cr13 / 1.4021</td><td>EN 1.4021</td><td>420</td><td>Surgical instruments, cutlery, knives</td></tr>
+                        <tr><td><strong>3Cr13 / 30Cr13</strong></td><td>420 / S42000</td><td>420S45</td><td>X30Cr13 / 1.4028</td><td>EN 1.4028</td><td>420</td><td>High hardness blades, springs</td></tr>
+                        <tr><td><strong>9Cr18 / 95Cr18</strong></td><td>440A / S44002</td><td>-</td><td>X70CrMo15 / 1.4109</td><td>EN 1.4109</td><td>440A</td><td>Bearings, high hardness applications</td></tr>
+                        <tr><td><strong>9Cr18MoV</strong></td><td>440C / S44004</td><td>-</td><td>X105CrMo17 / 1.4125</td><td>EN 1.4125</td><td>440C</td><td>Bearings, knife blades, highest hardness</td></tr>
+                        
+                        <tr class="category-header"><td colspan="7">Ferritic Stainless Steel (400 Series) - Magnetic, Good Formability</td></tr>
+                        <tr><td><strong>1Cr17 / 10Cr17</strong></td><td>430 / S43000</td><td>430S17</td><td>X6Cr17 / 1.4016</td><td>EN 1.4016</td><td>430</td><td>Automotive trim, appliances, kitchen sinks</td></tr>
+                        <tr><td><strong>0Cr17Ti / 10CrTi</strong></td><td>430Ti / S43036</td><td>-</td><td>X6CrTi17 / 1.4510</td><td>EN 1.4510</td><td>430Ti</td><td>Welded construction, exhaust systems</td></tr>
+                        <tr><td><strong>00Cr17Mo</strong></td><td>434 / S43400</td><td>434S17</td><td>X6CrMo17-1 / 1.4113</td><td>EN 1.4113</td><td>434</td><td>Automotive trim, moldings</td></tr>
+                        
+                        <tr class="category-header"><td colspan="7">Precipitation Hardening Stainless Steel - Ultra High Strength</td></tr>
+                        <tr><td><strong>0Cr17Ni4Cu4Nb / 05Cr17Ni4Cu4Nb</strong></td><td>630 (17-4 PH) / S17400</td><td>-</td><td>X5CrNiCuNb16-4 / 1.4542</td><td>EN 1.4542</td><td>17-4PH</td><td>Aerospace, valves, turbine blades, nuclear</td></tr>
+                        <tr><td><strong>0Cr15Ni5Cu4Nb</strong></td><td>15-5 PH / S15500</td><td>-</td><td>X5CrNiCu15-5 / 1.4545</td><td>EN 1.4545</td><td>15-5PH</td><td>Aerospace valves, high strength fasteners</td></tr>
+                        <tr><td><strong>0Cr17Ni7Al</strong></td><td>17-7 PH / S17700</td><td>-</td><td>X7CrNiAl17-7 / 1.4568</td><td>EN 1.4568</td><td>17-7PH</td><td>Springs, diaphragms, clips</td></tr>
+                        
+                        <tr class="category-header"><td colspan="7">Duplex Stainless Steel - High Strength & Corrosion Resistance</td></tr>
+                        <tr><td><strong>00Cr22Ni5Mo3N</strong></td><td>2205 / S32205</td><td>-</td><td>X2CrNiMoN22-5-3 / 1.4462</td><td>EN 1.4462</td><td>2205</td><td>Chemical processing, offshore, desalination</td></tr>
+                        <tr><td><strong>00Cr25Ni7Mo4N</strong></td><td>2507 / S32750</td><td>-</td><td>X2CrNiMoN25-7-4 / 1.4410</td><td>EN 1.4410</td><td>2507</td><td>Super duplex, oil & gas, seawater</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Copper & Brass -->
+    <section id="copper" style="padding: 80px 0; background: var(--off-white);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge" style="background: #fff8e1; color: #f57c00;">Excellent Conductivity</span>
+                <h2 class="section-title">Copper & Brass - International Equivalents</h2>
+                <p class="section-description">Complete reference for pure copper, oxygen-free copper, brass, and specialty copper alloys with superior thermal and electrical conductivity.</p>
+            </div>
+            <div class="table-container">
+                <table class="material-table">
+                    <thead>
+                        <tr>
+                            <th>🇨🇳 China (GB)</th>
+                            <th>🇺🇸 USA (UNS/CDA)</th>
+                            <th>🇬🇧 UK (BS)</th>
+                            <th>🇩🇪 Germany (DIN/W.Nr.)</th>
+                            <th>🇪🇺 Europe (EN)</th>
+                            <th>🇦🇺 Australia (AS)</th>
+                            <th>Applications</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="category-header"><td colspan="7">Oxygen-Free Copper (OFC) - Highest Purity, Best Conductivity</td></tr>
+                        <tr><td><strong>TU0</strong></td><td>C10100 (OFE)</td><td>C103</td><td>Cu-OFE / 2.0040</td><td>CW009A</td><td>C10100</td><td>Electronics, superconductors, vacuum tubes</td></tr>
+                        <tr><td><strong>TU1</strong></td><td>C10200 (OFHC)</td><td>C101</td><td>Cu-OF / 2.0040</td><td>CW008A</td><td>C10200</td><td>Waveguides, lead frames, high-purity apps</td></tr>
+                        <tr><td><strong>TU2</strong></td><td>C10300</td><td>C102</td><td>Cu-OF / 2.0040</td><td>CW008A</td><td>C10300</td><td>Electrical conductors, semiconductor equipment</td></tr>
+                        <tr><td><strong>C1020 (OFC)</strong></td><td>C10200 (OFHC)</td><td>C101</td><td>Cu-OF / 2.0040</td><td>CW008A</td><td>C10200</td><td>Audio equipment, precision electronics, busbars</td></tr>
+                        
+                        <tr class="category-header"><td colspan="7">Electrolytic Tough Pitch Copper (ETP) - Standard Electrical Grade</td></tr>
+                        <tr><td><strong>T1</strong></td><td>C11000 (ETP)</td><td>C101</td><td>E-Cu58 / 2.0065</td><td>CW004A</td><td>C11000</td><td>Electrical wire, bus bars, general electrical</td></tr>
+                        <tr><td><strong>T2</strong></td><td>C11000 (ETP)</td><td>C101</td><td>E-Cu57 / 2.0060</td><td>CW004A</td><td>C11000</td><td>Electrical conductors, busbars, heat exchangers</td></tr>
+                        <tr><td><strong>T3</strong></td><td>C12000</td><td>C104</td><td>Cu-DLP / 2.0076</td><td>CW023A</td><td>C12000</td><td>Plumbing, gaskets, general purpose</td></tr>
+                        <tr><td><strong>C1100</strong></td><td>C11000 (ETP)</td><td>C101</td><td>E-Cu58 / 2.0065</td><td>CW004A</td><td>C11000</td><td>Heat sinks, electrical connectors, busbars</td></tr>
+                        
+                        <tr class="category-header"><td colspan="7">Free-Machining Copper - Enhanced Machinability</td></tr>
+                        <tr><td><strong>Te-Cu / HTe</strong></td><td>C14500 (Te-Cu)</td><td>C109</td><td>CuTeP / 2.1546</td><td>CW118C</td><td>C14500</td><td>Free machining electrical, screw machine parts</td></tr>
+                        <tr><td><strong>HPb59-1</strong></td><td>C36000 (Free Cutting)</td><td>CZ121</td><td>CuZn39Pb3 / 2.0401</td><td>CW614N</td><td>C36000</td><td>Best machinability, precision screw machine</td></tr>
+                        
+                        <tr class="category-header"><td colspan="7">Brass (Copper-Zinc Alloys) - Good Strength & Machinability</td></tr>
+                        <tr><td><strong>H96</strong></td><td>C21000 (Gilding)</td><td>CZ101</td><td>CuZn5 / 2.0220</td><td>CW500L</td><td>C21000</td><td>Jewelry, decorative, coins</td></tr>
+                        <tr><td><strong>H90</strong></td><td>C22000 (Commercial)</td><td>CZ102</td><td>CuZn10 / 2.0230</td><td>CW501L</td><td>C22000</td><td>Costume jewelry, ornamental</td></tr>
+                        <tr><td><strong>H80</strong></td><td>C24000 (Low Brass)</td><td>CZ103</td><td>CuZn20 / 2.0250</td><td>CW503L</td><td>C24000</td><td>Musical instruments, flexible hose</td></tr>
+                        <tr><td><strong>H70</strong></td><td>C26000 (Cartridge)</td><td>CZ108</td><td>CuZn30 / 2.0265</td><td>CW505L</td><td>C26000</td><td>Deep drawing, ammunition, springs</td></tr>
+                        <tr><td><strong>H68</strong></td><td>C26800</td><td>CZ107</td><td>CuZn33 / 2.0280</td><td>CW506L</td><td>C26800</td><td>Radiator cores, lamp fixtures</td></tr>
+                        <tr><td><strong>H65</strong></td><td>C27000 (Yellow Brass)</td><td>CZ106</td><td>CuZn35 / 2.0300</td><td>CW507L</td><td>C27000</td><td>Hardware, plumbing fittings</td></tr>
+                        <tr><td><strong>H62</strong></td><td>C27400 / C28000</td><td>CZ106</td><td>CuZn37 / 2.0321</td><td>CW508L</td><td>C27400</td><td>Cartridge cases, hardware, automotive</td></tr>
+                        <tr><td><strong>H59</strong></td><td>C38500 (Arch Brass)</td><td>CZ131</td><td>CuZn40Pb2 / 2.0402</td><td>CW617N</td><td>C38500</td><td>Valves, fittings, forged hardware</td></tr>
+                        <tr><td><strong>HPb63-3</strong></td><td>C36000</td><td>CZ121</td><td>CuZn36Pb3 / 2.0375</td><td>CW603N</td><td>C36000</td><td>Free cutting, screw machine products</td></tr>
+                        
+                        <tr class="category-header"><td colspan="7">Bronze & Specialty Copper Alloys - High Strength & Special Properties</td></tr>
+                        <tr><td><strong>QSn6.5-0.1</strong></td><td>C51000 (Phosphor Bronze)</td><td>PB102</td><td>CuSn6 / 2.1020</td><td>CW451K</td><td>C51000</td><td>Springs, connectors, bearings</td></tr>
+                        <tr><td><strong>QSn4-0.3</strong></td><td>C51100</td><td>PB101</td><td>CuSn4 / 2.1016</td><td>CW450K</td><td>C51100</td><td>Electrical contacts, switches</td></tr>
+                        <tr><td><strong>QAl9-4</strong></td><td>C63000 (Al Bronze)</td><td>CA104</td><td>CuAl10Ni5Fe4 / 2.0966</td><td>CW307G</td><td>C63000</td><td>Marine hardware, high strength, wear resistant</td></tr>
+                        <tr><td><strong>QBe2</strong></td><td>C17200 (BeCu)</td><td>CB101</td><td>CuBe2 / 2.1247</td><td>CW101C</td><td>C17200</td><td>Springs, mold inserts, non-sparking tools</td></tr>
+                        <tr><td><strong>QSi3-1</strong></td><td>C65500 (Si Bronze)</td><td>CS101</td><td>CuSi3Mn1 / 2.1525</td><td>CW116C</td><td>C65500</td><td>Hydraulic tubing, marine hardware</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Carbon & Alloy Steel -->
+    <section id="steel" style="padding: 80px 0; background: var(--white);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge" style="background: #fce4ec; color: #c2185b;">High Strength</span>
+                <h2 class="section-title">Carbon & Alloy Steel - International Equivalents</h2>
+                <p class="section-description">Complete reference from structural steel to high-performance alloy and tool steels including Q235, 20#, 45#, 1215, 40Cr, 20Cr.</p>
+            </div>
+            <div class="table-container">
+                <table class="material-table">
+                    <thead>
+                        <tr>
+                            <th>🇨🇳 China (GB)</th>
+                            <th>🇺🇸 USA (AISI/SAE)</th>
+                            <th>🇬🇧 UK (BS)</th>
+                            <th>🇩🇪 Germany (DIN/W.Nr.)</th>
+                            <th>🇪🇺 Europe (EN)</th>
+                            <th>🇦🇺 Australia (AS)</th>
+                            <th>Applications</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="category-header"><td colspan="7">Structural Steel - General Construction</td></tr>
+                        <tr><td><strong>Q235A/B/C/D</strong></td><td>A36 / A283-C</td><td>S235JR</td><td>S235JR / 1.0038</td><td>EN S235JR</td><td>250</td><td>Structural steel, bridges, general construction</td></tr>
+                        <tr><td><strong>Q275</strong></td><td>A572 Gr50</td><td>S275JR</td><td>S275JR / 1.0044</td><td>EN S275JR</td><td>300</td><td>Structural, higher strength</td></tr>
+                        <tr><td><strong>Q345 (16Mn)</strong></td><td>A572 Gr50</td><td>S355JR</td><td>S355J2 / 1.0570</td><td>EN S355J2</td><td>350</td><td>High strength structural, bridges</td></tr>
+                        
+                        <tr class="category-header"><td colspan="7">Low Carbon Steel - Case Hardening & Forming</td></tr>
+                        <tr><td><strong>08 / 08F</strong></td><td>1008</td><td>040A04</td><td>DC04 / 1.0338</td><td>EN 1.0338</td><td>1008</td><td>Deep drawing, cold forming</td></tr>
+                        <tr><td><strong>10</strong></td><td>1010</td><td>040A10</td><td>C10 / 1.0301</td><td>EN 1.0301</td><td>1010</td><td>Cold forming, carburizing base</td></tr>
+                        <tr><td><strong>15</strong></td><td>1015</td><td>040A15</td><td>C15 / 1.0401</td><td>EN 1.0401</td><td>1015</td><td>Case hardening, pins</td></tr>
+                        <tr><td><strong>20# Carbon Steel</strong></td><td>1020 / AISI 1020</td><td>050A20</td><td>C22 / 1.0402</td><td>EN 1.0402</td><td>1020</td><td>Case hardening, carburizing, pins, gears</td></tr>
+                        
+                        <tr class="category-header"><td colspan="7">Medium Carbon Steel - Shafts & Gears</td></tr>
+                        <tr><td><strong>35</strong></td><td>1035</td><td>080A35</td><td>C35 / 1.0501</td><td>EN 1.0501</td><td>1035</td><td>Moderate strength parts</td></tr>
+                        <tr><td><strong>40</strong></td><td>1040</td><td>080A40</td><td>C40 / 1.0511</td><td>EN 1.0511</td><td>1040</td><td>Crankshafts, connecting rods</td></tr>
+                        <tr><td><strong>45# Carbon Steel</strong></td><td>1045 / AISI 1045</td><td>080M46</td><td>C45 / 1.0503</td><td>EN 1.0503</td><td>1045</td><td>Shafts, axles, bolts, gears, connecting rods</td></tr>
+                        <tr><td><strong>50</strong></td><td>1050</td><td>060A52</td><td>C50 / 1.0540</td><td>EN 1.0540</td><td>1050</td><td>Springs, tools, higher strength shafts</td></tr>
+                        <tr><td><strong>55</strong></td><td>1055</td><td>070M55</td><td>C55 / 1.0535</td><td>EN 1.0535</td><td>1055</td><td>Springs, hand tools</td></tr>
+                        
+                        <tr class="category-header"><td colspan="7">Free-Cutting Steel - High Speed Machining</td></tr>
+                        <tr><td><strong>Y12 / 1215 Free-Cutting Steel</strong></td><td>1215 / 12L14</td><td>230M07</td><td>9SMn28 / 1.0715</td><td>EN 1.0715</td><td>1215</td><td>High-speed automatic screw machine parts</td></tr>
+                        <tr><td><strong>Y15</strong></td><td>1215</td><td>220M07</td><td>9SMnPb28 / 1.0718</td><td>EN 1.0718</td><td>1215</td><td>Free machining, precision screws</td></tr>
+                        <tr><td><strong>Y40Mn</strong></td><td>1144</td><td>-</td><td>46S20 / 1.0727</td><td>EN 1.0727</td><td>1144</td><td>Higher strength free cutting</td></tr>
+                        
+                        <tr class="category-header"><td colspan="7">Chromium Alloy Steel - Improved Hardenability</td></tr>
+                        <tr><td><strong>20Cr Chromium Steel</strong></td><td>5120 / AISI 5120</td><td>527M20</td><td>20Cr4 / 1.7027</td><td>EN 1.7027</td><td>5120</td><td>Case-hardened gears, piston pins, cam shafts</td></tr>
+                        <tr><td><strong>40Cr Chromium Steel</strong></td><td>5140 / AISI 5140</td><td>530M40</td><td>41Cr4 / 1.7035</td><td>EN 1.7035</td><td>5140</td><td>Gears, shafts, spindles, high-strength fasteners</td></tr>
+                        <tr><td><strong>35CrMo</strong></td><td>4135</td><td>708A37</td><td>34CrMo4 / 1.7220</td><td>EN 1.7220</td><td>4135</td><td>High strength shafts, fasteners</td></tr>
+                        
+                        <tr class="category-header"><td colspan="7">Chrome-Molybdenum Alloy Steel - High Performance</td></tr>
+                        <tr><td><strong>42CrMo4</strong></td><td>4140 / AISI 4140</td><td>708M40</td><td>42CrMo4 / 1.7225</td><td>EN 1.7225</td><td>4140</td><td>High strength shafts, gears, tooling</td></tr>
+                        <tr><td><strong>40CrNiMoA</strong></td><td>4340 / AISI 4340</td><td>817M40</td><td>34CrNiMo6 / 1.6582</td><td>EN 1.6582</td><td>4340</td><td>Aircraft landing gear, high fatigue resistance</td></tr>
+                        <tr><td><strong>20CrMnTi</strong></td><td>8620 / AISI 8620</td><td>805M20</td><td>20MnCr5 / 1.7147</td><td>EN 1.7147</td><td>8620</td><td>Gears, carburizing, high wear resistance</td></tr>
+                        <tr><td><strong>18CrNiMo7-6</strong></td><td>4320 / 8822</td><td>815M17</td><td>18CrNiMo7-6 / 1.6587</td><td>EN 1.6587</td><td>-</td><td>Heavy duty gears, wind turbines</td></tr>
+                        
+                        <tr class="category-header"><td colspan="7">Tool Steel - Cutting Tools & Dies</td></tr>
+                        <tr><td><strong>Cr12MoV</strong></td><td>D2 / AISI D2</td><td>BD2</td><td>X155CrVMo12-1 / 1.2379</td><td>EN 1.2379</td><td>D2</td><td>Dies, punches, cold work tooling</td></tr>
+                        <tr><td><strong>Cr12Mo1V1</strong></td><td>A2 / AISI A2</td><td>BA2</td><td>X100CrMoV5 / 1.2363</td><td>EN 1.2363</td><td>A2</td><td>Blanking dies, air hardening</td></tr>
+                        <tr><td><strong>9CrWMn</strong></td><td>O1 / AISI O1</td><td>BO1</td><td>100MnCrW4 / 1.2510</td><td>EN 1.2510</td><td>O1</td><td>General tooling, oil hardening</td></tr>
+                        <tr><td><strong>4Cr5MoSiV1</strong></td><td>H13 / AISI H13</td><td>BH13</td><td>X40CrMoV5-1 / 1.2344</td><td>EN 1.2344</td><td>H13</td><td>Die casting dies, hot work tooling</td></tr>
+                        <tr><td><strong>3Cr2Mo</strong></td><td>P20 / AISI P20</td><td>-</td><td>40CrMnMo7 / 1.2311</td><td>EN 1.2311</td><td>P20</td><td>Plastic injection molds</td></tr>
+                        <tr><td><strong>W18Cr4V</strong></td><td>T1 / AISI T1</td><td>BT1</td><td>HS18-0-1 / 1.3355</td><td>EN 1.3355</td><td>T1</td><td>High speed cutting tools</td></tr>
+                        <tr><td><strong>W6Mo5Cr4V2</strong></td><td>M2 / AISI M2</td><td>BM2</td><td>HS6-5-2 / 1.3343</td><td>EN 1.3343</td><td>M2</td><td>Drills, taps, general HSS tools</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Titanium -->
+    <section id="titanium" style="padding: 80px 0; background: var(--off-white);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge" style="background: #e0f7fa; color: #0097a7;">Aerospace Grade</span>
+                <h2 class="section-title">Titanium Alloys - International Equivalents</h2>
+                <p class="section-description">Exceptional strength-to-weight ratio for aerospace, medical, and demanding applications.</p>
+            </div>
+            <div class="table-container">
+                <table class="material-table">
+                    <thead>
+                        <tr>
+                            <th>🇨🇳 China (GB)</th>
+                            <th>🇺🇸 USA (ASTM/UNS)</th>
+                            <th>🇬🇧 UK (BS)</th>
+                            <th>🇩🇪 Germany (DIN/W.Nr.)</th>
+                            <th>🇪🇺 Europe (EN)</th>
+                            <th>🇦🇺 Australia (AS)</th>
+                            <th>Applications</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="category-header"><td colspan="7">Commercially Pure (CP) Titanium - Excellent Corrosion Resistance</td></tr>
+                        <tr><td><strong>TA1</strong></td><td>Grade 1 / R50250</td><td>-</td><td>Ti99.5 / 3.7025</td><td>EN 3.7025</td><td>Grade 1</td><td>High ductility, chemical processing</td></tr>
+                        <tr><td><strong>TA2</strong></td><td>Grade 2 / R50400</td><td>TA10</td><td>Ti99.2 / 3.7035</td><td>EN 3.7035</td><td>Grade 2</td><td>General purpose, medical implants, marine</td></tr>
+                        <tr><td><strong>TA3</strong></td><td>Grade 3 / R50550</td><td>TA11</td><td>Ti99.0 / 3.7055</td><td>EN 3.7055</td><td>Grade 3</td><td>Moderate strength, aerospace frames</td></tr>
+                        <tr><td><strong>TA4</strong></td><td>Grade 4 / R50700</td><td>-</td><td>Ti99.0 / 3.7065</td><td>EN 3.7065</td><td>Grade 4</td><td>Highest pure Ti strength, airframes</td></tr>
+                        
+                        <tr class="category-header"><td colspan="7">Alpha-Beta Titanium Alloys - High Strength Aerospace</td></tr>
+                        <tr><td><strong>TC4 / Ti-6Al-4V</strong></td><td>Grade 5 / R56400</td><td>TA42</td><td>TiAl6V4 / 3.7165</td><td>EN 3.7165</td><td>Grade 5</td><td>Aerospace, most common Ti alloy</td></tr>
+                        <tr><td><strong>TC4 ELI</strong></td><td>Grade 23 / R56401</td><td>-</td><td>TiAl6V4 ELI / 3.7165</td><td>EN 3.7165</td><td>Grade 23</td><td>Medical implants, surgical, biocompatible</td></tr>
+                        <tr><td><strong>TC11</strong></td><td>Ti-6Al-2Sn-4Zr-2Mo</td><td>-</td><td>TiAl6Sn2Zr4Mo2 / 3.7145</td><td>-</td><td>-</td><td>High temp aerospace, jet engines</td></tr>
+                        
+                        <tr class="category-header"><td colspan="7">Beta Titanium Alloys - Highest Strength</td></tr>
+                        <tr><td><strong>TB6</strong></td><td>Ti-10V-2Fe-3Al</td><td>-</td><td>-</td><td>-</td><td>-</td><td>Aircraft landing gear, high strength</td></tr>
+                        <tr><td><strong>Ti-15-3</strong></td><td>Ti-15V-3Cr-3Al-3Sn</td><td>-</td><td>-</td><td>-</td><td>-</td><td>Springs, fasteners, aerospace</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tips Section -->
+    <section style="padding: 80px 0; background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); color: white;">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge" style="background: rgba(255,255,255,0.15); color: #fff;">Expert Tips</span>
+                <h2 class="section-title" style="color: white;">How to Use This Guide</h2>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 40px;">
+                <div style="background: rgba(255,255,255,0.1); border-radius: 16px; padding: 30px;">
+                    <i class="fas fa-search" style="font-size: 2rem; color: #64b5f6; margin-bottom: 15px;"></i>
+                    <h4 style="color: white; margin-bottom: 10px;">Find Your Material</h4>
+                    <p style="color: rgba(255,255,255,0.85);">Use Ctrl+F to find your material by any regional designation.</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); border-radius: 16px; padding: 30px;">
+                    <i class="fas fa-exchange-alt" style="font-size: 2rem; color: #81c784; margin-bottom: 15px;"></i>
+                    <h4 style="color: white; margin-bottom: 10px;">Cross-Reference</h4>
+                    <p style="color: rgba(255,255,255,0.85);">Find equivalent grades across different national standards.</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); border-radius: 16px; padding: 30px;">
+                    <i class="fas fa-clipboard-check" style="font-size: 2rem; color: #ffb74d; margin-bottom: 15px;"></i>
+                    <h4 style="color: white; margin-bottom: 10px;">Verify Specifications</h4>
+                    <p style="color: rgba(255,255,255,0.85);">Always confirm with material certificates for critical applications.</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); border-radius: 16px; padding: 30px;">
+                    <i class="fas fa-comments" style="font-size: 2rem; color: #f48fb1; margin-bottom: 15px;"></i>
+                    <h4 style="color: white; margin-bottom: 10px;">Ask Our Experts</h4>
+                    <p style="color: rgba(255,255,255,0.85);">Not sure? Our engineers can recommend the best material for you.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-background"></div>
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Start Your Project?</h2>
+                <p>Upload your CAD file and specify your material. We'll provide an quote request with recommendations.</p>
+                <div class="cta-actions">
+                    <a href="index.html#quote" class="btn btn-primary btn-large"><i class="fas fa-upload"></i> Request a Quote</a>
+                    <a href="contact.html" class="btn btn-outline-light btn-large"><i class="fas fa-comments"></i> Talk to an Engineer</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <a href="index.html" class="footer-logo"><img src="logo.png" alt="WFX - Wanfuxin" class="logo-img footer-logo-visible"></a>
+                    <p>Industry-leading CNC machining services delivering precision parts from prototype to production. Trusted by engineers worldwide.</p>
+                    <div class="footer-social">
+                        <!-- Social links: Add real URLs when available -->
+                        
+                        
+                        
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="cnc-milling.html">CNC Milling</a></li>
+                            <li><a href="cnc-turning.html">CNC Turning</a></li>
+                            <li><a href="5-axis.html">5-Axis Machining</a></li>
+                            <li><a href="precision-inspection.html">Precision Inspection</a></li>
+                            <li><a href="prototyping.html">Rapid Prototyping</a></li>
+                            <li><a href="production.html">Production Runs</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Industries</h4>
+                        <ul>
+                            <li><a href="aerospace.html">Aerospace Parts</a></li>
+                            <li><a href="liquid-cooling.html">Liquid Cooling Parts</a></li>
+                            <li><a href="medical.html">Medical Devices</a></li>
+                            <li><a href="electronics.html">Electronics</a></li>
+                            <li><a href="robotics.html">Robotics</a></li>
+                            <li><a href="industrial.html">Industrial</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Resources</h4>
+                        <ul>
+                            <li><a href="materials.html">Materials Guide</a></li>
+                            <li><a href="design-guide.html">Design Guidelines</a></li>
+                            <li><a href="tolerances.html">Tolerances</a></li>
+                            <li><a href="finishing.html">Surface Finishes</a></li>
+                            <li><a href="blog.html">Blog</a></li>
+                            <li><a href="faq.html">FAQ</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="about.html">About Us</a></li>
+                            <li><a href="quality.html">Quality & Certifications</a></li>
+                            <li><a href="careers.html">Careers</a></li>
+                            <li><a href="contact.html">Contact Us</a></li>
+                            <li><a href="privacy.html">Privacy Policy</a></li>
+                            <li><a href="terms.html">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-contact">
+                    <h4>Contact Us</h4>
+                    <address>
+                        <p><i class="fas fa-map-marker-alt"></i> 3 Fuxin West Road<br>QingXi Town, Dongguan City, Guangdong, China</p>
+                        <p><i class="fas fa-phone"></i> <a href="tel:+8613431451998">+86 13431451998</a></p>
+                        <p><i class="fas fa-envelope"></i> <a href="mailto:lucindaz@wanfuxin.com">lucindaz@wanfuxin.com</a></p>
+                    </address>
+                    <div class="footer-hours">
+                        <h5>Business Hours</h5>
+                        <p>Mon - Sat: 8:00 AM - 12:00 PM, 1:30 PM - 5:30 PM (China Time)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-copyright"><p>&copy; 2025 WFX. All rights reserved.</p></div>
+                <div class="footer-certifications">
+                    <span>Certifications:</span>
+                    <span class="cert-badge">ISO9001</span>
+                    <span class="cert-badge">IATF16949</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top"><i class="fas fa-chevron-up"></i></button>
+    <script defer src="content-loader.js"></script>
+    <script defer src="script.js"></script>
+</body>
+</html>

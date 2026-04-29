@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /generate-pages.sh
+Disallow: /server.py
+Disallow: /start-server.sh
+Disallow: /start-server.bat
+
+Sitemap: https://wanfuxin.com/sitemap.xml

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WFX CNC machining resources - design guidelines, material guides, case studies, FAQ and technical downloads. Expert knowledge for your manufacturing projects.">
+    <meta name="keywords" content="CNC machining resources, design guidelines, material guide, case studies, FAQ, technical downloads">
+    <title>Resources | CNC Machining Guides & Downloads | WFX</title>
+    <link rel="canonical" href="https://wanfuxin.com/resources.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .page-hero {
+            background: var(--gradient-dark);
+            padding: 180px 0 100px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .page-hero-content {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .page-hero h1 {
+            font-size: 3.5rem;
+            color: var(--white);
+            margin-bottom: 20px;
+        }
+
+        .page-hero p {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .breadcrumb {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .breadcrumb a:hover {
+            color: var(--white);
+        }
+
+        .breadcrumb span {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .resources-section {
+            padding: var(--section-padding) 0;
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+
+        .resource-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .resource-card-header {
+            padding: 30px;
+            background: var(--off-white);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .resource-card-header .resource-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-primary);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .resource-card-header h3 {
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .resource-card-content {
+            padding: 30px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .resource-card-content p {
+            color: var(--gray);
+            margin-bottom: 25px;
+            line-height: 1.7;
+            flex: 1;
+        }
+
+        .resource-card-content .btn {
+            align-self: flex-start;
+        }
+
+        .featured-resource {
+            grid-column: span 2;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            overflow: hidden;
+        }
+
+        .featured-resource .resource-image {
+            position: relative;
+            min-height: 300px;
+        }
+
+        .featured-resource .resource-image img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .featured-resource .resource-content {
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .featured-resource .resource-content .badge {
+            display: inline-block;
+            background: var(--primary);
+            color: var(--white);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            width: fit-content;
+        }
+
+        .featured-resource .resource-content h3 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .featured-resource .resource-content p {
+            color: var(--gray);
+            margin-bottom: 25px;
+            line-height: 1.7;
+        }
+
+        .cta-section {
+            padding: var(--section-padding) 0;
+            background: var(--gradient-dark);
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            color: var(--white);
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .cta-section p {
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+
+        @media (max-width: 992px) {
+            .featured-resource {
+                grid-template-columns: 1fr;
+            }
+
+            .featured-resource .resource-image {
+                min-height: 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .resources-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .featured-resource {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="top-bar-content">
+                <div class="top-bar-left">
+                    <span><i class="fas fa-phone"></i> +86 13431451998</span>
+                    <span><i class="fas fa-envelope"></i> lucindaz@wanfuxin.com</span>
+                </div>
+                <div class="top-bar-right">
+                    <a href="index.html#quote">Request a Quote</a>
+                    <a href="contact.html">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">
+                    <img src="logo.png" alt="WFX - Wanfuxin" class="logo-img">
+                </a>
+                
+                <ul class="nav-menu" id="nav-menu">
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link">Services <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-menu mega-menu">
+                            <div class="mega-menu-content">
+                                <div class="mega-menu-section">
+                                    <h4>CNC Machining</h4>
+                                    <ul>
+                                        <li><a href="cnc-milling.html"><i class="fas fa-cube"></i> CNC Milling</a></li>
+                                        <li><a href="cnc-turning.html"><i class="fas fa-sync-alt"></i> CNC Turning</a></li>
+                                        <li><a href="5-axis.html"><i class="fas fa-dice-d6"></i> 5-Axis Machining</a></li>
+                                        <li><a href="precision-inspection.html"><i class="fas fa-compress-arrows-alt"></i> Precision Inspection</a></li>
+                                    </ul>
+                                </div>
+                                <div class="mega-menu-section">
+                                    <h4>Additional Services</h4>
+                                    <ul>
+                                        <li><a href="prototyping.html"><i class="fas fa-drafting-compass"></i> Rapid Prototyping</a></li>
+                                        <li><a href="production.html"><i class="fas fa-industry industry-icon"></i> Production Runs</a></li>
+                                        <li><a href="finishing.html"><i class="fas fa-spray-can"></i> Surface Finishing</a></li>
+                                        <li><a href="assembly.html"><i class="fas fa-puzzle-piece"></i> Assembly Services</a></li>
+                                    </ul>
+                                </div>
+                                <div class="mega-menu-section">
+                                    <h4>Metal Forming</h4>
+                                    <ul>
+                                        <li><a href="die-casting.html"><i class="fas fa-fill-drip"></i> Die Casting</a></li>
+                                        <li><a href="forging.html"><i class="fas fa-hammer"></i> Forging</a></li>
+                                        <li><a href="stamping.html"><i class="fas fa-compress-alt"></i> Stamping</a></li>
+                                        <li><a href="sheet-metal.html"><i class="fas fa-layer-group"></i> Sheet Metal</a></li>
+                                        <li><a href="investment-casting.html"><i class="fas fa-gem"></i> Investment Casting</a></li>
+                                    </ul>
+                                </div>
+                                <div class="mega-menu-section">
+                                    <h4>Quick Links</h4>
+                                    <ul>
+                                        <li><a href="index.html#quote"><i class="fas fa-calculator"></i> Request a Quote</a></li>
+                                        <li><a href="materials.html"><i class="fas fa-layer-group"></i> Material Selection</a></li>
+                                        <li><a href="tolerances.html"><i class="fas fa-ruler-combined"></i> Tolerances Guide</a></li>
+                                    </ul>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="materials.html" class="nav-link">Materials <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-menu">
+                            <ul>
+                                <li><a href="metals.html">Metals & Alloys</a></li>
+                                <li><a href="forging.html">Forging</a></li>
+                                <li><a href="die-casting.html">Die Casting</a></li>
+                                <li><a href="material-guide.html">Material Selection Guide</a></li>
+                                <li><a href="finishing.html">Surface Finishing</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="industries.html" class="nav-link">Industries <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-menu">
+                            <ul>
+                                <li><a href="aerospace.html">Aerospace Parts</a></li>
+                                <li><a href="liquid-cooling.html">Liquid Cooling Parts</a></li>
+                                <li><a href="medical.html">Medical Devices</a></li>
+                                <li><a href="electronics.html">Electronics</a></li>
+                                <li><a href="industrial.html">Industrial Equipment</a></li>
+                                <li><a href="robotics.html">Robotics & Automation</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="resources.html" class="nav-link">Resources <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-menu">
+                            <ul>
+                                <li><a href="design-guide.html">Design Guidelines</a></li>
+                                <li><a href="blog.html">Blog & News</a></li>
+                                <li><a href="case-studies.html">Case Studies</a></li>
+                                <li><a href="faq.html">FAQ</a></li>
+                                <li><a href="downloads.html">Downloads</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a href="about.html" class="nav-link">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="contact.html" class="nav-link">Contact</a>
+                    </li>
+                </ul>
+
+                <div class="nav-actions">
+                    <a href="index.html#quote" class="btn btn-primary">Get Quote</a>
+                    <button class="mobile-toggle" id="mobile-toggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Hero -->
+    <section class="page-hero">
+        <div class="container">
+            <div class="page-hero-content">
+                <div class="breadcrumb">
+                    <a href="index.html">Home</a>
+                    <span>/</span>
+                    <span>Resources</span>
+                </div>
+                <h1>Resources & Guides</h1>
+                <p>Expert knowledge and tools to help you design better parts and streamline your manufacturing process.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resources Section -->
+    <section class="resources-section">
+        <div class="container">
+            <div class="resources-grid">
+                <!-- Featured Resource - Design Guidelines -->
+                <div class="resource-card featured-resource">
+                    <div class="resource-image">
+                        <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&h=600&fit=crop" alt="Design Guidelines" loading="lazy" decoding="async" width="800" height="600">
+                    </div>
+                    <div class="resource-content">
+                        <span class="badge">Featured Guide</span>
+                        <h3>Design Guidelines</h3>
+                        <p>Comprehensive design-for-manufacturability (DFM) guidelines to optimize your parts for CNC machining. Learn about wall thickness, tolerances, undercuts, and more to reduce costs and improve quality.</p>
+                        <a href="design-guide.html" class="btn btn-primary">Read the Guide</a>
+                    </div>
+                </div>
+
+                <!-- Blog & News -->
+                <div class="resource-card">
+                    <div class="resource-card-header">
+                        <div class="resource-icon">
+                            <i class="fas fa-newspaper"></i>
+                        </div>
+                        <h3>Blog & News</h3>
+                    </div>
+                    <div class="resource-card-content">
+                        <p>Stay updated with the latest trends in CNC machining, manufacturing technology, industry insights, and company news. Expert articles written by our engineering team.</p>
+                        <a href="blog.html" class="btn btn-outline">Read Articles</a>
+                    </div>
+                </div>
+
+                <!-- Case Studies -->
+                <div class="resource-card">
+                    <div class="resource-card-header">
+                        <div class="resource-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h3>Case Studies</h3>
+                    </div>
+                    <div class="resource-card-content">
+                        <p>Real-world examples of how we've helped customers solve complex manufacturing challenges. See detailed project breakdowns with results and testimonials.</p>
+                        <a href="case-studies.html" class="btn btn-outline">View Case Studies</a>
+                    </div>
+                </div>
+
+                <!-- FAQ -->
+                <div class="resource-card">
+                    <div class="resource-card-header">
+                        <div class="resource-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <h3>FAQ</h3>
+                    </div>
+                    <div class="resource-card-content">
+                        <p>Find quick answers to common questions about our CNC machining services, ordering process, materials, tolerances, lead times, and more.</p>
+                        <a href="faq.html" class="btn btn-outline">Browse FAQ</a>
+                    </div>
+                </div>
+
+                <!-- Downloads -->
+                <div class="resource-card">
+                    <div class="resource-card-header">
+                        <div class="resource-icon">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <h3>Downloads</h3>
+                    </div>
+                    <div class="resource-card-content">
+                        <p>Download technical documents, CAD templates, material datasheets, tolerance charts, and other useful resources for your design and engineering needs.</p>
+                        <a href="downloads.html" class="btn btn-outline">Download Files</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Need Help With Your Project?</h2>
+            <p>Our engineering team is ready to assist you with design optimization, material selection, and manufacturing advice.</p>
+            <div class="cta-buttons">
+                <a href="index.html#quote" class="btn btn-primary btn-large">Request a Quote</a>
+                <a href="contact.html" class="btn btn-outline-light btn-large">Talk to an Engineer</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <a href="index.html" class="footer-logo">
+                        <img src="logo.png" alt="WFX - Wanfuxin" class="logo-img footer-logo-visible">
+                    </a>
+                    <p>Industry-leading CNC machining services delivering precision parts from prototype to production. Trusted by engineers worldwide.</p>
+                    <div class="footer-social">
+                        <!-- Social links: Add real URLs when available -->
+                        
+                        
+                        
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="cnc-milling.html">CNC Milling</a></li>
+                            <li><a href="cnc-turning.html">CNC Turning</a></li>
+                            <li><a href="5-axis.html">5-Axis Machining</a></li>
+                            <li><a href="precision-inspection.html">Precision Inspection</a></li>
+                            <li><a href="prototyping.html">Rapid Prototyping</a></li>
+                            <li><a href="production.html">Production Runs</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Industries</h4>
+                        <ul>
+                            <li><a href="aerospace.html">Aerospace Parts</a></li>
+                            <li><a href="liquid-cooling.html">Liquid Cooling Parts</a></li>
+                            <li><a href="medical.html">Medical Devices</a></li>
+                            <li><a href="electronics.html">Electronics</a></li>
+                            <li><a href="robotics.html">Robotics</a></li>
+                            <li><a href="industrial.html">Industrial</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Resources</h4>
+                        <ul>
+                            <li><a href="materials.html">Materials Guide</a></li>
+                            <li><a href="design-guide.html">Design Guidelines</a></li>
+                            <li><a href="tolerances.html">Tolerances</a></li>
+                            <li><a href="finishing.html">Surface Finishes</a></li>
+                            <li><a href="blog.html">Blog</a></li>
+                            <li><a href="faq.html">FAQ</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="about.html">About Us</a></li>
+                            <li><a href="quality.html">Quality & Certifications</a></li>
+                            <li><a href="careers.html">Careers</a></li>
+                            <li><a href="contact.html">Contact Us</a></li>
+                            <li><a href="privacy.html">Privacy Policy</a></li>
+                            <li><a href="terms.html">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="footer-contact">
+                    <h4>Contact Us</h4>
+                    <address>
+                        <p><i class="fas fa-map-marker-alt"></i> 3 Fuxin West Road<br>QingXi Town, Dongguan City, Guangdong, China</p>
+                        <p><i class="fas fa-phone"></i> <a href="tel:+8613431451998">+86 13431451998</a></p>
+                        <p><i class="fas fa-envelope"></i> <a href="mailto:lucindaz@wanfuxin.com">lucindaz@wanfuxin.com</a></p>
+                    </address>
+                    <div class="footer-hours">
+                        <h5>Business Hours</h5>
+                        <p>Mon - Sat: 8:00 AM - 12:00 PM, 1:30 PM - 5:30 PM (China Time)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    <p>&copy; 2025 WFX. All rights reserved.</p>
+                </div>
+                <div class="footer-certifications">
+                    <span>Certifications:</span>
+                    <span class="cert-badge">ISO9001</span>
+                    <span class="cert-badge">IATF16949</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <script defer src="content-loader.js"></script>
+    <script defer src="script.js"></script>
+</body>
+</html>

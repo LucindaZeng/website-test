@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Log | WFX Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../logo.png" alt="WFX">
+            <h2>Admin Panel</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard.html" class="nav-item">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Content Management</div>
+                <a href="content-editor.html" class="nav-item">
+                    <i class="fas fa-edit"></i> Content Editor
+                </a>
+                <a href="videos.html" class="nav-item">
+                    <i class="fas fa-video"></i> Video Manager
+                </a>
+                <a href="pages.html" class="nav-item">
+                    <i class="fas fa-file-alt"></i> Pages & Text
+                </a>
+                <a href="page-images.html" class="nav-item">
+                    <i class="fas fa-image"></i> Page Images
+                </a>
+                <a href="products.html" class="nav-item">
+                    <i class="fas fa-boxes"></i> Industry Products
+                </a>
+                <a href="categories.html" class="nav-item">
+                    <i class="fas fa-folder-open"></i> Categories
+                </a>
+                <a href="media.html" class="nav-item">
+                    <i class="fas fa-images"></i> Media Library
+                </a>
+                <a href="blog.html" class="nav-item">
+                    <i class="fas fa-blog"></i> Blog Posts
+                </a>
+                <a href="news.html" class="nav-item">
+                    <i class="fas fa-newspaper"></i> News
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+                <a href="users.html" class="nav-item">
+                    <i class="fas fa-users"></i> User Management
+                </a>
+                <a href="activity-log.html" class="nav-item active">
+                    <i class="fas fa-history"></i> Activity Log
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+            </div>
+            <div class="nav-section">
+                <a href="../index.html" class="nav-item" target="_blank">
+                    <i class="fas fa-external-link-alt"></i> View Website
+                </a>
+                <a href="#" class="nav-item" onclick="AdminCore.logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <header class="admin-header">
+            <div class="header-left">
+                <h1>Activity Log</h1>
+            </div>
+            <div class="header-right">
+                <div class="user-menu">
+                    <div class="user-avatar" id="user-avatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="user-name">Admin</div>
+                        <div class="user-role" id="user-role">Administrator</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="admin-content">
+            <!-- Filters -->
+            <div class="card" style="margin-bottom: 25px;">
+                <div class="card-body">
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-end;">
+                        <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 200px;">
+                            <label class="form-label">Action Type</label>
+                            <select class="form-control" id="filter-action">
+                                <option value="">All Actions</option>
+                                <option value="login">Login</option>
+                                <option value="logout">Logout</option>
+                                <option value="user_created">User Created</option>
+                                <option value="user_updated">User Updated</option>
+                                <option value="user_deleted">User Deleted</option>
+                                <option value="password_changed">Password Changed</option>
+                                <option value="blog_created">Blog Created</option>
+                                <option value="blog_updated">Blog Updated</option>
+                                <option value="blog_deleted">Blog Deleted</option>
+                                <option value="news_created">News Created</option>
+                                <option value="news_updated">News Updated</option>
+                                <option value="news_deleted">News Deleted</option>
+                                <option value="image_added">Image Added</option>
+                                <option value="image_updated">Image Updated</option>
+                                <option value="image_deleted">Image Deleted</option>
+                                <option value="text_updated">Text Updated</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 200px;">
+                            <label class="form-label">User</label>
+                            <select class="form-control" id="filter-user">
+                                <option value="">All Users</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 150px;">
+                            <label class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="filter-start-date">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 150px;">
+                            <label class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="filter-end-date">
+                        </div>
+                        <button class="btn btn-primary" onclick="applyFilters()">
+                            <i class="fas fa-filter"></i> Apply Filters
+                        </button>
+                        <button class="btn btn-secondary" onclick="clearFilters()">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Log -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-history"></i> Activity History</h3>
+                    <span id="log-count">0 entries</span>
+                </div>
+                <div class="card-body" style="padding: 0;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">Type</th>
+                                <th>Action</th>
+                                <th>Description</th>
+                                <th>User</th>
+                                <th>Timestamp</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activity-table">
+                            <tr><td colspan="6" style="text-align: center; padding: 40px;">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </main>
+
+    <!-- Details Modal -->
+    <div class="modal-overlay" id="details-modal">
+        <div class="modal" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Activity Details</h3>
+                <button class="modal-close" onclick="closeDetailsModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="details-content">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDetailsModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/admin-core.js"></script>
+    <script>
+        // Check authentication
+        if (!AdminCore.checkAuth()) {
+            window.location.href = 'index.html';
+        }
+
+        // Load current user info
+        const currentUser = AdminCore.getCurrentUser();
+        if (currentUser) {
+            document.getElementById('user-name').textContent = currentUser.name || currentUser.username;
+            document.getElementById('user-role').textContent = currentUser.role === 'super_admin' ? 'Super Admin' : 'Editor';
+            document.getElementById('user-avatar').textContent = (currentUser.name || currentUser.username).charAt(0).toUpperCase();
+        }
+
+        // Pagination state
+        let currentPage = 1;
+        const itemsPerPage = 20;
+        let filteredLogs = [];
+
+        // Populate user filter
+        function populateUserFilter() {
+            const users = AdminCore.getUsers();
+            const select = document.getElementById('filter-user');
+            users.forEach(user => {
+                const option = document.createElement('option');
+                option.value = user.username;
+                option.textContent = user.name || user.username;
+                select.appendChild(option);
+            });
+        }
+        populateUserFilter();
+
+        // Get action icon and class
+        function getActionStyle(action) {
+            const styles = {
+                login: { icon: 'sign-in-alt', class: 'login', color: '#0052cc' },
+                logout: { icon: 'sign-out-alt', class: 'login', color: '#6b7280' },
+                user_created: { icon: 'user-plus', class: 'create', color: '#10b981' },
+                user_updated: { icon: 'user-edit', class: 'update', color: '#f59e0b' },
+                user_deleted: { icon: 'user-minus', class: 'delete', color: '#dc2626' },
+                password_changed: { icon: 'key', class: 'update', color: '#f59e0b' },
+                blog_created: { icon: 'plus', class: 'create', color: '#10b981' },
+                blog_updated: { icon: 'edit', class: 'update', color: '#f59e0b' },
+                blog_deleted: { icon: 'trash', class: 'delete', color: '#dc2626' },
+                news_created: { icon: 'plus', class: 'create', color: '#10b981' },
+                news_updated: { icon: 'edit', class: 'update', color: '#f59e0b' },
+                news_deleted: { icon: 'trash', class: 'delete', color: '#dc2626' },
+                image_added: { icon: 'image', class: 'create', color: '#10b981' },
+                image_updated: { icon: 'image', class: 'update', color: '#f59e0b' },
+                image_deleted: { icon: 'image', class: 'delete', color: '#dc2626' },
+                video_added: { icon: 'video', class: 'create', color: '#10b981' },
+                video_updated: { icon: 'video', class: 'update', color: '#f59e0b' },
+                text_updated: { icon: 'font', class: 'update', color: '#f59e0b' }
+            };
+            return styles[action] || { icon: 'circle', class: 'login', color: '#6b7280' };
+        }
+
+        // Load activity log
+        function loadActivityLog() {
+            const filters = {
+                action: document.getElementById('filter-action').value || undefined,
+                user: document.getElementById('filter-user').value || undefined,
+                startDate: document.getElementById('filter-start-date').value || undefined,
+                endDate: document.getElementById('filter-end-date').value || undefined
+            };
+            
+            filteredLogs = AdminCore.getActivityLog(filters);
+            document.getElementById('log-count').textContent = `${filteredLogs.length} entries`;
+            
+            renderTable();
+            renderPagination();
+        }
+
+        // Render table with pagination
+        function renderTable() {
+            const tbody = document.getElementById('activity-table');
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageData = filteredLogs.slice(start, end);
+            
+            if (pageData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px;">No activity found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = pageData.map(log => {
+                const style = getActionStyle(log.action);
+                return `
+                    <tr>
+                        <td>
+                            <div class="activity-icon ${style.class}" style="width: 36px; height: 36px;">
+                                <i class="fas fa-${style.icon}"></i>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="status-badge" style="background: ${style.color}20; color: ${style.color};">
+                                ${log.action.replace(/_/g, ' ').toUpperCase()}
+                            </span>
+                        </td>
+                        <td>${log.description}</td>
+                        <td><strong>${log.user}</strong></td>
+                        <td>
+                            <div>${AdminCore.formatDate(log.timestamp)}</div>
+                            <div style="font-size: 0.8rem; color: var(--admin-gray);">${AdminCore.formatRelativeTime(log.timestamp)}</div>
+                        </td>
+                        <td>
+                            ${Object.keys(log.details || {}).length > 0 ? `
+                                <button class="btn btn-sm btn-secondary" onclick="showDetails(${log.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            ` : '-'}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Render pagination
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredLogs.length / itemsPerPage);
+            const pagination = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            
+            // Previous button
+            html += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})">
+                <i class="fas fa-chevron-left"></i>
+            </button>`;
+            
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    html += `<button class="${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    html += '<button disabled>...</button>';
+                }
+            }
+            
+            // Next button
+            html += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})">
+                <i class="fas fa-chevron-right"></i>
+            </button>`;
+            
+            pagination.innerHTML = html;
+        }
+
+        // Go to page
+        function goToPage(page) {
+            currentPage = page;
+            renderTable();
+            renderPagination();
+        }
+
+        // Apply filters
+        function applyFilters() {
+            currentPage = 1;
+            loadActivityLog();
+        }
+
+        // Clear filters
+        function clearFilters() {
+            document.getElementById('filter-action').value = '';
+            document.getElementById('filter-user').value = '';
+            document.getElementById('filter-start-date').value = '';
+            document.getElementById('filter-end-date').value = '';
+            currentPage = 1;
+            loadActivityLog();
+        }
+
+        // Show details modal
+        function showDetails(logId) {
+            const log = filteredLogs.find(l => l.id === logId);
+            if (!log) return;
+            
+            const content = document.getElementById('details-content');
+            content.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <strong>Action:</strong> ${log.action.replace(/_/g, ' ').toUpperCase()}<br>
+                    <strong>Description:</strong> ${log.description}<br>
+                    <strong>User:</strong> ${log.user}<br>
+                    <strong>Timestamp:</strong> ${AdminCore.formatDate(log.timestamp)}
+                </div>
+                <div>
+                    <strong>Details:</strong>
+                    <pre style="background: var(--admin-off-white); padding: 15px; border-radius: 8px; margin-top: 10px; overflow-x: auto; font-size: 0.85rem;">
+${JSON.stringify(log.details, null, 2)}
+                    </pre>
+                </div>
+            `;
+            
+            document.getElementById('details-modal').classList.add('active');
+        }
+
+        function closeDetailsModal() {
+            document.getElementById('details-modal').classList.remove('active');
+        }
+
+        // Initial load
+        loadActivityLog();
+    </script>
+</body>
+</html>

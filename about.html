@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn about WFX - 19+ years of precision manufacturing excellence. ISO9001 & IATF16949 certified CNC machining for aerospace, medical, and automotive industries.">
+    <title>About Us | WFX - Precision Manufacturing Excellence</title>
+    <link rel="canonical" href="https://wanfuxin.com/about.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* About Page Specific Styles */
+        .page-hero {
+            background: var(--gradient-dark);
+            padding: 180px 0 100px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .page-hero-content {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .page-hero h1 {
+            font-size: 3.5rem;
+            color: var(--white);
+            margin-bottom: 20px;
+        }
+
+        .page-hero p {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .breadcrumb {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .breadcrumb a:hover {
+            color: var(--white);
+        }
+
+        .breadcrumb span {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .about-intro {
+            padding: var(--section-padding) 0;
+        }
+
+        .about-intro-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .about-intro-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 24px;
+        }
+
+        .about-intro-content p {
+            color: var(--gray);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .about-intro-image {
+            position: relative;
+        }
+
+        .about-intro-image img {
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .about-intro-image::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 200px;
+            height: 200px;
+            background: var(--gradient-primary);
+            border-radius: var(--radius-xl);
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        .values-section {
+            padding: var(--section-padding) 0;
+            background: var(--off-white);
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+
+        .value-card {
+            background: var(--white);
+            padding: 40px 30px;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .value-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .value-card i {
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient-primary);
+            color: var(--white);
+            font-size: 1.75rem;
+            border-radius: 50%;
+            margin: 0 auto 24px;
+        }
+
+        .value-card h3 {
+            font-size: 1.125rem;
+            margin-bottom: 12px;
+        }
+
+        .value-card p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .capabilities-section {
+            padding: var(--section-padding) 0;
+        }
+
+        .capabilities-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .capability-card {
+            background: var(--off-white);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            transition: var(--transition);
+        }
+
+        .capability-card:hover {
+            background: var(--white);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .capability-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.125rem;
+            margin-bottom: 16px;
+        }
+
+        .capability-card h3 i {
+            color: var(--primary);
+        }
+
+        .capability-card ul {
+            color: var(--gray);
+        }
+
+        .capability-card ul li {
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+            font-size: 0.95rem;
+        }
+
+        .capability-card ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 14px;
+            width: 6px;
+            height: 6px;
+            background: var(--secondary);
+            border-radius: 50%;
+        }
+
+        .team-section {
+            padding: var(--section-padding) 0;
+            background: var(--off-white);
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+
+        .team-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .team-card img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+        }
+
+        .team-icon {
+            width: 100%;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient-primary);
+        }
+
+        .team-icon i {
+            font-size: 4rem;
+            color: white;
+        }
+
+        .team-card-content {
+            padding: 24px;
+        }
+
+        .team-card h3 {
+            font-size: 1.15rem;
+            margin-bottom: 4px;
+        }
+
+        .team-card .role {
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .team-card p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .history-section {
+            padding: var(--section-padding) 0;
+        }
+
+        .history-timeline {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .history-timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--light-gray);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-content {
+            width: calc(50% - 40px);
+            background: var(--off-white);
+            padding: 30px;
+            border-radius: var(--radius-lg);
+        }
+
+        .timeline-item:nth-child(even) .timeline-content {
+            text-align: right;
+        }
+
+        .timeline-year {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gradient-primary);
+            color: var(--white);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .timeline-content h3 {
+            font-size: 1.15rem;
+            margin-bottom: 8px;
+            margin-top: 30px;
+        }
+
+        .timeline-content p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 1024px) {
+            .values-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .capabilities-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .team-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .about-intro-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .about-intro-image {
+                order: -1;
+            }
+
+            .values-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .capabilities-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .history-timeline::before {
+                left: 20px;
+            }
+
+            .timeline-item,
+            .timeline-item:nth-child(even) {
+                flex-direction: column;
+                padding-left: 60px;
+            }
+
+            .timeline-content {
+                width: 100%;
+            }
+
+            .timeline-item:nth-child(even) .timeline-content {
+                text-align: left;
+            }
+
+            .timeline-year {
+                left: 20px;
+                transform: translateX(-50%);
+            }
+
+            .ar-tour-features {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .ar-tour-features {
+                grid-template-columns: 1fr !important;
+            }
+
+            .ar-tour-container iframe {
+                height: 350px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="top-bar-content">
+                <div class="top-bar-left">
+                    <span><i class="fas fa-phone"></i> +86 13431451998</span>
+                    <span><i class="fas fa-envelope"></i> lucindaz@wanfuxin.com</span>
+                </div>
+                <div class="top-bar-right">
+                    <a href="index.html#quote">Request a Quote</a>
+                    <a href="contact.html">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">
+                    <img src="logo.png" alt="WFX - Wanfuxin" class="logo-img">
+                </a>
+                
+                <ul class="nav-menu" id="nav-menu">
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link">Services <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-menu mega-menu">
+                            <div class="mega-menu-content">
+                                <div class="mega-menu-section">
+                                    <h4>CNC Machining</h4>
+                                    <ul>
+                                        <li><a href="cnc-milling.html"><i class="fas fa-cube"></i> CNC Milling</a></li>
+                                        <li><a href="cnc-turning.html"><i class="fas fa-sync-alt"></i> CNC Turning</a></li>
+                                        <li><a href="5-axis.html"><i class="fas fa-dice-d6"></i> 5-Axis Machining</a></li>
+                                        <li><a href="precision-inspection.html"><i class="fas fa-compress-arrows-alt"></i> Precision Inspection</a></li>
+                                    </ul>
+                                </div>
+                                <div class="mega-menu-section">
+                                    <h4>Additional Services</h4>
+                                    <ul>
+                                        <li><a href="prototyping.html"><i class="fas fa-drafting-compass"></i> Rapid Prototyping</a></li>
+                                        <li><a href="production.html"><i class="fas fa-industry industry-icon"></i> Production Runs</a></li>
+                                        <li><a href="finishing.html"><i class="fas fa-spray-can"></i> Surface Finishing</a></li>
+                                        <li><a href="assembly.html"><i class="fas fa-puzzle-piece"></i> Assembly Services</a></li>
+                                    </ul>
+                                </div>
+                                <div class="mega-menu-section">
+                                    <h4>Metal Forming</h4>
+                                    <ul>
+                                        <li><a href="die-casting.html"><i class="fas fa-fill-drip"></i> Die Casting</a></li>
+                                        <li><a href="forging.html"><i class="fas fa-hammer"></i> Forging</a></li>
+                                        <li><a href="stamping.html"><i class="fas fa-compress-alt"></i> Stamping</a></li>
+                                        <li><a href="sheet-metal.html"><i class="fas fa-layer-group"></i> Sheet Metal</a></li>
+                                        <li><a href="investment-casting.html"><i class="fas fa-gem"></i> Investment Casting</a></li>
+                                    </ul>
+                                </div>
+                                <div class="mega-menu-section">
+                                    <h4>Quick Links</h4>
+                                    <ul>
+                                        <li><a href="index.html#quote"><i class="fas fa-calculator"></i> Request a Quote</a></li>
+                                        <li><a href="materials.html"><i class="fas fa-layer-group"></i> Material Selection</a></li>
+                                        <li><a href="tolerances.html"><i class="fas fa-ruler-combined"></i> Tolerances Guide</a></li>
+                                    </ul>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="materials.html" class="nav-link">Materials <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-menu">
+                            <ul>
+                                <li><a href="metals.html">Metals & Alloys</a></li>
+                                <li><a href="forging.html">Forging</a></li>
+                                <li><a href="die-casting.html">Die Casting</a></li>
+                                <li><a href="material-guide.html">Material Selection Guide</a></li>
+                                <li><a href="finishing.html">Surface Finishing</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="industries.html" class="nav-link">Industries <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-menu">
+                            <ul>
+                                <li><a href="aerospace.html">Aerospace Parts</a></li>
+                                <li><a href="liquid-cooling.html">Liquid Cooling Parts</a></li>
+                                <li><a href="medical.html">Medical Devices</a></li>
+                                <li><a href="electronics.html">Electronics</a></li>
+                                <li><a href="industrial.html">Industrial Equipment</a></li>
+                                <li><a href="robotics.html">Robotics & Automation</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="resources.html" class="nav-link">Resources <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-menu">
+                            <ul>
+                                <li><a href="design-guide.html">Design Guidelines</a></li>
+                                <li><a href="blog.html">Blog & News</a></li>
+                                <li><a href="case-studies.html">Case Studies</a></li>
+                                <li><a href="faq.html">FAQ</a></li>
+                                <li><a href="downloads.html">Downloads</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a href="about.html" class="nav-link">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="contact.html" class="nav-link">Contact</a>
+                    </li>
+                </ul>
+
+                <div class="nav-actions">
+                    <a href="index.html#quote" class="btn btn-primary">Get Quote</a>
+                    <button class="mobile-toggle" id="mobile-toggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Hero -->
+    <section class="page-hero">
+        <div class="container">
+            <div class="page-hero-content">
+                <nav class="breadcrumb">
+                    <a href="index.html">Home</a>
+                    <span>/</span>
+                    <span>About Us</span>
+                </nav>
+                <h1>About WFX Wanfuxin</h1>
+                <p>Founded in 2007, WFX is a leading precision CNC manufacturer with a 20,000 sqm self-built facility and 300+ CNC machines. ISO9001 & IATF16949 certified, serving customers in 10+ countries.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Intro -->
+    <section class="about-intro">
+        <div class="container">
+            <div class="about-intro-grid">
+                <div class="about-intro-content">
+                    <span class="section-badge">Our Story</span>
+                    <h2>19+ Years of Precision Manufacturing Excellence</h2>
+                    <p>Founded in 2007, Dongguan Wanfuxin Intelligent Equipment Co., Ltd. (WFX) is a leading CNC precision machining manufacturer located in Qingxi Town, Dongguan City, Guangdong Province. We specialize in providing high-precision CNC machining services to customers worldwide across automotive, aerospace, liquid cooling, medical, and electronics industries.</p>
+                    <p>Our modern self-built facility spans 20,000 square meters and houses over 300 CNC machines running 24/7 production. We serve customers across the USA, Germany, Austria, Finland, Australia, and 10 Chinese provinces including Guangdong, Zhejiang, Jiangsu, Shandong, Beijing, and more.</p>
+                    <p>With ISO9001:2015 and IATF16949:2016 certifications (verified by Quality Austria), we maintain rigorous quality standards. Our in-house capabilities include 5-axis machining, CNC turning, precision grinding, and our own anodizing subsidiary for complete surface treatment control.</p>
+                </div>
+                <div class="about-intro-image">
+                    <div class="video-container" style="border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-xl);">
+                        <video controls width="100%" poster="company-video-poster.jpg" style="display: block;">
+                            <source src="company-video.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Values Section -->
+    <section class="values-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Our Values</span>
+                <h2 class="section-title">What Drives Us</h2>
+                <p class="section-description">These core values guide everything we do, from initial quote to final delivery.</p>
+            </div>
+
+            <div class="values-grid">
+                <div class="value-card">
+                    <i class="fas fa-medal"></i>
+                    <h3>Excellence in All We Do</h3>
+                    <p>We pursue excellence and continuous improvement in every part we produce, building lasting success through unwavering quality standards.</p>
+                </div>
+                <div class="value-card">
+                    <i class="fas fa-handshake"></i>
+                    <h3>Unity & Shared Success</h3>
+                    <p>We believe in working together as one team. Through unity and shared effort, we achieve prosperity for all stakeholders.</p>
+                </div>
+                <div class="value-card">
+                    <i class="fas fa-lightbulb"></i>
+                    <h3>Moving Forward Together</h3>
+                    <p>With aligned hearts and purpose, we walk together with our customers and partners to create a better future.</p>
+                </div>
+                <div class="value-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Integrity & Trust</h3>
+                    <p>Recognized as a "Guangdong Province Contract-honoring and Credit-worthy Enterprise," we operate with complete transparency and keep our commitments.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Capabilities Section -->
+    <section class="capabilities-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Our Capabilities</span>
+                <h2 class="section-title">Modern Manufacturing Facility</h2>
+                <p class="section-description">Our 20,000 sqm self-built facility houses 300+ advanced CNC machines for precision manufacturing.</p>
+            </div>
+
+            <div class="capabilities-grid">
+                <div class="capability-card">
+                    <h3><i class="fas fa-cube"></i> 5-Axis Machining</h3>
+                    <ul>
+                        <li>2× Mazak I-600 5-axis centers (510×910×510mm)</li>
+                        <li>3× DMG 60EVO 5-axis centers (600×550×500mm)</li>
+                        <li>5× Five-face machining centers (1850×1850×600mm)</li>
+                        <li>50 four-axis fixtures for complex parts</li>
+                    </ul>
+                </div>
+                <div class="capability-card">
+                    <h3><i class="fas fa-industry"></i> CNC Milling</h3>
+                    <ul>
+                        <li>250+ vertical machining centers</li>
+                        <li>27× Brother TC-S2DZ high-speed centers</li>
+                        <li>20× FANUC a-D14MIA machining centers</li>
+                        <li>10× Dehao 850 large-format centers</li>
+                    </ul>
+                </div>
+                <div class="capability-card">
+                    <h3><i class="fas fa-sync-alt"></i> CNC Turning</h3>
+                    <ul>
+                        <li>20× Tsugami M08J-11 precision lathes</li>
+                        <li>15× Tsugami B0205 Swiss-type lathes</li>
+                        <li>10× Chimura 8046 mill-turn centers</li>
+                        <li>70× Renishaw probes for in-process inspection</li>
+                    </ul>
+                </div>
+                <div class="capability-card">
+                    <h3><i class="fas fa-microscope"></i> Quality Lab</h3>
+                    <ul>
+                        <li>3× Zeiss CMM (1200×1000×800mm, 0.0009mm precision)</li>
+                        <li>2× Hexagon CMM (500×500×500mm)</li>
+                        <li>1× Large-travel CMM (1500×1000×600mm)</li>
+                        <li>85 Mitutoyo calipers, 10 height gauges</li>
+                    </ul>
+                </div>
+                <div class="capability-card">
+                    <h3><i class="fas fa-spray-can"></i> In-house Anodizing</h3>
+                    <ul>
+                        <li>Own subsidiary established 2012</li>
+                        <li>Max tank size: 4m × 1.5m × 1.2m</li>
+                        <li>Full color anodizing & hard coat</li>
+                        <li>Screen printing workshop included</li>
+                    </ul>
+                </div>
+                <div class="capability-card">
+                    <h3><i class="fas fa-cogs"></i> Die Casting</h3>
+                    <ul>
+                        <li>In-house die casting workshop</li>
+                        <li>Aluminum & magnesium alloys</li>
+                        <li>Secondary CNC machining</li>
+                        <li>Complete vertical integration</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AR Factory Tour Section -->
+    <section class="ar-tour-section" style="padding: 100px 0; background: var(--off-white);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Virtual Tour</span>
+                <h2 class="section-title">360° AR Factory Tour</h2>
+                <p class="section-description">Take an immersive virtual tour of our state-of-the-art manufacturing facility. Explore our CNC machining centers, quality lab, and production floor.</p>
+            </div>
+
+            <div class="ar-tour-container" style="position: relative; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-xl); background: #000;">
+                <iframe 
+                    src="https://www.720yun.com/vr/d15jt5yOun2" 
+                    frameborder="0" 
+                    width="100%" 
+                    height="600" 
+                    allowfullscreen
+                    style="display: block;"
+                ></iframe>
+            </div>
+
+            <div class="ar-tour-features" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; margin-top: 50px;">
+                <div class="ar-feature" style="text-align: center; padding: 25px;">
+                    <i class="fas fa-vr-cardboard" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px;"></i>
+                    <h4 style="margin-bottom: 10px;">360° View</h4>
+                    <p style="color: var(--gray); font-size: 0.95rem;">Explore every corner of our facility with full 360-degree panoramic views</p>
+                </div>
+                <div class="ar-feature" style="text-align: center; padding: 25px;">
+                    <i class="fas fa-industry" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px;"></i>
+                    <h4 style="margin-bottom: 10px;">Production Floor</h4>
+                    <p style="color: var(--gray); font-size: 0.95rem;">See our 300+ CNC machines operating 24/7 in our modern production environment</p>
+                </div>
+                <div class="ar-feature" style="text-align: center; padding: 25px;">
+                    <i class="fas fa-microscope" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px;"></i>
+                    <h4 style="margin-bottom: 10px;">Quality Lab</h4>
+                    <p style="color: var(--gray); font-size: 0.95rem;">Visit our climate-controlled quality lab with CMM inspection equipment</p>
+                </div>
+                <div class="ar-feature" style="text-align: center; padding: 25px;">
+                    <i class="fas fa-mobile-alt" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px;"></i>
+                    <h4 style="margin-bottom: 10px;">Mobile Compatible</h4>
+                    <p style="color: var(--gray); font-size: 0.95rem;">Tour our facility from anywhere using your smartphone or VR headset</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="team-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Our Team</span>
+                <h2 class="section-title">Professional Expert Team</h2>
+                <p class="section-description">Experienced professionals dedicated to delivering excellence in every project.</p>
+            </div>
+
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="team-icon"><i class="fas fa-user-tie"></i></div>
+                    <div class="team-card-content">
+                        <h3>Management Team</h3>
+                        <p class="role">Strategic Leadership</p>
+                        <p>Experienced leaders with deep expertise in precision manufacturing and global business operations.</p>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-icon"><i class="fas fa-cogs"></i></div>
+                    <div class="team-card-content">
+                        <h3>Engineering Team</h3>
+                        <p class="role">Technical Excellence</p>
+                        <p>Skilled engineers specializing in CNC programming, DFM analysis, and process optimization.</p>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-icon"><i class="fas fa-clipboard-check"></i></div>
+                    <div class="team-card-content">
+                        <h3>Quality Team</h3>
+                        <p class="role">Quality Assurance</p>
+                        <p>Certified quality professionals ensuring every part meets strict tolerance and specification requirements.</p>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-icon"><i class="fas fa-headset"></i></div>
+                    <div class="team-card-content">
+                        <h3>Customer Service</h3>
+                        <p class="role">Client Support</p>
+                        <p>Dedicated account managers providing responsive communication and project coordination.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- History Timeline -->
+    <section class="history-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Our Journey</span>
+                <h2 class="section-title">19+ Years of Continuous Growth</h2>
+            </div>
+
+            <div class="history-timeline">
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="timeline-year">2007</span>
+                        <h3>Company Founded</h3>
+                        <p>Dongguan Wanfuxin Hardware Products Co., Ltd. established in Qingxi Town, Dongguan.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="timeline-year">2010</span>
+                        <h3>First Expansion</h3>
+                        <p>Expanded the scale of production to meet growing customer demand.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="timeline-year">2012</span>
+                        <h3>Anodizing Subsidiary</h3>
+                        <p>Established our own anodizing surface treatment subsidiary with screen printing workshop.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="timeline-year">2013</span>
+                        <h3>ISO9001 Certification</h3>
+                        <p>Achieved ISO9001:2008 quality management system certification.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="timeline-year">2014</span>
+                        <h3>New Facility Built</h3>
+                        <p>Constructed our own 20,000 sqm manufacturing facility.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="timeline-year">2015</span>
+                        <h3>Facility Relocation</h3>
+                        <p>Moved to new factory and expanded the scale of production again.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="timeline-year">2016</span>
+                        <h3>5-Axis Investment</h3>
+                        <p>First time import 5-axis CNC machining centers for complex precision parts.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="timeline-year">2019</span>
+                        <h3>Rebranding</h3>
+                        <p>Company renamed to Dongguan Wanfuxin Intelligent Equipment Co., Ltd., reflecting our technology focus.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="timeline-year">2020</span>
+                        <h3>IATF16949 Certified</h3>
+                        <p>Achieved IATF16949:2016 automotive quality certification and established subsidiary company.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <span class="timeline-year">2021</span>
+                        <h3>Major Expansion</h3>
+                        <p>Expanded to 300+ CNC machines and added Zeiss CMM inspection equipment.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Company Honors Section -->
+    <section style="padding: 100px 0; background: var(--white);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Recognition</span>
+                <h2 class="section-title">Company Honors & Certifications</h2>
+                <p class="section-description">Our commitment to excellence has been recognized with numerous awards and certifications.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;">
+                <div style="background: var(--off-white); padding: 40px; border-radius: 16px; text-align: center;">
+                    <div style="width: 80px; height: 80px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px;">
+                        <i class="fas fa-award" style="font-size: 2rem; color: white;"></i>
+                    </div>
+                    <h3 style="margin-bottom: 15px;">High-tech Enterprise</h3>
+                    <p style="color: var(--gray);">Certified as a National High-tech Enterprise, recognizing our innovation in precision manufacturing technology.</p>
+                </div>
+
+                <div style="background: var(--off-white); padding: 40px; border-radius: 16px; text-align: center;">
+                    <div style="width: 80px; height: 80px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px;">
+                        <i class="fas fa-handshake" style="font-size: 2rem; color: white;"></i>
+                    </div>
+                    <h3 style="margin-bottom: 15px;">Contract & Credit Enterprise</h3>
+                    <p style="color: var(--gray);">Guangdong Province Contract-honoring and Credit-worthy Enterprise, demonstrating our business integrity.</p>
+                </div>
+
+                <div style="background: var(--off-white); padding: 40px; border-radius: 16px; text-align: center;">
+                    <div style="width: 80px; height: 80px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px;">
+                        <i class="fas fa-star" style="font-size: 2rem; color: white;"></i>
+                    </div>
+                    <h3 style="margin-bottom: 15px;">Advanced Private Enterprise</h3>
+                    <p style="color: var(--gray);">Recognized as Qingxi Town's Advanced Private Enterprise for outstanding contribution to local development.</p>
+                </div>
+
+                <div style="background: var(--off-white); padding: 40px; border-radius: 16px; text-align: center;">
+                    <div style="width: 80px; height: 80px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px;">
+                        <i class="fas fa-trophy" style="font-size: 2rem; color: white;"></i>
+                    </div>
+                    <h3 style="margin-bottom: 15px;">Molex Best Supplier</h3>
+                    <p style="color: var(--gray);">Awarded "Best Quality Heat Sink Supplier" by Molex Dongguan, recognizing excellence in precision heat sink manufacturing.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Equipment List Section -->
+    <section style="padding: 100px 0; background: var(--white);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Our Facility</span>
+                <h2 class="section-title">Manufacturing Equipment</h2>
+                <p class="section-description">State-of-the-art machinery ensuring precision, quality, and capacity for your projects.</p>
+            </div>
+
+            <!-- CNC Machining Centers -->
+            <div style="margin-bottom: 50px;">
+                <h3 style="font-size: 1.5rem; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid var(--primary);">
+                    <i class="fas fa-cogs" style="color: var(--primary); margin-right: 10px;"></i>CNC Machining Centers
+                </h3>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; background: var(--off-white); border-radius: 12px; overflow: hidden;">
+                        <thead>
+                            <tr style="background: var(--gradient-primary); color: white;">
+                                <th style="padding: 15px; text-align: left; font-weight: 600;">Equipment</th>
+                                <th style="padding: 15px; text-align: left; font-weight: 600;">Brand/Model</th>
+                                <th style="padding: 15px; text-align: center; font-weight: 600;">Quantity</th>
+                                <th style="padding: 15px; text-align: left; font-weight: 600;">Specifications</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid var(--light-gray);">
+                                <td style="padding: 15px; font-weight: 500;">5-Axis Machining Center</td>
+                                <td style="padding: 15px; color: var(--gray);">DMG MORI DMU 50</td>
+                                <td style="padding: 15px; text-align: center;">3</td>
+                                <td style="padding: 15px; color: var(--gray);">Travel: 500x450x400mm, Spindle: 20,000 RPM</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--light-gray); background: white;">
+                                <td style="padding: 15px; font-weight: 500;">5-Axis Machining Center</td>
+                                <td style="padding: 15px; color: var(--gray);">Mazak VARIAXIS i-600</td>
+                                <td style="padding: 15px; text-align: center;">2</td>
+                                <td style="padding: 15px; color: var(--gray);">Travel: 730x650x560mm, Spindle: 18,000 RPM</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--light-gray);">
+                                <td style="padding: 15px; font-weight: 500;">Vertical Machining Center</td>
+                                <td style="padding: 15px; color: var(--gray);">FANUC ROBODRILL</td>
+                                <td style="padding: 15px; text-align: center;">12</td>
+                                <td style="padding: 15px; color: var(--gray);">High-speed drilling & tapping, 24,000 RPM</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--light-gray); background: white;">
+                                <td style="padding: 15px; font-weight: 500;">Vertical Machining Center</td>
+                                <td style="padding: 15px; color: var(--gray);">Makino S56</td>
+                                <td style="padding: 15px; text-align: center;">6</td>
+                                <td style="padding: 15px; color: var(--gray);">Travel: 900x500x450mm, Spindle: 14,000 RPM</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--light-gray);">
+                                <td style="padding: 15px; font-weight: 500;">Horizontal Machining Center</td>
+                                <td style="padding: 15px; color: var(--gray);">Okuma MB-5000H</td>
+                                <td style="padding: 15px; text-align: center;">4</td>
+                                <td style="padding: 15px; color: var(--gray);">500mm pallet, 60-tool ATC</td>
+                            </tr>
+                            <tr style="background: white;">
+                                <td style="padding: 15px; font-weight: 500;">CNC Lathe</td>
+                                <td style="padding: 15px; color: var(--gray);">Citizen Cincom L20</td>
+                                <td style="padding: 15px; text-align: center;">8</td>
+                                <td style="padding: 15px; color: var(--gray);">Swiss-type, Bar capacity: 20mm</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Thermal Management Equipment -->
+            <div style="margin-bottom: 50px;">
+                <h3 style="font-size: 1.5rem; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid var(--secondary);">
+                    <i class="fas fa-temperature-low" style="color: var(--secondary); margin-right: 10px;"></i>Thermal Management Production
+                </h3>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; background: var(--off-white); border-radius: 12px; overflow: hidden;">
+                        <thead>
+                            <tr style="background: linear-gradient(135deg, #00875A 0%, #00A86B 100%); color: white;">
+                                <th style="padding: 15px; text-align: left; font-weight: 600;">Equipment</th>
+                                <th style="padding: 15px; text-align: left; font-weight: 600;">Brand/Model</th>
+                                <th style="padding: 15px; text-align: center; font-weight: 600;">Quantity</th>
+                                <th style="padding: 15px; text-align: left; font-weight: 600;">Specifications</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid var(--light-gray);">
+                                <td style="padding: 15px; font-weight: 500;">Skiving Machine</td>
+                                <td style="padding: 15px; color: var(--gray);">Custom High-Precision</td>
+                                <td style="padding: 15px; text-align: center;">4</td>
+                                <td style="padding: 15px; color: var(--gray);">Fin thickness: 0.3-1.0mm, Height: up to 60mm</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--light-gray); background: white;">
+                                <td style="padding: 15px; font-weight: 500;">Cold Forging Press</td>
+                                <td style="padding: 15px; color: var(--gray);">Komatsu / Aida</td>
+                                <td style="padding: 15px; text-align: center;">6</td>
+                                <td style="padding: 15px; color: var(--gray);">200T - 1000T capacity, Pin fin heat sinks</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--light-gray);">
+                                <td style="padding: 15px; font-weight: 500;">Friction Stir Welding</td>
+                                <td style="padding: 15px; color: var(--gray);">Custom FSW System</td>
+                                <td style="padding: 15px; text-align: center;">2</td>
+                                <td style="padding: 15px; color: var(--gray);">For liquid cold plate assembly</td>
+                            </tr>
+                            <tr style="background: white;">
+                                <td style="padding: 15px; font-weight: 500;">Brazing Furnace</td>
+                                <td style="padding: 15px; color: var(--gray);">Vacuum Brazing</td>
+                                <td style="padding: 15px; text-align: center;">2</td>
+                                <td style="padding: 15px; color: var(--gray);">Heat sink assembly, Max temp: 1150°C</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Surface Treatment Equipment -->
+            <div style="margin-bottom: 50px;">
+                <h3 style="font-size: 1.5rem; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #667eea;">
+                    <i class="fas fa-spray-can" style="color: #667eea; margin-right: 10px;"></i>Surface Treatment
+                </h3>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; background: var(--off-white); border-radius: 12px; overflow: hidden;">
+                        <thead>
+                            <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                                <th style="padding: 15px; text-align: left; font-weight: 600;">Equipment</th>
+                                <th style="padding: 15px; text-align: left; font-weight: 600;">Type</th>
+                                <th style="padding: 15px; text-align: center; font-weight: 600;">Quantity</th>
+                                <th style="padding: 15px; text-align: left; font-weight: 600;">Capabilities</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid var(--light-gray);">
+                                <td style="padding: 15px; font-weight: 500;">Anodizing Line</td>
+                                <td style="padding: 15px; color: var(--gray);">In-house Automated</td>
+                                <td style="padding: 15px; text-align: center;">1</td>
+                                <td style="padding: 15px; color: var(--gray);">Type II/III anodizing, Multiple colors</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--light-gray); background: white;">
+                                <td style="padding: 15px; font-weight: 500;">Electroplating Line</td>
+                                <td style="padding: 15px; color: var(--gray);">Nickel/Tin Plating</td>
+                                <td style="padding: 15px; text-align: center;">2</td>
+                                <td style="padding: 15px; color: var(--gray);">Electroless & electrolytic, 3-25μm thickness</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--light-gray);">
+                                <td style="padding: 15px; font-weight: 500;">Powder Coating Booth</td>
+                                <td style="padding: 15px; color: var(--gray);">Automated System</td>
+                                <td style="padding: 15px; text-align: center;">1</td>
+                                <td style="padding: 15px; color: var(--gray);">Epoxy, polyester, RAL colors</td>
+                            </tr>
+                            <tr style="background: white;">
+                                <td style="padding: 15px; font-weight: 500;">Passivation Tank</td>
+                                <td style="padding: 15px; color: var(--gray);">Chemical Treatment</td>
+                                <td style="padding: 15px; text-align: center;">3</td>
+                                <td style="padding: 15px; color: var(--gray);">Stainless steel passivation, RoHS compliant</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Quality & Inspection Equipment -->
+            <div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #f59e0b;">
+                    <i class="fas fa-search" style="color: #f59e0b; margin-right: 10px;"></i>Quality & Inspection
+                </h3>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; background: var(--off-white); border-radius: 12px; overflow: hidden;">
+                        <thead>
+                            <tr style="background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%); color: white;">
+                                <th style="padding: 15px; text-align: left; font-weight: 600;">Equipment</th>
+                                <th style="padding: 15px; text-align: left; font-weight: 600;">Brand/Model</th>
+                                <th style="padding: 15px; text-align: center; font-weight: 600;">Quantity</th>
+                                <th style="padding: 15px; text-align: left; font-weight: 600;">Accuracy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid var(--light-gray);">
+                                <td style="padding: 15px; font-weight: 500;">CMM</td>
+                                <td style="padding: 15px; color: var(--gray);">Zeiss CONTURA</td>
+                                <td style="padding: 15px; text-align: center;">2</td>
+                                <td style="padding: 15px; color: var(--gray);">Accuracy: 1.5 + L/350 μm</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--light-gray); background: white;">
+                                <td style="padding: 15px; font-weight: 500;">CMM</td>
+                                <td style="padding: 15px; color: var(--gray);">Hexagon Global S</td>
+                                <td style="padding: 15px; text-align: center;">1</td>
+                                <td style="padding: 15px; color: var(--gray);">Accuracy: 1.2 + L/400 μm</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--light-gray);">
+                                <td style="padding: 15px; font-weight: 500;">Vision Measuring System</td>
+                                <td style="padding: 15px; color: var(--gray);">Keyence IM-8000</td>
+                                <td style="padding: 15px; text-align: center;">3</td>
+                                <td style="padding: 15px; color: var(--gray);">Instant measurement, 99 points/sec</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--light-gray); background: white;">
+                                <td style="padding: 15px; font-weight: 500;">Surface Roughness Tester</td>
+                                <td style="padding: 15px; color: var(--gray);">Mitutoyo SJ-410</td>
+                                <td style="padding: 15px; text-align: center;">4</td>
+                                <td style="padding: 15px; color: var(--gray);">Ra, Rz, Rq measurement</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--light-gray);">
+                                <td style="padding: 15px; font-weight: 500;">Optical Projector</td>
+                                <td style="padding: 15px; color: var(--gray);">Nikon V-24B</td>
+                                <td style="padding: 15px; text-align: center;">2</td>
+                                <td style="padding: 15px; color: var(--gray);">Profile comparison, 20x-100x magnification</td>
+                            </tr>
+                            <tr style="background: white;">
+                                <td style="padding: 15px; font-weight: 500;">Hardness Tester</td>
+                                <td style="padding: 15px; color: var(--gray);">Wilson VH3100</td>
+                                <td style="padding: 15px; text-align: center;">2</td>
+                                <td style="padding: 15px; color: var(--gray);">Vickers/Rockwell, Micro-hardness</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Equipment Summary Stats -->
+            <div style="margin-top: 60px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px;">
+                <div style="background: var(--gradient-primary); color: white; padding: 35px; border-radius: 16px; text-align: center;">
+                    <div style="font-size: 3rem; font-weight: 700; margin-bottom: 10px;">50+</div>
+                    <div style="font-size: 1rem; opacity: 0.9;">CNC Machines</div>
+                </div>
+                <div style="background: linear-gradient(135deg, #00875A 0%, #00A86B 100%); color: white; padding: 35px; border-radius: 16px; text-align: center;">
+                    <div style="font-size: 3rem; font-weight: 700; margin-bottom: 10px;">5</div>
+                    <div style="font-size: 1rem; opacity: 0.9;">5-Axis Centers</div>
+                </div>
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 35px; border-radius: 16px; text-align: center;">
+                    <div style="font-size: 3rem; font-weight: 700; margin-bottom: 10px;">3</div>
+                    <div style="font-size: 1rem; opacity: 0.9;">CMM Systems</div>
+                </div>
+                <div style="background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%); color: white; padding: 35px; border-radius: 16px; text-align: center;">
+                    <div style="font-size: 3rem; font-weight: 700; margin-bottom: 10px;">8,000</div>
+                    <div style="font-size: 1rem; opacity: 0.9;">sqm Facility</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-background"></div>
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Work Together?</h2>
+                <p>Let's discuss how WFX can help bring your next project to life.</p>
+                <div class="cta-actions">
+                    <a href="index.html#quote" class="btn btn-primary btn-large">
+                        <i class="fas fa-upload"></i> Request a Quote
+                    </a>
+                    <a href="contact.html" class="btn btn-outline-light btn-large">
+                        <i class="fas fa-phone"></i> Contact Us
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (same as index.html) -->
+        <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <a href="index.html" class="footer-logo">
+                        <img src="logo.png" alt="WFX - Wanfuxin" class="logo-img footer-logo-visible">
+                    </a>
+                    <p>Industry-leading CNC machining services delivering precision parts from prototype to production. Trusted by engineers worldwide.</p>
+                    <div class="footer-social">
+                        <!-- Social links: Add real URLs when available -->
+                        
+                        
+                        
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="cnc-milling.html">CNC Milling</a></li>
+                            <li><a href="cnc-turning.html">CNC Turning</a></li>
+                            <li><a href="5-axis.html">5-Axis Machining</a></li>
+                            <li><a href="precision-inspection.html">Precision Inspection</a></li>
+                            <li><a href="prototyping.html">Rapid Prototyping</a></li>
+                            <li><a href="production.html">Production Runs</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Industries</h4>
+                        <ul>
+                            <li><a href="aerospace.html">Aerospace Parts</a></li>
+                            <li><a href="liquid-cooling.html">Liquid Cooling Parts</a></li>
+                            <li><a href="medical.html">Medical Devices</a></li>
+                            <li><a href="electronics.html">Electronics</a></li>
+                            <li><a href="robotics.html">Robotics</a></li>
+                            <li><a href="industrial.html">Industrial</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Resources</h4>
+                        <ul>
+                            <li><a href="materials.html">Materials Guide</a></li>
+                            <li><a href="design-guide.html">Design Guidelines</a></li>
+                            <li><a href="tolerances.html">Tolerances</a></li>
+                            <li><a href="finishing.html">Surface Finishes</a></li>
+                            <li><a href="blog.html">Blog</a></li>
+                            <li><a href="faq.html">FAQ</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="about.html">About Us</a></li>
+                            <li><a href="quality.html">Quality & Certifications</a></li>
+                            <li><a href="careers.html">Careers</a></li>
+                            <li><a href="contact.html">Contact Us</a></li>
+                            <li><a href="privacy.html">Privacy Policy</a></li>
+                            <li><a href="terms.html">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="footer-contact">
+                    <h4>Contact Us</h4>
+                    <address>
+                        <p><i class="fas fa-map-marker-alt"></i> 3 Fuxin West Road<br>QingXi Town, Dongguan City, Guangdong, China</p>
+                        <p><i class="fas fa-phone"></i> <a href="tel:+8613431451998">+86 13431451998</a></p>
+                        <p><i class="fas fa-envelope"></i> <a href="mailto:lucindaz@wanfuxin.com">lucindaz@wanfuxin.com</a></p>
+                    </address>
+                    <div class="footer-hours">
+                        <h5>Business Hours</h5>
+                        <p>Mon - Sat: 8:00 AM - 12:00 PM, 1:30 PM - 5:30 PM (China Time)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    <p>&copy; 2025 WFX. All rights reserved.</p>
+                </div>
+                <div class="footer-certifications">
+                    <span>Certifications:</span>
+                    <span class="cert-badge">ISO9001</span>
+                    <span class="cert-badge">IATF16949</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <script defer src="content-loader.js"></script>
+    <script defer src="script.js"></script>
+</body>
+</html>

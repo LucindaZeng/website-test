@@ -1,0 +1,18 @@
+# Require authentication for admin panel
+# Configure your web server to require HTTP Basic Auth for this directory
+# Example for Apache:
+# AuthType Basic
+# AuthName "WFX Admin"
+# AuthUserFile /path/to/.htpasswd
+# Require valid-user
+
+# For nginx, add to your server block:
+# location /admin/ {
+#     auth_basic "WFX Admin";
+#     auth_basic_user_file /etc/nginx/.htpasswd;
+# }
+
+# Block search engine indexing of admin
+<IfModule mod_headers.c>
+    Header set X-Robots-Tag "noindex, nofollow"
+</IfModule>
