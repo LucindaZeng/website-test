@@ -203,6 +203,203 @@ def list_submissions(table, limit=100):
         conn.close()
 
 
+# ─── CMS Content Helpers ────────────────────────────────────────────────────────
+
+def cms_get(key, default=None):
+    """Fetch a JSON value from cms_content. Returns parsed Python object or default."""
+    conn = get_db_connection()
+    if not conn:
+        return default
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT content_value FROM cms_content WHERE content_key = %s", (key,))
+        row = cursor.fetchone()
+        if row:
+            try:
+                return json.loads(row[0])
+            except (ValueError, TypeError):
+                return row[0]
+        return default
+    except mysql.connector.Error as e:
+        print(f"  ✗  cms_get failed: {e}")
+        return default
+    finally:
+        conn.close()
+
+
+def cms_set(key, value):
+    """Store a JSON-serializable value into cms_content."""
+    conn = get_db_connection()
+    if not conn:
+        return False
+    try:
+        cursor = conn.cursor()
+        payload = json.dumps(value, ensure_ascii=False) if not isinstance(value, str) else value
+        cursor.execute("""
+            INSERT INTO cms_content (content_key, content_value)
+            VALUES (%s, %s)
+            ON DUPLICATE KEY UPDATE content_value = VALUES(content_value)
+        """, (key, payload))
+        conn.commit()
+        return True
+    except mysql.connector.Error as e:
+        print(f"  ✗  cms_set failed: {e}")
+        return False
+    finally:
+        conn.close()
+
+
+def cms_delete(key):
+    conn = get_db_connection()
+    if not conn:
+        return False
+    try:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM cms_content WHERE content_key = %s", (key,))
+        conn.commit()
+        return True
+    except mysql.connector.Error as e:
+        print(f"  ✗  cms_delete failed: {e}")
+        return False
+    finally:
+        conn.close()
+
+
+def cms_list_industry_products(industry=None):
+    """Get industry products. If industry is None, returns all grouped by industry."""
+    conn = get_db_connection()
+    if not conn:
+        return []
+    try:
+        cursor = conn.cursor(dictionary=True)
+        if industry:
+            cursor.execute("""
+                SELECT id, industry, name, description, image_url, sort_order
+                FROM cms_industry_products
+                WHERE industry = %s
+                ORDER BY sort_order, id
+            """, (industry,))
+        else:
+            cursor.execute("""
+                SELECT id, industry, name, description, image_url, sort_order
+                FROM cms_industry_products
+                ORDER BY industry, sort_order, id
+            """)
+        return cursor.fetchall()
+    except mysql.connector.Error as e:
+        print(f"  ✗  list products failed: {e}")
+        return []
+    finally:
+        conn.close()
+
+
+def cms_replace_industry_products(industry, products):
+    """Replace all products for a given industry with the supplied list."""
+    conn = get_db_connection()
+    if not conn:
+        return False
+    try:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM cms_industry_products WHERE industry = %s", (industry,))
+        for i, p in enumerate(products or []):
+            cursor.execute("""
+                INSERT INTO cms_industry_products (industry, name, description, image_url, sort_order)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (
+                industry,
+                p.get('name', ''),
+                p.get('description', ''),
+                p.get('image', '') or p.get('image_url', ''),
+                p.get('sort_order', i),
+            ))
+        conn.commit()
+        return True
+    except mysql.connector.Error as e:
+        print(f"  ✗  replace products failed: {e}")
+        return False
+    finally:
+        conn.close()
+
+
+def cms_list_news(news_type='news', published_only=True, limit=100):
+    """Fetch news/blog posts."""
+    conn = get_db_connection()
+    if not conn:
+        return []
+    try:
+        cursor = conn.cursor(dictionary=True)
+        sql = "SELECT * FROM cms_news WHERE type = %s"
+        params = [news_type]
+        if published_only:
+            sql += " AND is_published = 1"
+        sql += " ORDER BY published_at DESC, id DESC LIMIT %s"
+        params.append(limit)
+        cursor.execute(sql, params)
+        rows = cursor.fetchall()
+        for row in rows:
+            for k, v in row.items():
+                if isinstance(v, datetime):
+                    row[k] = v.isoformat()
+        return rows
+    except mysql.connector.Error as e:
+        print(f"  ✗  list news failed: {e}")
+        return []
+    finally:
+        conn.close()
+
+
+def cms_replace_news(news_type, posts):
+    """Replace all news of a given type. Used by admin Save All operations."""
+    conn = get_db_connection()
+    if not conn:
+        return False
+    try:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM cms_news WHERE type = %s", (news_type,))
+        for p in posts or []:
+            slug = p.get('slug') or (p.get('title') or '').lower().replace(' ', '-')[:300] or f"post-{p.get('id', '')}"
+            published_at = p.get('published_at') or p.get('date') or p.get('created_at')
+            cursor.execute("""
+                INSERT INTO cms_news (type, title, slug, category, excerpt, content,
+                                      image_url, author, published_at, is_published)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (
+                news_type,
+                p.get('title', '')[:300],
+                slug[:300],
+                (p.get('category') or '')[:100],
+                p.get('excerpt', ''),
+                p.get('content', ''),
+                p.get('image', '') or p.get('image_url', ''),
+                (p.get('author') or '')[:100],
+                published_at,
+                1 if p.get('is_published', True) else 0,
+            ))
+        conn.commit()
+        return True
+    except mysql.connector.Error as e:
+        print(f"  ✗  replace news failed: {e}")
+        return False
+    finally:
+        conn.close()
+
+
+def cms_load_all_for_injection():
+    """
+    Load every CMS dataset that public pages need into HTML on first paint.
+    Returns a dict that gets serialized to JSON and injected into <script> tags.
+    """
+    return {
+        'page_content':       cms_get('page_content', {}),
+        'homepage_media':     cms_get('homepage_media', {}),
+        'site_settings':      cms_get('site_settings', {}),
+        'industry_products':  cms_list_industry_products(),
+        'news':               cms_list_news('news',  limit=20),
+        'blog':               cms_list_news('blog',  limit=20),
+        'categories':         cms_get('categories', {}),
+    }
+
+
 # ─── Threaded Server ────────────────────────────────────────────────────────────
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -246,6 +443,19 @@ class WFXHandler(SimpleHTTPRequestHandler):
             self._handle_quote_post()
         elif path == '/api/contact':
             self._handle_contact_post()
+        elif path.startswith('/api/cms/'):
+            self._handle_cms_write(path)
+        else:
+            self._send_json(404, {'ok': False, 'error': 'Not found'})
+
+    def do_PUT(self):
+        # Treat PUT same as POST for CMS
+        self.do_POST()
+
+    def do_DELETE(self):
+        path = urlparse(self.path).path
+        if path.startswith('/api/cms/'):
+            self._handle_cms_delete(path)
         else:
             self._send_json(404, {'ok': False, 'error': 'Not found'})
 
@@ -372,6 +582,9 @@ class WFXHandler(SimpleHTTPRequestHandler):
         if path == '/api/admin/contacts':
             self._handle_admin_list('contact_submissions')
             return
+        if path.startswith('/api/cms/'):
+            self._handle_cms_read(path)
+            return
         self._serve_static()
 
     def _handle_admin_list(self, table):
@@ -380,6 +593,125 @@ class WFXHandler(SimpleHTTPRequestHandler):
             self._send_json(401, {'ok': False, 'error': 'Unauthorized'})
             return
         self._send_json(200, {'ok': True, 'rows': list_submissions(table)})
+
+    # ─── CMS Handlers ────────────────────────────────────────────────────────
+    # GET  /api/cms/content/<key>     → read JSON value
+    # POST /api/cms/content/<key>     → write JSON value (auth required)
+    # GET  /api/cms/products/<industry?> → list products
+    # POST /api/cms/products/<industry> → replace products for industry (auth)
+    # GET  /api/cms/news/<type>       → list news/blog
+    # POST /api/cms/news/<type>       → replace all of given type (auth)
+    # GET  /api/cms/all               → bundle all CMS data (used by content-loader.js)
+
+    def _check_admin_auth(self):
+        token = self.headers.get('X-Admin-Token', '')
+        if token != ADMIN_API_TOKEN:
+            self._send_json(401, {'ok': False, 'error': 'Unauthorized'})
+            return False
+        return True
+
+    def _read_json_body(self, max_bytes=5 * 1024 * 1024):
+        length = int(self.headers.get('Content-Length', 0))
+        if length > max_bytes:
+            self._send_json(413, {'ok': False, 'error': 'Payload too large'})
+            return None
+        if length == 0:
+            return {}
+        raw = self.rfile.read(length)
+        try:
+            return json.loads(raw.decode('utf-8'))
+        except (ValueError, UnicodeDecodeError):
+            self._send_json(400, {'ok': False, 'error': 'Invalid JSON'})
+            return None
+
+    def _handle_cms_read(self, path):
+        """GET handlers — public read access (anyone can see content)."""
+        if not (DB_CONFIG and MYSQL_AVAILABLE):
+            self._send_json(503, {'ok': False, 'error': 'Database not configured'})
+            return
+
+        parts = path.strip('/').split('/')
+        # ['api', 'cms', resource, ...id]
+        if len(parts) < 3:
+            self._send_json(404, {'ok': False, 'error': 'Not found'})
+            return
+        resource = parts[2]
+
+        if resource == 'all':
+            self._send_json(200, {'ok': True, 'data': cms_load_all_for_injection()})
+            return
+
+        if resource == 'content' and len(parts) == 4:
+            value = cms_get(parts[3])
+            self._send_json(200, {'ok': True, 'value': value})
+            return
+
+        if resource == 'products':
+            industry = parts[3] if len(parts) >= 4 else None
+            self._send_json(200, {'ok': True, 'rows': cms_list_industry_products(industry)})
+            return
+
+        if resource == 'news' and len(parts) >= 4:
+            news_type = parts[3]  # 'news' or 'blog'
+            if news_type not in ('news', 'blog'):
+                self._send_json(400, {'ok': False, 'error': 'type must be news or blog'})
+                return
+            self._send_json(200, {'ok': True, 'rows': cms_list_news(news_type)})
+            return
+
+        self._send_json(404, {'ok': False, 'error': 'Not found'})
+
+    def _handle_cms_write(self, path):
+        """POST/PUT handlers — admin only."""
+        if not (DB_CONFIG and MYSQL_AVAILABLE):
+            self._send_json(503, {'ok': False, 'error': 'Database not configured'})
+            return
+        if not self._check_admin_auth():
+            return
+
+        parts = path.strip('/').split('/')
+        if len(parts) < 3:
+            self._send_json(404, {'ok': False, 'error': 'Not found'})
+            return
+        resource = parts[2]
+
+        body = self._read_json_body()
+        if body is None:
+            return  # already sent error
+
+        if resource == 'content' and len(parts) == 4:
+            ok = cms_set(parts[3], body.get('value'))
+            self._send_json(200 if ok else 500, {'ok': ok})
+            return
+
+        if resource == 'products' and len(parts) == 4:
+            industry = parts[3]
+            products = body.get('products', [])
+            ok = cms_replace_industry_products(industry, products)
+            self._send_json(200 if ok else 500, {'ok': ok})
+            return
+
+        if resource == 'news' and len(parts) == 4:
+            news_type = parts[3]
+            if news_type not in ('news', 'blog'):
+                self._send_json(400, {'ok': False, 'error': 'type must be news or blog'})
+                return
+            posts = body.get('posts', [])
+            ok = cms_replace_news(news_type, posts)
+            self._send_json(200 if ok else 500, {'ok': ok})
+            return
+
+        self._send_json(404, {'ok': False, 'error': 'Not found'})
+
+    def _handle_cms_delete(self, path):
+        if not self._check_admin_auth():
+            return
+        parts = path.strip('/').split('/')
+        if len(parts) == 4 and parts[2] == 'content':
+            ok = cms_delete(parts[3])
+            self._send_json(200 if ok else 500, {'ok': ok})
+            return
+        self._send_json(404, {'ok': False, 'error': 'Not found'})
 
     def _serve_static(self):
         decoded_path = unquote(self.path)
@@ -407,6 +739,30 @@ class WFXHandler(SimpleHTTPRequestHandler):
         _, ext = os.path.splitext(path)
         ext = ext.lower()
         content_type = mimetypes.guess_type(path)[0] or 'application/octet-stream'
+
+        # ── Server-side CMS data injection (the core SEO fix) ──
+        # For HTML pages, inject DB content into a <script> tag before </head>.
+        # This means Googlebot sees the latest content WITHOUT running JavaScript.
+        # Public pages then read window.__WFX_CMS__ instead of localStorage.
+        if ext == '.html' and DB_CONFIG and MYSQL_AVAILABLE and '/admin/' not in self.path:
+            try:
+                cms_bundle = cms_load_all_for_injection()
+                # JSON-encode safely (escape </script> sequences)
+                cms_json = json.dumps(cms_bundle, ensure_ascii=False, default=str)
+                cms_json = cms_json.replace('</', '<\\/')
+                injection = (
+                    '<script id="wfx-cms-data">'
+                    'window.__WFX_CMS__=' + cms_json + ';'
+                    '</script></head>'
+                ).encode('utf-8')
+                # Replace the first </head> only
+                if b'</head>' in content:
+                    content = content.replace(b'</head>', injection, 1)
+                    # Etag must change because content changed
+                    etag = hashlib.md5(content).hexdigest()
+            except Exception as e:
+                # Never let DB issues break static serving
+                print(f"  ⚠  CMS injection skipped: {e}")
 
         etag = hashlib.md5(content).hexdigest()
         if self.headers.get('If-None-Match', '').strip('"') == etag:

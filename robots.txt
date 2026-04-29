@@ -1,9 +1,13 @@
+# WFX Wanfuxin — robots.txt
+# Allow all crawlers full access to public content
+# Admin path protection should be enforced via web server config (.htaccess / nginx auth)
+# rather than disclosed here, to prevent attackers from discovering it.
+
 User-agent: *
 Allow: /
-Disallow: /admin/
-Disallow: /generate-pages.sh
-Disallow: /server.py
-Disallow: /start-server.sh
-Disallow: /start-server.bat
+
+# Block specific assets we don't want indexed
+Disallow: /uploads/
+Disallow: /*.json$
 
 Sitemap: https://wanfuxin.com/sitemap.xml

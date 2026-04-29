@@ -409,6 +409,47 @@
             }
         }
     </style>
+
+    <!-- Service schema for SEO rich snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "name": "Surface Finishing Services",
+      "serviceType": "Surface Finishing",
+      "description": "In-house anodizing (Type II/III), powder coating, electroplating, passivation, bead blasting, and polishing.",
+      "provider": {
+        "@type": "LocalBusiness",
+        "name": "WFX Wanfuxin",
+        "url": "https://wanfuxin.com/",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Dongguan",
+          "addressRegion": "Guangdong",
+          "addressCountry": "CN"
+        }
+      },
+      "areaServed": ["United States", "Canada", "Germany", "United Kingdom", "France", "Japan", "Australia", "Worldwide"],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Surface Finishing Capabilities",
+        "itemListElement": []
+      }
+    }
+    </script>
+
+    <!-- Breadcrumb schema for SEO rich snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://wanfuxin.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Services", "item": "https://wanfuxin.com/services.html" },
+        { "@type": "ListItem", "position": 3, "name": "Surface Finishing", "item": "https://wanfuxin.com/finishing.html" }
+      ]
+    }
+    </script>
 </head>
 <body>
     <!-- Top Bar -->

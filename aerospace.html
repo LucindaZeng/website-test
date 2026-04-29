@@ -8,13 +8,27 @@
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Precision CNC machining for the aerospace industry. ISO certified manufacturing with tight tolerances and full traceability.">
-    <title>Aerospace CNC Machining | WFX - Industry Solutions</title>
+    <meta name="description" content="Precision CNC machining for aerospace components — structural brackets, housings, flight-critical parts in aluminum 7075, titanium Ti-6Al-4V, and Inconel. ISO9001 &amp; IATF16949 certified, full traceability, ±0.005mm tolerance. Get an aerospace quote.">
+    <meta name="keywords" content="aerospace CNC machining, aerospace parts manufacturer China, titanium machining, Inconel CNC, aluminum 7075 aerospace, flight-critical parts, aerospace tolerance, aviation components supplier">
+    <title>Aerospace CNC Machining Services | Titanium &amp; Aluminum Parts | WFX</title>
     <link rel="canonical" href="https://wanfuxin.com/aerospace.html">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
+
+    <!-- Breadcrumb schema for SEO rich snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://wanfuxin.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Industries", "item": "https://wanfuxin.com/industries.html" },
+        { "@type": "ListItem", "position": 3, "name": "Aerospace", "item": "https://wanfuxin.com/aerospace.html" }
+      ]
+    }
+    </script>
 </head>
 <body>
     <!-- Top Bar -->
@@ -160,7 +174,10 @@
     </section>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const products = JSON.parse(localStorage.getItem('wfx_industry_products') || '[]');
+            // Prefer server-injected CMS data (visible to Google), fall back to localStorage
+            const products = (window.__WFX_CMS__ && window.__WFX_CMS__.industry_products)
+                ? window.__WFX_CMS__.industry_products
+                : JSON.parse(localStorage.getItem('wfx_industry_products') || '[]');
             const industryProducts = products.filter(p => p.industry === 'aerospace');
             const gallery = document.getElementById('products-gallery');
             

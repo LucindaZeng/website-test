@@ -17,10 +17,89 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
     <link rel="dns-prefetch" href="https://www.720yun.com">
+    <link rel="preload" as="image" href="hero-video-poster.jpg" fetchpriority="high">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
+
+    <!-- Schema.org structured data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://wanfuxin.com/#organization",
+          "name": "WFX (Dongguan Wanfuxin Hardware Products Co., Ltd.)",
+          "alternateName": "WFX Wanfuxin",
+          "url": "https://wanfuxin.com/",
+          "logo": "https://wanfuxin.com/logo.png",
+          "description": "Precision CNC machining services for aerospace, medical, electronics, robotics, and liquid cooling industries. ISO9001 and IATF16949 certified manufacturer based in Dongguan, China.",
+          "foundingDate": "2007",
+          "email": "lucindaz@wanfuxin.com",
+          "sameAs": [],
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "3 Fuxin West Road, Qingxi Town",
+            "addressLocality": "Dongguan",
+            "addressRegion": "Guangdong",
+            "postalCode": "523648",
+            "addressCountry": "CN"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 22.85,
+            "longitude": 114.17
+          }
+        },
+        {
+          "@type": "LocalBusiness",
+          "@id": "https://wanfuxin.com/#localbusiness",
+          "name": "WFX Wanfuxin Precision Manufacturing",
+          "image": "https://wanfuxin.com/company-video-poster.jpg",
+          "url": "https://wanfuxin.com/",
+          "email": "lucindaz@wanfuxin.com",
+          "priceRange": "$$",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "3 Fuxin West Road, Qingxi Town",
+            "addressLocality": "Dongguan",
+            "addressRegion": "Guangdong",
+            "postalCode": "523648",
+            "addressCountry": "CN"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 22.85,
+            "longitude": 114.17
+          },
+          "openingHoursSpecification": [
+            {
+              "@type": "OpeningHoursSpecification",
+              "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+              "opens": "08:00",
+              "closes": "17:30"
+            }
+          ],
+          "areaServed": ["United States", "Canada", "Germany", "United Kingdom", "France", "Japan", "Australia", "Worldwide"],
+          "hasCredential": [
+            { "@type": "EducationalOccupationalCredential", "name": "ISO 9001:2015" },
+            { "@type": "EducationalOccupationalCredential", "name": "IATF 16949:2016" }
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://wanfuxin.com/#website",
+          "url": "https://wanfuxin.com/",
+          "name": "WFX Precision CNC Machining",
+          "publisher": { "@id": "https://wanfuxin.com/#organization" },
+          "inLanguage": "en"
+        }
+      ]
+    }
+    </script>
 </head>
+
 <body>
     <!-- Top Bar -->
     <div class="top-bar">
@@ -152,7 +231,7 @@
     <section class="hero">
         <div class="hero-background">
             <div class="hero-overlay"></div>
-            <video autoplay muted loop playsinline class="hero-video">
+            <video autoplay muted loop playsinline preload="metadata" poster="hero-video-poster.jpg" class="hero-video">
                 <source src="hero-video.mp4" type="video/mp4">
             </video>
         </div>

@@ -422,6 +422,47 @@
             }
         }
     </style>
+
+    <!-- Service schema for SEO rich snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "name": "CNC Milling Services",
+      "serviceType": "CNC Milling",
+      "description": "Precision 3-axis and 4-axis CNC milling for prototypes and production runs. Aluminum, steel, titanium, brass, and engineering plastics. ISO9001 and IATF16949 certified.",
+      "provider": {
+        "@type": "LocalBusiness",
+        "name": "WFX Wanfuxin",
+        "url": "https://wanfuxin.com/",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Dongguan",
+          "addressRegion": "Guangdong",
+          "addressCountry": "CN"
+        }
+      },
+      "areaServed": ["United States", "Canada", "Germany", "United Kingdom", "France", "Japan", "Australia", "Worldwide"],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "CNC Milling Capabilities",
+        "itemListElement": []
+      }
+    }
+    </script>
+
+    <!-- Breadcrumb schema for SEO rich snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://wanfuxin.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Services", "item": "https://wanfuxin.com/services.html" },
+        { "@type": "ListItem", "position": 3, "name": "CNC Milling", "item": "https://wanfuxin.com/cnc-milling.html" }
+      ]
+    }
+    </script>
 </head>
 <body>
     <!-- Top Bar -->

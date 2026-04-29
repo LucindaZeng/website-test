@@ -8,13 +8,27 @@
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Precision CNC machining for the electronics industry. ISO certified manufacturing with tight tolerances and full traceability.">
-    <title>Electronics CNC Machining | WFX - Industry Solutions</title>
+    <meta name="description" content="CNC machined electronics enclosures, heat sinks, RF housings, and connector parts. Aluminum 6061/6063, copper C110, brass. Anodized, plated, or as-machined finishes. Trusted by Molex, Unilumin, ROE Visual. Get a quote.">
+    <meta name="keywords" content="electronics enclosure CNC, RF housing machining, copper heat sink, aluminum enclosure manufacturer, connector parts CNC, electronic components China, custom enclosure supplier, EMI shielding parts">
+    <title>Electronics Enclosures &amp; Components | CNC Machined Heat Sinks | WFX</title>
     <link rel="canonical" href="https://wanfuxin.com/electronics.html">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
+
+    <!-- Breadcrumb schema for SEO rich snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://wanfuxin.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Industries", "item": "https://wanfuxin.com/industries.html" },
+        { "@type": "ListItem", "position": 3, "name": "Electronics", "item": "https://wanfuxin.com/electronics.html" }
+      ]
+    }
+    </script>
 </head>
 <body>
     <!-- Top Bar -->
@@ -158,7 +172,10 @@
     </section>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const products = JSON.parse(localStorage.getItem('wfx_industry_products') || '[]');
+            // Prefer server-injected CMS data (visible to Google), fall back to localStorage
+            const products = (window.__WFX_CMS__ && window.__WFX_CMS__.industry_products)
+                ? window.__WFX_CMS__.industry_products
+                : JSON.parse(localStorage.getItem('wfx_industry_products') || '[]');
             const industryProducts = products.filter(p => p.industry === 'electronics');
             const gallery = document.getElementById('products-gallery');
             if (industryProducts.length === 0) { gallery.innerHTML = '<p style="text-align: center; color: var(--gray); grid-column: 1/-1;">Contact us at lucindaz@wanfuxin.com for our full product catalog and capabilities.</p>'; return; }

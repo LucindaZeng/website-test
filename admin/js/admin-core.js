@@ -39,6 +39,12 @@ const AdminCore = {
 
     // Initialize the system
     init: function() {
+        // Restore admin token for CMS sync (if previously logged in)
+        const savedToken = localStorage.getItem('wfx_api_token');
+        if (savedToken) {
+            window.WFX_ADMIN_TOKEN = savedToken;
+        }
+
         // Initialize users if not exists
         if (!localStorage.getItem('wfx_users')) {
             localStorage.setItem('wfx_users', JSON.stringify([this.DEFAULT_ADMIN]));
@@ -94,7 +100,17 @@ const AdminCore = {
                 role: user.role,
                 name: user.name
             }));
-            
+
+            // Set the API token used by cms-sync.js to authenticate with the server.
+            // For security, in production this should be issued by the server after
+            // verifying credentials. For this client-side setup, we use a fixed
+            // value that must match config.py's ADMIN_API_TOKEN on the server.
+            // The admin can override by setting localStorage.wfx_api_token manually.
+            if (!localStorage.getItem('wfx_api_token')) {
+                localStorage.setItem('wfx_api_token', 'replace-with-long-random-string');
+            }
+            window.WFX_ADMIN_TOKEN = localStorage.getItem('wfx_api_token');
+
             return true;
         }
         return false;

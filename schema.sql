@@ -110,3 +110,55 @@ INSERT IGNORE INTO categories (type, name, slug, description, sort_order) VALUES
 --    backup/restore performance.
 -- 2. Backup uploads/ separately (rsync to S3, NAS, etc.)
 -- ----------------------------------------------------------------------------
+
+-- ============================================================================
+-- CMS Content Tables (added in Round 3)
+-- These persist data that was previously only in browser localStorage,
+-- making it visible to all users and to Google's crawler.
+-- ============================================================================
+
+USE wfx_website;
+
+-- Generic key/value store for site-wide content
+-- (homepage media config, page content blocks, settings, etc.)
+CREATE TABLE IF NOT EXISTS cms_content (
+    content_key   VARCHAR(100)    PRIMARY KEY,
+    content_value MEDIUMTEXT      NOT NULL,
+    updated_at    DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                  ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Industry products (shown on aerospace.html, medical.html, etc.)
+CREATE TABLE IF NOT EXISTS cms_industry_products (
+    id              INT AUTO_INCREMENT PRIMARY KEY,
+    industry        VARCHAR(50)     NOT NULL,
+    name            VARCHAR(200)    NOT NULL,
+    description     TEXT,
+    image_url       VARCHAR(500),
+    sort_order      INT             DEFAULT 0,
+    created_at      DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                    ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_industry (industry)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- News/blog posts
+CREATE TABLE IF NOT EXISTS cms_news (
+    id              INT AUTO_INCREMENT PRIMARY KEY,
+    type            ENUM('news','blog') NOT NULL DEFAULT 'news',
+    title           VARCHAR(300)    NOT NULL,
+    slug            VARCHAR(300)    NOT NULL,
+    category        VARCHAR(100),
+    excerpt         TEXT,
+    content         MEDIUMTEXT,
+    image_url       VARCHAR(500),
+    author          VARCHAR(100),
+    published_at    DATETIME,
+    is_published    TINYINT(1)      NOT NULL DEFAULT 1,
+    created_at      DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                    ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_type_slug (type, slug),
+    INDEX idx_type_published (type, is_published, published_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

@@ -98,8 +98,14 @@ const ContentLoader = {
         }
     },
 
-    // Get content from storage
+    // Get content from storage. Priority order:
+    //   1. Server-injected data (window.__WFX_CMS__) — what Google sees, always fresh
+    //   2. localStorage cache — for offline/legacy fallback
     getContent: function() {
+        // Server-injected data takes precedence (set by server.py before </head>)
+        if (window.__WFX_CMS__ && window.__WFX_CMS__.page_content) {
+            return window.__WFX_CMS__.page_content;
+        }
         try {
             const content = localStorage.getItem(this.STORAGE_KEY);
             return content ? JSON.parse(content) : null;

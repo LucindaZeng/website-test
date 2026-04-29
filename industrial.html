@@ -8,13 +8,27 @@
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Precision CNC machining for the industrial industry. ISO certified manufacturing with tight tolerances and full traceability.">
-    <title>Industrial CNC Machining | WFX - Industry Solutions</title>
+    <meta name="description" content="CNC machined industrial equipment components — gearbox housings, hydraulic manifolds, valve bodies, machine bases. Heavy-duty steel, cast iron, aluminum. IATF16949 certified for industrial OEMs. Volume production capability.">
+    <meta name="keywords" content="industrial machinery parts, gearbox housing CNC, hydraulic manifold manufacturer, valve body machining, industrial OEM supplier China, heavy duty CNC machining, IATF16949 industrial parts">
+    <title>Industrial Equipment Components | Hydraulic &amp; Gearbox Parts | WFX</title>
     <link rel="canonical" href="https://wanfuxin.com/industrial.html">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
+
+    <!-- Breadcrumb schema for SEO rich snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://wanfuxin.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Industries", "item": "https://wanfuxin.com/industries.html" },
+        { "@type": "ListItem", "position": 3, "name": "Industrial", "item": "https://wanfuxin.com/industrial.html" }
+      ]
+    }
+    </script>
 </head>
 <body>
     <!-- Top Bar -->
@@ -158,7 +172,10 @@
     </section>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const products = JSON.parse(localStorage.getItem('wfx_industry_products') || '[]');
+            // Prefer server-injected CMS data (visible to Google), fall back to localStorage
+            const products = (window.__WFX_CMS__ && window.__WFX_CMS__.industry_products)
+                ? window.__WFX_CMS__.industry_products
+                : JSON.parse(localStorage.getItem('wfx_industry_products') || '[]');
             const industryProducts = products.filter(p => p.industry === 'industrial');
             const gallery = document.getElementById('products-gallery');
             if (industryProducts.length === 0) { gallery.innerHTML = '<p style="text-align: center; color: var(--gray); grid-column: 1/-1;">Contact us at lucindaz@wanfuxin.com for our full product catalog and capabilities.</p>'; return; }
