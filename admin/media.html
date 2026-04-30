@@ -124,51 +124,54 @@
             <div class="nav-section">
                 <div class="nav-section-title">Main</div>
                 <a href="dashboard.html" class="nav-item">
-                    <i class="fas fa-home"></i> Dashboard
+                    <i class="fas fa-home" aria-hidden="true"></i> Dashboard
                 </a>
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">Content Management</div>
                 <a href="content-editor.html" class="nav-item">
-                    <i class="fas fa-edit"></i> Content Editor
+                    <i class="fas fa-edit" aria-hidden="true"></i> Content Editor
                 </a>
                 <a href="videos.html" class="nav-item">
-                    <i class="fas fa-video"></i> Video Manager
+                    <i class="fas fa-video" aria-hidden="true"></i> Video Manager
                 </a>
                 <a href="pages.html" class="nav-item">
-                    <i class="fas fa-file-alt"></i> Pages & Text
+                    <i class="fas fa-file-alt" aria-hidden="true"></i> Pages & Text
                 </a>
                 <a href="page-images.html" class="nav-item">
-                    <i class="fas fa-image"></i> Page Images
+                    <i class="fas fa-image" aria-hidden="true"></i> Page Images
                 </a>
                 <a href="media.html" class="nav-item active">
-                    <i class="fas fa-images"></i> Media Library
+                    <i class="fas fa-images" aria-hidden="true"></i> Media Library
                 </a>
                 <a href="blog.html" class="nav-item">
-                    <i class="fas fa-blog"></i> Blog Posts
+                    <i class="fas fa-blog" aria-hidden="true"></i> Blog Posts
                 </a>
                 <a href="news.html" class="nav-item">
-                    <i class="fas fa-newspaper"></i> News
+                    <i class="fas fa-newspaper" aria-hidden="true"></i> News
                 </a>
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">System</div>
                 <a href="users.html" class="nav-item">
-                    <i class="fas fa-users"></i> User Management
+                    <i class="fas fa-users" aria-hidden="true"></i> User Management
                 </a>
                 <a href="activity-log.html" class="nav-item">
-                    <i class="fas fa-history"></i> Activity Log
+                    <i class="fas fa-history" aria-hidden="true"></i> Activity Log
                 </a>
                 <a href="settings.html" class="nav-item">
-                    <i class="fas fa-cog"></i> Settings
+                    <i class="fas fa-cog" aria-hidden="true"></i> Settings
+                </a>
+                <a href="change-password.html" class="nav-item">
+                    <i class="fas fa-key" aria-hidden="true"></i> Change Password
                 </a>
             </div>
             <div class="nav-section">
                 <a href="../index.html" class="nav-item" target="_blank">
-                    <i class="fas fa-external-link-alt"></i> View Website
+                    <i class="fas fa-external-link-alt" aria-hidden="true"></i> View Website
                 </a>
                 <a href="#" class="nav-item" onclick="AdminCore.logout()">
-                    <i class="fas fa-sign-out-alt"></i> Logout
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
                 </a>
             </div>
         </nav>
@@ -197,13 +200,13 @@
             <!-- Tabs -->
             <div class="tabs">
                 <button class="tab-btn active" data-tab="homepage">
-                    <i class="fas fa-home"></i> Homepage Media
+                    <i class="fas fa-home" aria-hidden="true"></i> Homepage Media
                 </button>
                 <button class="tab-btn" data-tab="images">
-                    <i class="fas fa-images"></i> Images
+                    <i class="fas fa-images" aria-hidden="true"></i> Images
                 </button>
                 <button class="tab-btn" data-tab="videos">
-                    <i class="fas fa-video"></i> Videos
+                    <i class="fas fa-video" aria-hidden="true"></i> Videos
                 </button>
             </div>
 
@@ -215,25 +218,25 @@
                         <p style="color: var(--admin-gray); margin-top: 5px;">Manage all images and videos displayed on the homepage</p>
                     </div>
                     <button class="btn btn-secondary" onclick="resetAllHomepageMedia()">
-                        <i class="fas fa-undo"></i> Reset to Defaults
+                        <i class="fas fa-undo" aria-hidden="true"></i> Reset to Defaults
                     </button>
                 </div>
 
                 <!-- Hero Video Section -->
                 <div class="card media-section">
                     <div class="card-header">
-                        <h3><i class="fas fa-film"></i> Hero Background Video</h3>
+                        <h3><i class="fas fa-film" aria-hidden="true"></i> Hero Background Video</h3>
                     </div>
                     <div class="card-body">
                         <p style="color: var(--admin-gray); margin-bottom: 15px;">The main background video shown in the hero section of the homepage.</p>
                         <div class="media-grid">
                             <div class="media-item video-item" onclick="editHomepageMedia('heroVideo', 'Hero Background Video')">
                                 <div class="video-placeholder">
-                                    <i class="fas fa-play-circle"></i>
+                                    <i class="fas fa-play-circle" aria-hidden="true"></i>
                                     <span id="heroVideo-preview">hero-video.mp4</span>
                                 </div>
                                 <div class="media-item-label">
-                                    <i class="fas fa-edit"></i> Hero Video - Click to Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Hero Video - Click to Edit
                                 </div>
                             </div>
                         </div>
@@ -243,7 +246,7 @@
                 <!-- Services Images Section -->
                 <div class="card media-section">
                     <div class="card-header">
-                        <h3><i class="fas fa-cogs"></i> Our Services Section Images</h3>
+                        <h3><i class="fas fa-cogs" aria-hidden="true"></i> Our Services Section Images</h3>
                     </div>
                     <div class="card-body">
                         <p style="color: var(--admin-gray); margin-bottom: 15px;">Images displayed in each service card on the homepage.</p>
@@ -256,7 +259,7 @@
                 <!-- Industries Images Section -->
                 <div class="card media-section">
                     <div class="card-header">
-                        <h3><i class="fas fa-industry"></i> Industries Section Images</h3>
+                        <h3><i class="fas fa-industry" aria-hidden="true"></i> Industries Section Images</h3>
                     </div>
                     <div class="card-body">
                         <p style="color: var(--admin-gray); margin-bottom: 15px;">Images displayed in each industry card on the homepage.</p>
@@ -269,24 +272,24 @@
                 <!-- Virtual Tour Section -->
                 <div class="card media-section">
                     <div class="card-header">
-                        <h3><i class="fas fa-vr-cardboard"></i> Virtual Tour Section</h3>
+                        <h3><i class="fas fa-vr-cardboard" aria-hidden="true"></i> Virtual Tour Section</h3>
                     </div>
                     <div class="card-body">
                         <p style="color: var(--admin-gray); margin-bottom: 15px;">Company video and poster image for the virtual tour section.</p>
                         <div class="media-grid">
                             <div class="media-item video-item" onclick="editHomepageMedia('companyVideo', 'Company Video')">
                                 <div class="video-placeholder">
-                                    <i class="fas fa-play-circle"></i>
+                                    <i class="fas fa-play-circle" aria-hidden="true"></i>
                                     <span id="companyVideo-preview">company-video.mp4</span>
                                 </div>
                                 <div class="media-item-label">
-                                    <i class="fas fa-edit"></i> Company Video - Click to Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Company Video - Click to Edit
                                 </div>
                             </div>
                             <div class="media-item" onclick="editHomepageMedia('companyVideoPoster', 'Video Poster Image')">
                                 <img id="companyVideoPoster-img" src="" alt="Video Poster">
                                 <div class="media-item-label">
-                                    <i class="fas fa-edit"></i> Video Poster (Thumbnail) - Click to Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Video Poster (Thumbnail) - Click to Edit
                                 </div>
                             </div>
                         </div>
@@ -299,14 +302,14 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
                     <h3>Image Management</h3>
                     <button class="btn btn-primary" onclick="openImageModal()">
-                        <i class="fas fa-plus"></i> Add Image
+                        <i class="fas fa-plus" aria-hidden="true"></i> Add Image
                     </button>
                 </div>
 
                 <!-- Current Website Images -->
                 <div class="card">
                     <div class="card-header">
-                        <h3><i class="fas fa-globe"></i> Website Images</h3>
+                        <h3><i class="fas fa-globe" aria-hidden="true"></i> Website Images</h3>
                     </div>
                     <div class="card-body">
                         <p style="color: var(--admin-gray); margin-bottom: 20px;">These are images currently used on the website. Click to edit or replace.</p>
@@ -315,7 +318,7 @@
                             <div class="image-item" onclick="editWebsiteImage('logo', '../logo.png', 'Website Logo')">
                                 <img src="../logo.png" alt="Logo">
                                 <div class="image-overlay">
-                                    <button class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-primary"><i class="fas fa-edit" aria-hidden="true"></i></button>
                                 </div>
                                 <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: white; padding: 8px; font-size: 0.8rem;">
                                     Logo
@@ -328,7 +331,7 @@
                 <!-- Custom Images -->
                 <div class="card" style="margin-top: 25px;">
                     <div class="card-header">
-                        <h3><i class="fas fa-folder-open"></i> Uploaded Images</h3>
+                        <h3><i class="fas fa-folder-open" aria-hidden="true"></i> Uploaded Images</h3>
                         <span id="image-count">0 images</span>
                     </div>
                     <div class="card-body">
@@ -346,14 +349,14 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
                     <h3>Video Management</h3>
                     <button class="btn btn-primary" onclick="openVideoModal()">
-                        <i class="fas fa-plus"></i> Add Video
+                        <i class="fas fa-plus" aria-hidden="true"></i> Add Video
                     </button>
                 </div>
 
                 <!-- Website Videos -->
                 <div class="card">
                     <div class="card-header">
-                        <h3><i class="fas fa-film"></i> Website Videos</h3>
+                        <h3><i class="fas fa-film" aria-hidden="true"></i> Website Videos</h3>
                     </div>
                     <div class="card-body">
                         <table class="admin-table">
@@ -372,7 +375,7 @@
                                     <td><code id="hero-video-code">hero-video.mp4</code></td>
                                     <td>
                                         <button class="btn btn-sm btn-secondary" onclick="editHomepageMedia('heroVideo', 'Hero Video')">
-                                            <i class="fas fa-edit"></i> Replace
+                                            <i class="fas fa-edit" aria-hidden="true"></i> Replace
                                         </button>
                                     </td>
                                 </tr>
@@ -382,7 +385,7 @@
                                     <td><code id="company-video-code">company-video.mp4</code></td>
                                     <td>
                                         <button class="btn btn-sm btn-secondary" onclick="editHomepageMedia('companyVideo', 'Company Video')">
-                                            <i class="fas fa-edit"></i> Replace
+                                            <i class="fas fa-edit" aria-hidden="true"></i> Replace
                                         </button>
                                     </td>
                                 </tr>
@@ -394,7 +397,7 @@
                 <!-- Custom Videos -->
                 <div class="card" style="margin-top: 25px;">
                     <div class="card-header">
-                        <h3><i class="fas fa-video"></i> Uploaded Videos</h3>
+                        <h3><i class="fas fa-video" aria-hidden="true"></i> Uploaded Videos</h3>
                         <span id="video-count">0 videos</span>
                     </div>
                     <div class="card-body">
@@ -470,7 +473,14 @@
                     <div class="form-group">
                         <label class="form-label">Image URL *</label>
                         <input type="url" class="form-control" id="image-url" required placeholder="https://example.com/image.jpg">
-                        <small style="color: var(--admin-gray);">Enter the URL of the image or upload to a hosting service</small>
+                        <small style="color: var(--admin-gray);">Paste a URL, OR upload a file directly:</small>
+                        <div style="margin-top: 8px; display: flex; gap: 8px; align-items: center;">
+                            <input type="file" id="image-upload-file" accept=".jpg,.jpeg,.png,.gif,.webp,.svg" style="flex: 1; padding: 6px; border: 1px dashed var(--admin-light-gray); border-radius: 6px;">
+                            <button type="button" class="btn btn-sm btn-secondary" onclick="uploadMediaFile('image-upload-file', 'image-url', 'images')">
+                                <i class="fas fa-upload" aria-hidden="true"></i> Upload
+                            </button>
+                        </div>
+                        <div id="image-upload-status" style="margin-top: 6px; font-size: 0.85rem;"></div>
                     </div>
                     
                     <div class="form-group">
@@ -513,7 +523,14 @@
                     <div class="form-group">
                         <label class="form-label">Video URL/File *</label>
                         <input type="text" class="form-control" id="video-url" required placeholder="video.mp4 or https://youtube.com/...">
-                        <small style="color: var(--admin-gray);">Local file name or external URL (YouTube, Vimeo, etc.)</small>
+                        <small style="color: var(--admin-gray);">Paste an external URL (YouTube, Vimeo, etc.), OR upload a file directly:</small>
+                        <div style="margin-top: 8px; display: flex; gap: 8px; align-items: center;">
+                            <input type="file" id="video-upload-file" accept=".mp4,.webm,.mov,.m4v" style="flex: 1; padding: 6px; border: 1px dashed var(--admin-light-gray); border-radius: 6px;">
+                            <button type="button" class="btn btn-sm btn-secondary" onclick="uploadMediaFile('video-upload-file', 'video-url', 'videos')">
+                                <i class="fas fa-upload" aria-hidden="true"></i> Upload
+                            </button>
+                        </div>
+                        <div id="video-upload-status" style="margin-top: 6px; font-size: 0.85rem;"></div>
                     </div>
                     
                     <div class="form-group">
@@ -537,6 +554,55 @@
         }
 
         const currentUser = AdminCore.getCurrentUser();
+
+        // ─── Direct file upload to /api/media ──────────────────────────────
+        // Uploads a file from a <input type=file>, fills the URL field on success.
+        async function uploadMediaFile(fileInputId, urlInputId, folder) {
+            const fileInput = document.getElementById(fileInputId);
+            const urlInput = document.getElementById(urlInputId);
+            const statusDiv = document.getElementById(fileInputId.replace('-file', '-status'));
+
+            if (!fileInput.files.length) {
+                statusDiv.innerHTML = '<span style="color:#dc2626;">Please choose a file first.</span>';
+                return;
+            }
+
+            const file = fileInput.files[0];
+            // Client-side size warning (server enforces real limit)
+            const maxMB = file.type.startsWith('video/') ? 200 : 50;
+            if (file.size > maxMB * 1024 * 1024) {
+                statusDiv.innerHTML = `<span style="color:#dc2626;">File too large (max ${maxMB}MB).</span>`;
+                return;
+            }
+
+            statusDiv.innerHTML = '<span style="color:#0369a1;"><i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Uploading...</span>';
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('folder', folder);
+
+            const csrf = window.WFX_CSRF_TOKEN || localStorage.getItem('wfx_csrf_token') || '';
+
+            try {
+                const r = await fetch('/api/media', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'X-CSRF-Token': csrf },
+                    body: formData
+                });
+                const j = await r.json().catch(() => ({}));
+                if (r.ok && j.ok) {
+                    urlInput.value = j.url;
+                    statusDiv.innerHTML = `<span style="color:#16a34a;"><i class="fas fa-check" aria-hidden="true"></i> Uploaded! URL: <code style="background:#f0fdf4; padding:2px 6px; border-radius:3px;">${j.url}</code></span>`;
+                    fileInput.value = '';
+                } else {
+                    statusDiv.innerHTML = `<span style="color:#dc2626;"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i> ${j.error || 'Upload failed (HTTP ' + r.status + ')'}</span>`;
+                }
+            } catch (e) {
+                statusDiv.innerHTML = `<span style="color:#dc2626;">Network error: ${e.message}</span>`;
+            }
+        }
+        window.uploadMediaFile = uploadMediaFile;
         if (currentUser) {
             document.getElementById('user-name').textContent = currentUser.name || currentUser.username;
             document.getElementById('user-role').textContent = currentUser.role === 'super_admin' ? 'Super Admin' : 'Editor';
@@ -596,7 +662,7 @@
                 <div class="media-item" onclick="editHomepageMedia('${key}', '${serviceLabels[key] || key}', 'services')">
                     <img src="${url}" alt="${serviceLabels[key] || key}" onerror="this.src='https://via.placeholder.com/400x300?text=Error'">
                     <div class="media-item-label">
-                        <i class="fas fa-edit"></i> ${serviceLabels[key] || key}
+                        <i class="fas fa-edit" aria-hidden="true"></i> ${serviceLabels[key] || key}
                     </div>
                 </div>
             `).join('');
@@ -607,7 +673,7 @@
                 <div class="media-item" onclick="editHomepageMedia('${key}', '${industryLabels[key] || key}', 'industries')">
                     <img src="${url}" alt="${industryLabels[key] || key}" onerror="this.src='https://via.placeholder.com/400x300?text=Error'">
                     <div class="media-item-label">
-                        <i class="fas fa-edit"></i> ${industryLabels[key] || key}
+                        <i class="fas fa-edit" aria-hidden="true"></i> ${industryLabels[key] || key}
                     </div>
                 </div>
             `).join('');
@@ -628,8 +694,8 @@
                     <div class="image-item">
                         <img src="${img.url}" alt="${img.alt || img.name}" onerror="this.src='https://via.placeholder.com/150?text=Error'">
                         <div class="image-overlay">
-                            <button class="btn btn-sm btn-primary btn-icon" onclick="editImage(${img.id})"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-sm btn-danger btn-icon" onclick="deleteImage(${img.id})"><i class="fas fa-trash"></i></button>
+                            <button class="btn btn-sm btn-primary btn-icon" onclick="editImage(${img.id})"><i class="fas fa-edit" aria-hidden="true"></i></button>
+                            <button class="btn btn-sm btn-danger btn-icon" onclick="deleteImage(${img.id})"><i class="fas fa-trash" aria-hidden="true"></i></button>
                         </div>
                         <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: white; padding: 8px; font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                             ${img.name}
@@ -652,8 +718,8 @@
                         <td>${AdminCore.formatDate(vid.updatedAt)}</td>
                         <td>
                             <div style="display: flex; gap: 5px;">
-                                <button class="btn btn-sm btn-secondary btn-icon" onclick="editVideo(${vid.id})"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-danger btn-icon" onclick="deleteVideo(${vid.id})"><i class="fas fa-trash"></i></button>
+                                <button class="btn btn-sm btn-secondary btn-icon" onclick="editVideo(${vid.id})"><i class="fas fa-edit" aria-hidden="true"></i></button>
+                                <button class="btn btn-sm btn-danger btn-icon" onclick="deleteVideo(${vid.id})"><i class="fas fa-trash" aria-hidden="true"></i></button>
                             </div>
                         </td>
                     </tr>
@@ -698,7 +764,7 @@
                 if (url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.ogg')) {
                     preview.innerHTML = `<video src="${url}" style="max-width: 100%; max-height: 200px;" controls onerror="this.parentElement.innerHTML='<span style=color:var(--admin-danger)>Cannot preview local video files</span>'"></video>`;
                 } else {
-                    preview.innerHTML = `<div style="text-align: center; padding: 20px;"><i class="fas fa-video" style="font-size: 3rem; color: var(--admin-gray);"></i><br><span style="color: var(--admin-gray); margin-top: 10px; display: block;">${url}</span></div>`;
+                    preview.innerHTML = `<div style="text-align: center; padding: 20px;"><i class="fas fa-video" aria-hidden="true" style="font-size: 3rem; color: var(--admin-gray);"></i><br><span style="color: var(--admin-gray); margin-top: 10px; display: block;">${url}</span></div>`;
                 }
             } else {
                 preview.innerHTML = `<img src="${url}" style="max-width: 100%; max-height: 200px; object-fit: contain;" onerror="this.parentElement.innerHTML='<span style=color:var(--admin-danger)>Failed to load image</span>'">`;
@@ -876,7 +942,7 @@
             const container = document.getElementById('alert-container');
             const alert = document.createElement('div');
             alert.className = `alert alert-${type}`;
-            alert.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+            alert.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}" aria-hidden="true"></i> ${message}`;
             container.appendChild(alert);
             setTimeout(() => alert.remove(), 3000);
         }

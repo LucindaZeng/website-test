@@ -26,57 +26,60 @@
             <div class="nav-section">
                 <div class="nav-section-title">Main</div>
                 <a href="dashboard.html" class="nav-item">
-                    <i class="fas fa-home"></i> Dashboard
+                    <i class="fas fa-home" aria-hidden="true"></i> Dashboard
                 </a>
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">Content Management</div>
                 <a href="content-editor.html" class="nav-item">
-                    <i class="fas fa-edit"></i> Content Editor
+                    <i class="fas fa-edit" aria-hidden="true"></i> Content Editor
                 </a>
                 <a href="videos.html" class="nav-item">
-                    <i class="fas fa-video"></i> Video Manager
+                    <i class="fas fa-video" aria-hidden="true"></i> Video Manager
                 </a>
                 <a href="pages.html" class="nav-item">
-                    <i class="fas fa-file-alt"></i> Pages & Text
+                    <i class="fas fa-file-alt" aria-hidden="true"></i> Pages & Text
                 </a>
                 <a href="page-images.html" class="nav-item">
-                    <i class="fas fa-image"></i> Page Images
+                    <i class="fas fa-image" aria-hidden="true"></i> Page Images
                 </a>
                 <a href="products.html" class="nav-item">
-                    <i class="fas fa-boxes"></i> Industry Products
+                    <i class="fas fa-boxes" aria-hidden="true"></i> Industry Products
                 </a>
                 <a href="categories.html" class="nav-item">
-                    <i class="fas fa-folder-open"></i> Categories
+                    <i class="fas fa-folder-open" aria-hidden="true"></i> Categories
                 </a>
                 <a href="media.html" class="nav-item">
-                    <i class="fas fa-images"></i> Media Library
+                    <i class="fas fa-images" aria-hidden="true"></i> Media Library
                 </a>
                 <a href="blog.html" class="nav-item">
-                    <i class="fas fa-blog"></i> Blog Posts
+                    <i class="fas fa-blog" aria-hidden="true"></i> Blog Posts
                 </a>
                 <a href="news.html" class="nav-item">
-                    <i class="fas fa-newspaper"></i> News
+                    <i class="fas fa-newspaper" aria-hidden="true"></i> News
                 </a>
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">System</div>
                 <a href="users.html" class="nav-item">
-                    <i class="fas fa-users"></i> User Management
+                    <i class="fas fa-users" aria-hidden="true"></i> User Management
                 </a>
                 <a href="activity-log.html" class="nav-item active">
-                    <i class="fas fa-history"></i> Activity Log
+                    <i class="fas fa-history" aria-hidden="true"></i> Activity Log
                 </a>
                 <a href="settings.html" class="nav-item">
-                    <i class="fas fa-cog"></i> Settings
+                    <i class="fas fa-cog" aria-hidden="true"></i> Settings
+                </a>
+                <a href="change-password.html" class="nav-item">
+                    <i class="fas fa-key" aria-hidden="true"></i> Change Password
                 </a>
             </div>
             <div class="nav-section">
                 <a href="../index.html" class="nav-item" target="_blank">
-                    <i class="fas fa-external-link-alt"></i> View Website
+                    <i class="fas fa-external-link-alt" aria-hidden="true"></i> View Website
                 </a>
                 <a href="#" class="nav-item" onclick="AdminCore.logout()">
-                    <i class="fas fa-sign-out-alt"></i> Logout
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
                 </a>
             </div>
         </nav>
@@ -141,10 +144,10 @@
                             <input type="date" class="form-control" id="filter-end-date">
                         </div>
                         <button class="btn btn-primary" onclick="applyFilters()">
-                            <i class="fas fa-filter"></i> Apply Filters
+                            <i class="fas fa-filter" aria-hidden="true"></i> Apply Filters
                         </button>
                         <button class="btn btn-secondary" onclick="clearFilters()">
-                            <i class="fas fa-times"></i> Clear
+                            <i class="fas fa-times" aria-hidden="true"></i> Clear
                         </button>
                     </div>
                 </div>
@@ -153,7 +156,7 @@
             <!-- Activity Log -->
             <div class="card">
                 <div class="card-header">
-                    <h3><i class="fas fa-history"></i> Activity History</h3>
+                    <h3><i class="fas fa-history" aria-hidden="true"></i> Activity History</h3>
                     <span id="log-count">0 entries</span>
                 </div>
                 <div class="card-body" style="padding: 0;">
@@ -288,7 +291,7 @@
                     <tr>
                         <td>
                             <div class="activity-icon ${style.class}" style="width: 36px; height: 36px;">
-                                <i class="fas fa-${style.icon}"></i>
+                                <i class="fas fa-${style.icon}" aria-hidden="true"></i>
                             </div>
                         </td>
                         <td>
@@ -305,7 +308,7 @@
                         <td>
                             ${Object.keys(log.details || {}).length > 0 ? `
                                 <button class="btn btn-sm btn-secondary" onclick="showDetails(${log.id})">
-                                    <i class="fas fa-eye"></i>
+                                    <i class="fas fa-eye" aria-hidden="true"></i>
                                 </button>
                             ` : '-'}
                         </td>
@@ -328,7 +331,7 @@
             
             // Previous button
             html += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})">
-                <i class="fas fa-chevron-left"></i>
+                <i class="fas fa-chevron-left" aria-hidden="true"></i>
             </button>`;
             
             // Page numbers
@@ -342,7 +345,7 @@
             
             // Next button
             html += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})">
-                <i class="fas fa-chevron-right"></i>
+                <i class="fas fa-chevron-right" aria-hidden="true"></i>
             </button>`;
             
             pagination.innerHTML = html;

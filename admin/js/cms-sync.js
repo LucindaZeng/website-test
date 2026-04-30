@@ -38,10 +38,22 @@
         const cfg = SYNC_MAP[key];
         if (!cfg) return;
 
-        const token = window.WFX_ADMIN_TOKEN || localStorage.getItem('wfx_api_token') || '';
-        if (!token) {
-            // Admin not logged in or token missing — silently skip
+        // Build authentication headers:
+        // - Modern: rely on session cookie (sent automatically) + CSRF token
+        // - Legacy: X-Admin-Token header for backwards compat / CI scripts
+        const csrf = window.WFX_CSRF_TOKEN || localStorage.getItem('wfx_csrf_token') || '';
+        const legacyToken = window.WFX_ADMIN_TOKEN || localStorage.getItem('wfx_api_token') || '';
+
+        // If neither auth method is available, skip
+        if (!csrf && !legacyToken) {
             return;
+        }
+
+        function authHeaders() {
+            const h = { 'Content-Type': 'application/json' };
+            if (csrf) h['X-CSRF-Token'] = csrf;
+            if (legacyToken) h['X-Admin-Token'] = legacyToken;
+            return h;
         }
 
         let parsed;
@@ -56,9 +68,7 @@
             url = '/api/cms/content/' + encodeURIComponent(cfg.key);
             body = JSON.stringify({ value: parsed });
         } else if (cfg.type === 'products') {
-            // Products may be an array or an object grouped by industry
             if (Array.isArray(parsed)) {
-                // Group by industry
                 const byIndustry = {};
                 parsed.forEach(p => {
                     const ind = p.industry || 'general';
@@ -68,17 +78,18 @@
                 Object.keys(byIndustry).forEach(industry => {
                     fetch('/api/cms/products/' + encodeURIComponent(industry), {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'X-Admin-Token': token },
+                        credentials: 'same-origin',
+                        headers: authHeaders(),
                         body: JSON.stringify({ products: byIndustry[industry] })
                     }).catch(e => console.warn('CMS sync (products):', e.message));
                 });
                 return;
             } else {
-                // Already grouped as { industry: [...] }
                 Object.keys(parsed || {}).forEach(industry => {
                     fetch('/api/cms/products/' + encodeURIComponent(industry), {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'X-Admin-Token': token },
+                        credentials: 'same-origin',
+                        headers: authHeaders(),
                         body: JSON.stringify({ products: parsed[industry] })
                     }).catch(e => console.warn('CMS sync (products):', e.message));
                 });
@@ -91,14 +102,78 @@
             return;
         }
 
-        // Fire-and-forget POST (server handles deduplication)
         fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-Admin-Token': token },
+            credentials: 'same-origin',
+            headers: authHeaders(),
             body: body
         })
-        .then(r => r.ok ? null : console.warn('CMS sync failed:', r.status, key))
+        .then(async r => {
+            if (r.ok) return;
+            // 409 Conflict: another user edited the same content
+            if (r.status === 409) {
+                const j = await r.json().catch(() => ({}));
+                showConflictDialog(key, j.message || 'Another user has modified this content.', j.current_version);
+                return;
+            }
+            // 403 Permission denied — surface to user (not silent)
+            if (r.status === 403) {
+                const j = await r.json().catch(() => ({}));
+                showPermissionDenied(j.error || 'You do not have permission to perform this action.');
+                return;
+            }
+            console.warn('CMS sync failed:', r.status, key);
+        })
         .catch(e => console.warn('CMS sync error:', key, e.message));
+    }
+
+    // ─── Conflict / permission UI ─────────────────────────────────────────
+    function showConflictDialog(key, message, currentVersion) {
+        // Avoid stacking multiple toasts for the same conflict
+        if (document.getElementById('wfx-conflict-toast')) return;
+        const div = document.createElement('div');
+        div.id = 'wfx-conflict-toast';
+        div.style.cssText = 'position:fixed; top:20px; right:20px; z-index:99999; ' +
+            'background:#fef3c7; color:#92400e; border:1px solid #fcd34d; ' +
+            'border-radius:8px; padding:16px 20px; box-shadow:0 8px 25px rgba(0,0,0,0.15); ' +
+            'max-width:420px; font-family:Inter,sans-serif; font-size:0.9rem;';
+        div.innerHTML =
+            '<div style="display:flex; gap:12px; align-items:flex-start;">' +
+                '<i class="fas fa-exclamation-triangle" style="color:#d97706; font-size:1.2rem; margin-top:2px;" aria-hidden="true"></i>' +
+                '<div style="flex:1;">' +
+                    '<div style="font-weight:600; margin-bottom:6px;">Edit Conflict</div>' +
+                    '<div style="margin-bottom:10px; line-height:1.5;">' +
+                        (message || 'Someone else updated this content while you were editing.') +
+                        '<br><span style="opacity:0.8;">Reload to see the latest version. Your unsaved changes will be lost — copy them somewhere safe first.</span>' +
+                    '</div>' +
+                    '<div style="display:flex; gap:8px;">' +
+                        '<button onclick="window.location.reload()" style="background:#d97706; color:white; border:none; padding:6px 14px; border-radius:6px; font-weight:500; cursor:pointer;">Reload Page</button>' +
+                        '<button onclick="document.getElementById(\'wfx-conflict-toast\').remove()" style="background:transparent; color:#92400e; border:1px solid #92400e; padding:6px 14px; border-radius:6px; font-weight:500; cursor:pointer;">Dismiss</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+        document.body.appendChild(div);
+    }
+
+    function showPermissionDenied(message) {
+        if (document.getElementById('wfx-permission-toast')) return;
+        const div = document.createElement('div');
+        div.id = 'wfx-permission-toast';
+        div.style.cssText = 'position:fixed; top:20px; right:20px; z-index:99999; ' +
+            'background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; ' +
+            'border-radius:8px; padding:14px 18px; box-shadow:0 8px 25px rgba(0,0,0,0.15); ' +
+            'max-width:380px; font-family:Inter,sans-serif; font-size:0.9rem;';
+        div.innerHTML =
+            '<div style="display:flex; gap:10px; align-items:flex-start;">' +
+                '<i class="fas fa-lock" style="color:#dc2626; margin-top:2px;" aria-hidden="true"></i>' +
+                '<div style="flex:1;">' +
+                    '<div style="font-weight:600; margin-bottom:4px;">Permission Denied</div>' +
+                    '<div style="margin-bottom:8px;">' + (message || '') + '</div>' +
+                    '<button onclick="document.getElementById(\'wfx-permission-toast\').remove()" style="background:transparent; color:#991b1b; border:1px solid #991b1b; padding:4px 10px; border-radius:4px; font-size:0.85rem; cursor:pointer;">Dismiss</button>' +
+                '</div>' +
+            '</div>';
+        document.body.appendChild(div);
+        setTimeout(() => { const el = document.getElementById('wfx-permission-toast'); if (el) el.remove(); }, 8000);
     }
 
     // ─── Hook localStorage.setItem ───────────────────────────────────────
@@ -122,7 +197,7 @@
 
         pullAll: async function() {
             try {
-                const r = await fetch('/api/cms/all');
+                const r = await fetch('/api/cms/all', { credentials: 'same-origin' });
                 if (!r.ok) return false;
                 const j = await r.json();
                 if (!j.ok || !j.data) return false;

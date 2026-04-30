@@ -293,57 +293,60 @@
             <div class="nav-section">
                 <div class="nav-section-title">Main</div>
                 <a href="dashboard.html" class="nav-item">
-                    <i class="fas fa-home"></i> Dashboard
+                    <i class="fas fa-home" aria-hidden="true"></i> Dashboard
                 </a>
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">Content Management</div>
                 <a href="content-editor.html" class="nav-item">
-                    <i class="fas fa-edit"></i> Content Editor
+                    <i class="fas fa-edit" aria-hidden="true"></i> Content Editor
                 </a>
                 <a href="videos.html" class="nav-item">
-                    <i class="fas fa-video"></i> Video Manager
+                    <i class="fas fa-video" aria-hidden="true"></i> Video Manager
                 </a>
                 <a href="pages.html" class="nav-item">
-                    <i class="fas fa-file-alt"></i> Pages & Text
+                    <i class="fas fa-file-alt" aria-hidden="true"></i> Pages & Text
                 </a>
                 <a href="page-images.html" class="nav-item active">
-                    <i class="fas fa-image"></i> Page Images
+                    <i class="fas fa-image" aria-hidden="true"></i> Page Images
                 </a>
                 <a href="products.html" class="nav-item">
-                    <i class="fas fa-boxes"></i> Industry Products
+                    <i class="fas fa-boxes" aria-hidden="true"></i> Industry Products
                 </a>
                 <a href="categories.html" class="nav-item">
-                    <i class="fas fa-folder-open"></i> Categories
+                    <i class="fas fa-folder-open" aria-hidden="true"></i> Categories
                 </a>
                 <a href="media.html" class="nav-item">
-                    <i class="fas fa-images"></i> Media Library
+                    <i class="fas fa-images" aria-hidden="true"></i> Media Library
                 </a>
                 <a href="blog.html" class="nav-item">
-                    <i class="fas fa-blog"></i> Blog Posts
+                    <i class="fas fa-blog" aria-hidden="true"></i> Blog Posts
                 </a>
                 <a href="news.html" class="nav-item">
-                    <i class="fas fa-newspaper"></i> News
+                    <i class="fas fa-newspaper" aria-hidden="true"></i> News
                 </a>
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">System</div>
                 <a href="users.html" class="nav-item">
-                    <i class="fas fa-users"></i> User Management
+                    <i class="fas fa-users" aria-hidden="true"></i> User Management
                 </a>
                 <a href="activity-log.html" class="nav-item">
-                    <i class="fas fa-history"></i> Activity Log
+                    <i class="fas fa-history" aria-hidden="true"></i> Activity Log
                 </a>
                 <a href="settings.html" class="nav-item">
-                    <i class="fas fa-cog"></i> Settings
+                    <i class="fas fa-cog" aria-hidden="true"></i> Settings
+                </a>
+                <a href="change-password.html" class="nav-item">
+                    <i class="fas fa-key" aria-hidden="true"></i> Change Password
                 </a>
             </div>
             <div class="nav-section">
                 <a href="../index.html" class="nav-item" target="_blank">
-                    <i class="fas fa-external-link-alt"></i> View Website
+                    <i class="fas fa-external-link-alt" aria-hidden="true"></i> View Website
                 </a>
                 <a href="#" class="nav-item" onclick="AdminCore.logout()">
-                    <i class="fas fa-sign-out-alt"></i> Logout
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
                 </a>
             </div>
         </nav>
@@ -353,12 +356,12 @@
     <main class="admin-main">
         <header class="admin-header">
             <div class="header-left">
-                <h1><i class="fas fa-image" style="margin-right: 10px; color: #0052CC;"></i> Page Images</h1>
+                <h1><i class="fas fa-image" aria-hidden="true" style="margin-right: 10px; color: #0052CC;"></i> Page Images</h1>
                 <p style="margin: 5px 0 0; color: #666; font-size: 0.9rem;">Manage images for all website pages and modules</p>
             </div>
             <div class="header-right">
                 <button class="btn btn-primary" onclick="saveAllChanges()">
-                    <i class="fas fa-save"></i> Save All Changes
+                    <i class="fas fa-save" aria-hidden="true"></i> Save All Changes
                 </button>
             </div>
         </header>
@@ -395,7 +398,7 @@
                     <option value="news">News & Blog</option>
                 </select>
                 <div class="search-box">
-                    <i class="fas fa-search"></i>
+                    <i class="fas fa-search" aria-hidden="true"></i>
                     <input type="text" id="image-search" placeholder="Search images..." onkeyup="filterImages()">
                 </div>
             </div>
@@ -403,7 +406,7 @@
             <!-- Homepage Images -->
             <div class="page-section" data-page="index">
                 <div class="page-section-header">
-                    <h3><i class="fas fa-home"></i> Homepage (index.html)</h3>
+                    <h3><i class="fas fa-home" aria-hidden="true"></i> Homepage (index.html)</h3>
                     <span style="color: #666; font-size: 0.9rem;">12 images</span>
                 </div>
                 <div class="image-grid">
@@ -415,7 +418,7 @@
                             <p><span class="badge badge-hero">Hero</span> Navigation dropdown</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('index', 'hero-menu', 'Menu Featured Image')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -429,7 +432,7 @@
                             <p><span class="badge badge-service">Service</span> Services section</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('index', 'milling', 'CNC Milling Card')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -442,7 +445,7 @@
                             <p><span class="badge badge-service">Service</span> Services section</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('index', 'turning', 'CNC Turning Card')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -455,7 +458,7 @@
                             <p><span class="badge badge-service">Service</span> Services section</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('index', '5axis', '5-Axis Machining Card')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -468,7 +471,7 @@
                             <p><span class="badge badge-service">Service</span> Services section</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('index', 'inspection', 'Precision Inspection Card')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -482,7 +485,7 @@
                             <p><span class="badge badge-industry">Industry</span> Industries section</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('index', 'aerospace', 'Aerospace Industry Card')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -495,7 +498,7 @@
                             <p><span class="badge badge-industry">Industry</span> Industries section</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('index', 'automotive', 'Automotive Industry Card')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -508,7 +511,7 @@
                             <p><span class="badge badge-industry">Industry</span> Industries section</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('index', 'medical', 'Medical Industry Card')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -521,7 +524,7 @@
                             <p><span class="badge badge-industry">Industry</span> Industries section</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('index', 'electronics', 'Electronics Industry Card')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -534,7 +537,7 @@
                             <p><span class="badge badge-industry">Industry</span> Industries section</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('index', 'robotics', 'Robotics Industry Card')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -547,7 +550,7 @@
                             <p><span class="badge badge-industry">Industry</span> Industries section</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('index', 'industrial', 'Industrial Equipment Card')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -561,7 +564,7 @@
                             <p><span class="badge badge-news">News</span> News section</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('index', 'news1', 'News: 5-Axis Machines')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -572,7 +575,7 @@
             <!-- About Page Images -->
             <div class="page-section" data-page="about">
                 <div class="page-section-header">
-                    <h3><i class="fas fa-building"></i> About Us (about.html)</h3>
+                    <h3><i class="fas fa-building" aria-hidden="true"></i> About Us (about.html)</h3>
                     <span style="color: #666; font-size: 0.9rem;">6 images</span>
                 </div>
                 <div class="image-grid">
@@ -583,7 +586,7 @@
                             <p><span class="badge badge-hero">Hero</span> Page header</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('about', 'hero', 'About Hero Image')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -596,7 +599,7 @@
                             <p><span class="badge badge-feature">Feature</span> Our facility</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('about', 'facility', 'Facility Image')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -609,7 +612,7 @@
                             <p><span class="badge badge-feature">Feature</span> Our team</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('about', 'team', 'Team Image')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -620,7 +623,7 @@
             <!-- CNC Milling Page Images -->
             <div class="page-section" data-page="cnc-milling">
                 <div class="page-section-header">
-                    <h3><i class="fas fa-cube"></i> CNC Milling (cnc-milling.html)</h3>
+                    <h3><i class="fas fa-cube" aria-hidden="true"></i> CNC Milling (cnc-milling.html)</h3>
                     <span style="color: #666; font-size: 0.9rem;">8 images</span>
                 </div>
                 <div class="image-grid">
@@ -631,7 +634,7 @@
                             <p><span class="badge badge-hero">Hero</span> Page header</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('cnc-milling', 'hero', 'Milling Hero Image')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -644,7 +647,7 @@
                             <p><span class="badge badge-feature">Feature</span> Capabilities</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('cnc-milling', '3axis', '3-Axis Milling')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -657,7 +660,7 @@
                             <p><span class="badge badge-feature">Feature</span> Capabilities</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('cnc-milling', '4axis', '4-Axis Milling')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -670,7 +673,7 @@
                             <p><span class="badge badge-feature">Feature</span> Capabilities</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('cnc-milling', '5axis', '5-Axis Milling')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -681,7 +684,7 @@
             <!-- Materials Page Images -->
             <div class="page-section" data-page="materials">
                 <div class="page-section-header">
-                    <h3><i class="fas fa-layer-group"></i> Materials (materials.html)</h3>
+                    <h3><i class="fas fa-layer-group" aria-hidden="true"></i> Materials (materials.html)</h3>
                     <span style="color: #666; font-size: 0.9rem;">3 images</span>
                 </div>
                 <div class="image-grid">
@@ -692,7 +695,7 @@
                             <p><span class="badge badge-feature">Feature</span> Material categories</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('materials', 'metals', 'Metals & Alloys Card')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -705,7 +708,7 @@
                             <p><span class="badge badge-feature">Feature</span> Material categories</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('materials', 'forging', 'Forging Card')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -718,7 +721,7 @@
                             <p><span class="badge badge-feature">Feature</span> Material categories</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('materials', 'diecasting', 'Die Casting Card')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -729,7 +732,7 @@
             <!-- Quality Page Images -->
             <div class="page-section" data-page="quality">
                 <div class="page-section-header">
-                    <h3><i class="fas fa-award"></i> Quality (quality.html)</h3>
+                    <h3><i class="fas fa-award" aria-hidden="true"></i> Quality (quality.html)</h3>
                     <span style="color: #666; font-size: 0.9rem;">5 images</span>
                 </div>
                 <div class="image-grid">
@@ -740,7 +743,7 @@
                             <p><span class="badge badge-feature">Feature</span> Quality equipment</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('quality', 'cmm', 'CMM Inspection')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -753,7 +756,7 @@
                             <p><span class="badge badge-feature">Feature</span> Quality equipment</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('quality', 'lab', 'Testing Lab')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -764,7 +767,7 @@
             <!-- Case Studies Page Images -->
             <div class="page-section" data-page="case-studies">
                 <div class="page-section-header">
-                    <h3><i class="fas fa-briefcase"></i> Case Studies (case-studies.html)</h3>
+                    <h3><i class="fas fa-briefcase" aria-hidden="true"></i> Case Studies (case-studies.html)</h3>
                     <span style="color: #666; font-size: 0.9rem;">6 images</span>
                 </div>
                 <div class="image-grid">
@@ -775,7 +778,7 @@
                             <p><span class="badge badge-feature">Feature</span> Aerospace project</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('case-studies', 'case1', 'Case Study 1')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -788,7 +791,7 @@
                             <p><span class="badge badge-feature">Feature</span> Medical project</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('case-studies', 'case2', 'Case Study 2')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -801,7 +804,7 @@
                             <p><span class="badge badge-feature">Feature</span> Automotive project</p>
                             <div class="image-actions">
                                 <button class="btn btn-outline" onclick="editImage('case-studies', 'case3', 'Case Study 3')">
-                                    <i class="fas fa-edit"></i> Edit
+                                    <i class="fas fa-edit" aria-hidden="true"></i> Edit
                                 </button>
                             </div>
                         </div>
@@ -829,20 +832,20 @@
                 <!-- Tabs -->
                 <div class="tabs">
                     <button class="tab-btn active" onclick="switchTab('upload')">
-                        <i class="fas fa-upload"></i> Upload New
+                        <i class="fas fa-upload" aria-hidden="true"></i> Upload New
                     </button>
                     <button class="tab-btn" onclick="switchTab('url')">
-                        <i class="fas fa-link"></i> Enter URL
+                        <i class="fas fa-link" aria-hidden="true"></i> Enter URL
                     </button>
                     <button class="tab-btn" onclick="switchTab('library')">
-                        <i class="fas fa-images"></i> Media Library
+                        <i class="fas fa-images" aria-hidden="true"></i> Media Library
                     </button>
                 </div>
 
                 <!-- Upload Tab -->
                 <div class="tab-content active" id="tab-upload">
                     <div class="upload-zone" onclick="document.getElementById('file-input').click()">
-                        <i class="fas fa-cloud-upload-alt"></i>
+                        <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
                         <p>Click to upload or drag and drop</p>
                         <p style="font-size: 0.8rem; color: #9ca3af;">PNG, JPG, WebP up to 5MB</p>
                     </div>
@@ -894,7 +897,7 @@
             <div class="modal-footer">
                 <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
                 <button class="btn btn-primary" onclick="applyImageChange()">
-                    <i class="fas fa-check"></i> Apply Change
+                    <i class="fas fa-check" aria-hidden="true"></i> Apply Change
                 </button>
             </div>
         </div>
@@ -1079,7 +1082,7 @@
             const container = document.getElementById('alert-container');
             const alert = document.createElement('div');
             alert.className = 'alert alert-' + type;
-            alert.innerHTML = '<i class="fas fa-' + (type === 'success' ? 'check-circle' : 'exclamation-circle') + '"></i> ' + message;
+            alert.innerHTML = '<i class="fas fa-' + (type === 'success' ? 'check-circle' : 'exclamation-circle') + '" aria-hidden="true"></i> ' + message;
             container.appendChild(alert);
             
             setTimeout(() => {

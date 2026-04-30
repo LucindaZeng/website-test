@@ -26,57 +26,60 @@
             <div class="nav-section">
                 <div class="nav-section-title">Main</div>
                 <a href="dashboard.html" class="nav-item">
-                    <i class="fas fa-home"></i> Dashboard
+                    <i class="fas fa-home" aria-hidden="true"></i> Dashboard
                 </a>
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">Content Management</div>
                 <a href="content-editor.html" class="nav-item">
-                    <i class="fas fa-edit"></i> Content Editor
+                    <i class="fas fa-edit" aria-hidden="true"></i> Content Editor
                 </a>
                 <a href="videos.html" class="nav-item">
-                    <i class="fas fa-video"></i> Video Manager
+                    <i class="fas fa-video" aria-hidden="true"></i> Video Manager
                 </a>
                 <a href="pages.html" class="nav-item">
-                    <i class="fas fa-file-alt"></i> Pages & Text
+                    <i class="fas fa-file-alt" aria-hidden="true"></i> Pages & Text
                 </a>
                 <a href="page-images.html" class="nav-item">
-                    <i class="fas fa-image"></i> Page Images
+                    <i class="fas fa-image" aria-hidden="true"></i> Page Images
                 </a>
                 <a href="products.html" class="nav-item">
-                    <i class="fas fa-boxes"></i> Industry Products
+                    <i class="fas fa-boxes" aria-hidden="true"></i> Industry Products
                 </a>
                 <a href="categories.html" class="nav-item">
-                    <i class="fas fa-folder-open"></i> Categories
+                    <i class="fas fa-folder-open" aria-hidden="true"></i> Categories
                 </a>
                 <a href="media.html" class="nav-item">
-                    <i class="fas fa-images"></i> Media Library
+                    <i class="fas fa-images" aria-hidden="true"></i> Media Library
                 </a>
                 <a href="blog.html" class="nav-item">
-                    <i class="fas fa-blog"></i> Blog Posts
+                    <i class="fas fa-blog" aria-hidden="true"></i> Blog Posts
                 </a>
                 <a href="news.html" class="nav-item">
-                    <i class="fas fa-newspaper"></i> News
+                    <i class="fas fa-newspaper" aria-hidden="true"></i> News
                 </a>
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">System</div>
                 <a href="users.html" class="nav-item active">
-                    <i class="fas fa-users"></i> User Management
+                    <i class="fas fa-users" aria-hidden="true"></i> User Management
                 </a>
                 <a href="activity-log.html" class="nav-item">
-                    <i class="fas fa-history"></i> Activity Log
+                    <i class="fas fa-history" aria-hidden="true"></i> Activity Log
                 </a>
                 <a href="settings.html" class="nav-item">
-                    <i class="fas fa-cog"></i> Settings
+                    <i class="fas fa-cog" aria-hidden="true"></i> Settings
+                </a>
+                <a href="change-password.html" class="nav-item">
+                    <i class="fas fa-key" aria-hidden="true"></i> Change Password
                 </a>
             </div>
             <div class="nav-section">
                 <a href="../index.html" class="nav-item" target="_blank">
-                    <i class="fas fa-external-link-alt"></i> View Website
+                    <i class="fas fa-external-link-alt" aria-hidden="true"></i> View Website
                 </a>
                 <a href="#" class="nav-item" onclick="AdminCore.logout()">
-                    <i class="fas fa-sign-out-alt"></i> Logout
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
                 </a>
             </div>
         </nav>
@@ -106,18 +109,18 @@
             <!-- Header Actions -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
                 <div class="search-box">
-                    <i class="fas fa-search"></i>
+                    <i class="fas fa-search" aria-hidden="true"></i>
                     <input type="text" id="search-users" placeholder="Search users...">
                 </div>
                 <button class="btn btn-primary" onclick="openAddUserModal()">
-                    <i class="fas fa-user-plus"></i> Add New User
+                    <i class="fas fa-user-plus" aria-hidden="true"></i> Add New User
                 </button>
             </div>
 
             <!-- Users Table -->
             <div class="card">
                 <div class="card-header">
-                    <h3><i class="fas fa-users"></i> All Users</h3>
+                    <h3><i class="fas fa-users" aria-hidden="true"></i> All Users</h3>
                     <span id="user-count">0 users</span>
                 </div>
                 <div class="card-body" style="padding: 0;">
@@ -169,9 +172,11 @@
                         <div class="form-group">
                             <label class="form-label">Role *</label>
                             <select class="form-control" id="user-role-select">
-                                <option value="editor">Editor</option>
-                                <option value="admin">Admin</option>
-                                <option value="super_admin">Super Admin</option>
+                                <option value="viewer">Viewer (read-only)</option>
+                                <option value="sales">Sales (quotes &amp; contacts)</option>
+                                <option value="seo_specialist">SEO Specialist (meta tags only)</option>
+                                <option value="chief_editor">Chief Editor (content + media)</option>
+                                <option value="super_admin">Super Admin (full access)</option>
                             </select>
                         </div>
                     </div>
@@ -251,130 +256,150 @@
             document.getElementById('user-avatar').textContent = (currentUser.name || currentUser.username).charAt(0).toUpperCase();
         }
 
-        // Load users table
-        function loadUsers() {
-            const users = AdminCore.getUsers();
+        // Role display labels
+        const ROLE_LABELS = {
+            super_admin:    { label: 'Super Admin',    color: '#dc2626', bg: '#fee2e2' },
+            chief_editor:   { label: 'Chief Editor',   color: '#7c3aed', bg: '#ede9fe' },
+            seo_specialist: { label: 'SEO Specialist', color: '#0891b2', bg: '#cffafe' },
+            sales:          { label: 'Sales',          color: '#16a34a', bg: '#dcfce7' },
+            viewer:         { label: 'Viewer',         color: '#64748b', bg: '#f1f5f9' },
+            // Legacy fallbacks
+            admin:          { label: 'Admin',          color: '#0052CC', bg: '#dbeafe' },
+            editor:         { label: 'Editor',         color: '#0891b2', bg: '#cffafe' },
+        };
+
+        // Cache of users (for client-side search)
+        let userCache = [];
+
+        // Load users from server (preferred) with localStorage fallback
+        async function loadUsers() {
+            const tbody = document.getElementById('users-table');
+            const csrf = window.WFX_CSRF_TOKEN || localStorage.getItem('wfx_csrf_token') || '';
+
+            try {
+                const r = await fetch('/api/users', {
+                    credentials: 'same-origin',
+                    headers: csrf ? { 'X-CSRF-Token': csrf } : {}
+                });
+                if (r.status === 403) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#dc2626;">Your role does not have permission to view users.</td></tr>';
+                    document.getElementById('user-count').textContent = '';
+                    return;
+                }
+                if (r.status === 401) {
+                    window.location.href = 'index.html';
+                    return;
+                }
+                if (r.ok) {
+                    const j = await r.json();
+                    userCache = j.users || [];
+                    renderUsersTable(userCache);
+                    return;
+                }
+            } catch (e) {
+                console.warn('Server unavailable, using local fallback:', e.message);
+            }
+            // Fallback to localStorage
+            userCache = AdminCore.getUsers();
+            renderUsersTable(userCache);
+        }
+
+        function renderUsersTable(users) {
             const tbody = document.getElementById('users-table');
             document.getElementById('user-count').textContent = `${users.length} users`;
-            
-            tbody.innerHTML = users.map(user => `
-                <tr>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <div class="user-avatar" style="width: 40px; height: 40px; font-size: 0.9rem;">
-                                ${(user.name || user.username).charAt(0).toUpperCase()}
+
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--admin-gray);">No users yet.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = users.map(user => {
+                const role = user.role || 'viewer';
+                const roleInfo = ROLE_LABELS[role] || ROLE_LABELS.viewer;
+                const fullName = user.full_name || user.name || '';
+                const isInactive = user.is_active === false;
+                const lastLogin = user.last_login_at || user.lastLogin;
+                const createdAt = user.created_at || user.createdAt;
+
+                return `
+                    <tr style="${isInactive ? 'opacity: 0.5;' : ''}">
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div class="user-avatar" style="width: 40px; height: 40px; font-size: 0.9rem;">
+                                    ${escapeHtml((fullName || user.username).charAt(0).toUpperCase())}
+                                </div>
+                                <div>
+                                    <div style="font-weight: 500;">${escapeHtml(fullName || '-')}</div>
+                                    <div style="font-size: 0.85rem; color: var(--admin-gray);">${escapeHtml(user.email || '-')}</div>
+                                </div>
                             </div>
-                            <div>
-                                <div style="font-weight: 500;">${user.name || '-'}</div>
-                                <div style="font-size: 0.85rem; color: var(--admin-gray);">${user.email || '-'}</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>${user.username}</td>
-                    <td>
-                        <span class="status-badge ${user.role === 'super_admin' ? 'status-published' : 'status-draft'}">
-                            ${user.role === 'super_admin' ? 'Super Admin' : user.role === 'admin' ? 'Admin' : 'Editor'}
-                        </span>
-                    </td>
-                    <td>${AdminCore.formatDate(user.createdAt)}</td>
-                    <td>${user.lastLogin ? AdminCore.formatRelativeTime(user.lastLogin) : 'Never'}</td>
-                    <td>
-                        <div style="display: flex; gap: 5px;">
-                            <button class="btn btn-sm btn-secondary btn-icon" onclick="editUser(${user.id})" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-secondary btn-icon" onclick="openPasswordModal(${user.id})" title="Change Password">
-                                <i class="fas fa-key"></i>
-                            </button>
-                            ${user.username !== 'admin' ? `
-                                <button class="btn btn-sm btn-danger btn-icon" onclick="deleteUser(${user.id}, '${user.username}')" title="Delete">
-                                    <i class="fas fa-trash"></i>
+                        </td>
+                        <td>${escapeHtml(user.username)}${isInactive ? ' <span style="color:#dc2626;font-size:0.75rem;">(disabled)</span>' : ''}</td>
+                        <td>
+                            <span style="display:inline-block; padding:4px 10px; border-radius:12px; font-size:0.8rem; font-weight:500; background:${roleInfo.bg}; color:${roleInfo.color};">
+                                ${roleInfo.label}
+                            </span>
+                        </td>
+                        <td>${createdAt ? new Date(createdAt).toLocaleDateString() : '-'}</td>
+                        <td>${lastLogin ? new Date(lastLogin).toLocaleDateString() : 'Never'}</td>
+                        <td>
+                            <div style="display: flex; gap: 5px;">
+                                <button class="btn btn-sm btn-secondary btn-icon" onclick="editUser(${user.id})" title="Edit">
+                                    <i class="fas fa-edit" aria-hidden="true"></i>
                                 </button>
-                            ` : ''}
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+                                <button class="btn btn-sm btn-secondary btn-icon" onclick="openPasswordModal(${user.id})" title="Reset Password">
+                                    <i class="fas fa-key" aria-hidden="true"></i>
+                                </button>
+                                ${user.username !== 'admin' && !isInactive ? `
+                                    <button class="btn btn-sm btn-danger btn-icon" onclick="deleteUser(${user.id}, '${escapeHtml(user.username)}')" title="Delete">
+                                        <i class="fas fa-trash" aria-hidden="true"></i>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
         loadUsers();
 
         // Search functionality
         document.getElementById('search-users').addEventListener('input', function() {
             const query = this.value.toLowerCase();
-            const users = AdminCore.getUsers();
-            const filtered = users.filter(u => 
+            const filtered = userCache.filter(u =>
                 u.username.toLowerCase().includes(query) ||
-                (u.name && u.name.toLowerCase().includes(query)) ||
+                ((u.full_name || u.name) && (u.full_name || u.name).toLowerCase().includes(query)) ||
                 (u.email && u.email.toLowerCase().includes(query))
             );
-            
-            const tbody = document.getElementById('users-table');
-            if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px;">No users found</td></tr>';
-            } else {
-                tbody.innerHTML = filtered.map(user => `
-                    <tr>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <div class="user-avatar" style="width: 40px; height: 40px; font-size: 0.9rem;">
-                                    ${(user.name || user.username).charAt(0).toUpperCase()}
-                                </div>
-                                <div>
-                                    <div style="font-weight: 500;">${user.name || '-'}</div>
-                                    <div style="font-size: 0.85rem; color: var(--admin-gray);">${user.email || '-'}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>${user.username}</td>
-                        <td>
-                            <span class="status-badge ${user.role === 'super_admin' ? 'status-published' : 'status-draft'}">
-                                ${user.role === 'super_admin' ? 'Super Admin' : user.role === 'admin' ? 'Admin' : 'Editor'}
-                            </span>
-                        </td>
-                        <td>${AdminCore.formatDate(user.createdAt)}</td>
-                        <td>${user.lastLogin ? AdminCore.formatRelativeTime(user.lastLogin) : 'Never'}</td>
-                        <td>
-                            <div style="display: flex; gap: 5px;">
-                                <button class="btn btn-sm btn-secondary btn-icon" onclick="editUser(${user.id})" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-secondary btn-icon" onclick="openPasswordModal(${user.id})" title="Change Password">
-                                    <i class="fas fa-key"></i>
-                                </button>
-                                ${user.username !== 'admin' ? `
-                                    <button class="btn btn-sm btn-danger btn-icon" onclick="deleteUser(${user.id}, '${user.username}')" title="Delete">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                ` : ''}
-                            </div>
-                        </td>
-                    </tr>
-                `).join('');
-            }
+            renderUsersTable(filtered);
         });
+
 
         // Modal functions
         function openAddUserModal() {
             document.getElementById('modal-title').textContent = 'Add New User';
             document.getElementById('user-form').reset();
             document.getElementById('user-id').value = '';
+            document.getElementById('user-username').disabled = false;
             document.getElementById('user-password').required = true;
+            document.getElementById('password-group').style.display = 'block';
             document.getElementById('user-modal').classList.add('active');
         }
 
         function editUser(userId) {
-            const users = AdminCore.getUsers();
-            const user = users.find(u => u.id === userId);
-            
+            const user = userCache.find(u => u.id === userId);
+
             if (user) {
                 document.getElementById('modal-title').textContent = 'Edit User';
                 document.getElementById('user-id').value = user.id;
-                document.getElementById('user-fullname').value = user.name || '';
+                document.getElementById('user-fullname').value = user.full_name || user.name || '';
                 document.getElementById('user-email').value = user.email || '';
                 document.getElementById('user-username').value = user.username;
-                document.getElementById('user-role-select').value = user.role;
+                document.getElementById('user-username').disabled = true;  // Username cannot be changed
+                document.getElementById('user-role-select').value = user.role || 'viewer';
                 document.getElementById('user-password').value = '';
                 document.getElementById('user-password').required = false;
+                document.getElementById('password-group').style.display = 'none';  // Use Reset Password button
                 document.getElementById('user-modal').classList.add('active');
             }
         }
@@ -383,38 +408,64 @@
             document.getElementById('user-modal').classList.remove('active');
         }
 
-        function saveUser() {
+        async function saveUser() {
             const userId = document.getElementById('user-id').value;
-            const userData = {
-                name: document.getElementById('user-fullname').value,
-                email: document.getElementById('user-email').value,
-                username: document.getElementById('user-username').value,
-                role: document.getElementById('user-role-select').value
-            };
-            
+            const csrf = window.WFX_CSRF_TOKEN || localStorage.getItem('wfx_csrf_token') || '';
+
+            const username = document.getElementById('user-username').value.trim();
+            const fullName = document.getElementById('user-fullname').value.trim();
+            const email = document.getElementById('user-email').value.trim();
+            const role = document.getElementById('user-role-select').value;
             const password = document.getElementById('user-password').value;
-            if (password) {
-                userData.password = password;
+
+            if (!username) {
+                showAlert('Username is required', 'danger');
+                return;
             }
-            
-            let result;
-            if (userId) {
-                result = AdminCore.updateUser(parseInt(userId), userData);
-            } else {
-                if (!password) {
-                    showAlert('Password is required for new users', 'danger');
-                    return;
+
+            try {
+                let r;
+                if (userId) {
+                    // Update existing user
+                    r = await fetch('/api/users/' + userId, {
+                        method: 'PUT',
+                        credentials: 'same-origin',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
+                        body: JSON.stringify({
+                            full_name: fullName,
+                            email: email,
+                            role: role,
+                        })
+                    });
+                } else {
+                    // Create new user
+                    if (!password || password.length < 8) {
+                        showAlert('Password must be at least 8 characters', 'danger');
+                        return;
+                    }
+                    r = await fetch('/api/users', {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
+                        body: JSON.stringify({
+                            username: username,
+                            password: password,
+                            role: role,
+                            full_name: fullName,
+                            email: email,
+                        })
+                    });
                 }
-                userData.password = password;
-                result = AdminCore.addUser(userData);
-            }
-            
-            if (result.success) {
-                showAlert(userId ? 'User updated successfully' : 'User created successfully', 'success');
-                closeModal();
-                loadUsers();
-            } else {
-                showAlert(result.message, 'danger');
+                const j = await r.json().catch(() => ({}));
+                if (r.ok && j.ok) {
+                    showAlert(userId ? 'User updated successfully' : 'User created successfully (must change password on first login)', 'success');
+                    closeModal();
+                    loadUsers();
+                } else {
+                    showAlert(j.error || 'Operation failed', 'danger');
+                }
+            } catch (e) {
+                showAlert('Network error: ' + e.message, 'danger');
             }
         }
 
@@ -429,28 +480,37 @@
             document.getElementById('password-modal').classList.remove('active');
         }
 
-        function changePassword() {
+        async function changePassword() {
             const userId = parseInt(document.getElementById('password-user-id').value);
             const newPassword = document.getElementById('new-password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
-            
-            if (newPassword !== confirmPassword) {
+            const confirmPwd = document.getElementById('confirm-password').value;
+            const csrf = window.WFX_CSRF_TOKEN || localStorage.getItem('wfx_csrf_token') || '';
+
+            if (newPassword !== confirmPwd) {
                 showAlert('Passwords do not match', 'danger');
                 return;
             }
-            
-            if (newPassword.length < 6) {
-                showAlert('Password must be at least 6 characters', 'danger');
+            if (newPassword.length < 8) {
+                showAlert('Password must be at least 8 characters', 'danger');
                 return;
             }
-            
-            const result = AdminCore.changePassword(userId, newPassword);
-            
-            if (result.success) {
-                showAlert('Password changed successfully', 'success');
-                closePasswordModal();
-            } else {
-                showAlert(result.message, 'danger');
+
+            try {
+                const r = await fetch('/api/users/' + userId, {
+                    method: 'PUT',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
+                    body: JSON.stringify({ new_password: newPassword })
+                });
+                const j = await r.json().catch(() => ({}));
+                if (r.ok && j.ok) {
+                    showAlert('Password reset. User will be required to change it on next login.', 'success');
+                    closePasswordModal();
+                } else {
+                    showAlert(j.error || 'Failed to reset password', 'danger');
+                }
+            } catch (e) {
+                showAlert('Network error: ' + e.message, 'danger');
             }
         }
 
@@ -465,16 +525,26 @@
             document.getElementById('delete-modal').classList.remove('active');
         }
 
-        function confirmDelete() {
+        async function confirmDelete() {
             const userId = parseInt(document.getElementById('delete-user-id').value);
-            const result = AdminCore.deleteUser(userId);
-            
-            if (result.success) {
-                showAlert('User deleted successfully', 'success');
-                closeDeleteModal();
-                loadUsers();
-            } else {
-                showAlert(result.message, 'danger');
+            const csrf = window.WFX_CSRF_TOKEN || localStorage.getItem('wfx_csrf_token') || '';
+
+            try {
+                const r = await fetch('/api/users/' + userId, {
+                    method: 'DELETE',
+                    credentials: 'same-origin',
+                    headers: { 'X-CSRF-Token': csrf }
+                });
+                const j = await r.json().catch(() => ({}));
+                if (r.ok && j.ok) {
+                    showAlert('User deactivated', 'success');
+                    closeDeleteModal();
+                    loadUsers();
+                } else {
+                    showAlert(j.error || 'Failed to delete', 'danger');
+                }
+            } catch (e) {
+                showAlert('Network error: ' + e.message, 'danger');
             }
         }
 
@@ -483,7 +553,7 @@
             const container = document.getElementById('alert-container');
             const alert = document.createElement('div');
             alert.className = `alert alert-${type}`;
-            alert.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+            alert.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}" aria-hidden="true"></i> ${message}`;
             container.appendChild(alert);
             
             setTimeout(() => {

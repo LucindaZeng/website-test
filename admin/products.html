@@ -299,54 +299,57 @@
             <div class="nav-section">
                 <div class="nav-section-title">Main</div>
                 <a href="dashboard.html" class="nav-item">
-                    <i class="fas fa-home"></i> Dashboard
+                    <i class="fas fa-home" aria-hidden="true"></i> Dashboard
                 </a>
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">Content Management</div>
                 <a href="content-editor.html" class="nav-item">
-                    <i class="fas fa-edit"></i> Content Editor
+                    <i class="fas fa-edit" aria-hidden="true"></i> Content Editor
                 </a>
                 <a href="videos.html" class="nav-item">
-                    <i class="fas fa-video"></i> Video Manager
+                    <i class="fas fa-video" aria-hidden="true"></i> Video Manager
                 </a>
                 <a href="pages.html" class="nav-item">
-                    <i class="fas fa-file-alt"></i> Pages & Text
+                    <i class="fas fa-file-alt" aria-hidden="true"></i> Pages & Text
                 </a>
                 <a href="page-images.html" class="nav-item">
-                    <i class="fas fa-image"></i> Page Images
+                    <i class="fas fa-image" aria-hidden="true"></i> Page Images
                 </a>
                 <a href="products.html" class="nav-item active">
-                    <i class="fas fa-boxes"></i> Industry Products
+                    <i class="fas fa-boxes" aria-hidden="true"></i> Industry Products
                 </a>
                 <a href="media.html" class="nav-item">
-                    <i class="fas fa-images"></i> Media Library
+                    <i class="fas fa-images" aria-hidden="true"></i> Media Library
                 </a>
                 <a href="blog.html" class="nav-item">
-                    <i class="fas fa-blog"></i> Blog Posts
+                    <i class="fas fa-blog" aria-hidden="true"></i> Blog Posts
                 </a>
                 <a href="news.html" class="nav-item">
-                    <i class="fas fa-newspaper"></i> News
+                    <i class="fas fa-newspaper" aria-hidden="true"></i> News
                 </a>
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">System</div>
                 <a href="users.html" class="nav-item">
-                    <i class="fas fa-users"></i> User Management
+                    <i class="fas fa-users" aria-hidden="true"></i> User Management
                 </a>
                 <a href="activity-log.html" class="nav-item">
-                    <i class="fas fa-history"></i> Activity Log
+                    <i class="fas fa-history" aria-hidden="true"></i> Activity Log
                 </a>
                 <a href="settings.html" class="nav-item">
-                    <i class="fas fa-cog"></i> Settings
+                    <i class="fas fa-cog" aria-hidden="true"></i> Settings
+                </a>
+                <a href="change-password.html" class="nav-item">
+                    <i class="fas fa-key" aria-hidden="true"></i> Change Password
                 </a>
             </div>
             <div class="nav-section">
                 <a href="../index.html" class="nav-item" target="_blank">
-                    <i class="fas fa-external-link-alt"></i> View Website
+                    <i class="fas fa-external-link-alt" aria-hidden="true"></i> View Website
                 </a>
                 <a href="#" class="nav-item" onclick="AdminCore.logout()">
-                    <i class="fas fa-sign-out-alt"></i> Logout
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
                 </a>
             </div>
         </nav>
@@ -356,12 +359,12 @@
     <main class="admin-main">
         <header class="admin-header">
             <div class="header-left">
-                <h1><i class="fas fa-boxes" style="margin-right: 10px; color: #0052CC;"></i> Industry Products</h1>
+                <h1><i class="fas fa-boxes" aria-hidden="true" style="margin-right: 10px; color: #0052CC;"></i> Industry Products</h1>
                 <p style="margin: 5px 0 0; color: #666; font-size: 0.9rem;">Manage products displayed on industry pages</p>
             </div>
             <div class="header-right">
                 <button class="btn btn-primary" onclick="openAddModal()">
-                    <i class="fas fa-plus"></i> Add Product
+                    <i class="fas fa-plus" aria-hidden="true"></i> Add Product
                 </button>
             </div>
         </header>
@@ -369,14 +372,14 @@
         <div class="admin-content">
             <div style="background: #eff6ff; border-left: 4px solid #0052CC; padding: 15px 20px; border-radius: 8px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <strong style="color: #1e40af;"><i class="fas fa-info-circle"></i> Product Categories</strong>
+                    <strong style="color: #1e40af;"><i class="fas fa-info-circle" aria-hidden="true"></i> Product Categories</strong>
                     <p style="margin: 5px 0 0; color: #475569; font-size: 0.9rem;">
                         Industry tabs below correspond to product categories. To add, rename, or remove categories,
                         manage them in the Categories admin.
                     </p>
                 </div>
                 <a href="categories.html" class="btn btn-outline" style="white-space: nowrap;">
-                    <i class="fas fa-folder-open"></i> Manage Categories
+                    <i class="fas fa-folder-open" aria-hidden="true"></i> Manage Categories
                 </a>
             </div>
             <div id="alert-container"></div>
@@ -400,22 +403,22 @@
             <!-- Industry Tabs -->
             <div class="industry-tabs">
                 <button class="industry-tab active" data-industry="aerospace" onclick="switchIndustry('aerospace')">
-                    <i class="fas fa-plane"></i> Aerospace <span class="count" id="count-aerospace">0</span>
+                    <i class="fas fa-plane" aria-hidden="true"></i> Aerospace <span class="count" id="count-aerospace">0</span>
                 </button>
                 <button class="industry-tab" data-industry="automotive" onclick="switchIndustry('automotive')">
-                    <i class="fas fa-car"></i> Liquid Cooling <span class="count" id="count-automotive">0</span>
+                    <i class="fas fa-car" aria-hidden="true"></i> Liquid Cooling <span class="count" id="count-automotive">0</span>
                 </button>
                 <button class="industry-tab" data-industry="medical" onclick="switchIndustry('medical')">
-                    <i class="fas fa-heartbeat"></i> Medical <span class="count" id="count-medical">0</span>
+                    <i class="fas fa-heartbeat" aria-hidden="true"></i> Medical <span class="count" id="count-medical">0</span>
                 </button>
                 <button class="industry-tab" data-industry="electronics" onclick="switchIndustry('electronics')">
-                    <i class="fas fa-microchip"></i> Electronics <span class="count" id="count-electronics">0</span>
+                    <i class="fas fa-microchip" aria-hidden="true"></i> Electronics <span class="count" id="count-electronics">0</span>
                 </button>
                 <button class="industry-tab" data-industry="robotics" onclick="switchIndustry('robotics')">
-                    <i class="fas fa-robot"></i> Robotics <span class="count" id="count-robotics">0</span>
+                    <i class="fas fa-robot" aria-hidden="true"></i> Robotics <span class="count" id="count-robotics">0</span>
                 </button>
                 <button class="industry-tab" data-industry="industrial" onclick="switchIndustry('industrial')">
-                    <i class="fas fa-industry"></i> Industrial <span class="count" id="count-industrial">0</span>
+                    <i class="fas fa-industry" aria-hidden="true"></i> Industrial <span class="count" id="count-industrial">0</span>
                 </button>
             </div>
 
@@ -425,7 +428,7 @@
                 <div class="industry-content active" id="content-aerospace">
                     <div class="products-grid" id="grid-aerospace">
                         <div class="add-product-card" onclick="openAddModal('aerospace')">
-                            <i class="fas fa-plus-circle"></i>
+                            <i class="fas fa-plus-circle" aria-hidden="true"></i>
                             <span>Add Aerospace Product</span>
                         </div>
                     </div>
@@ -435,7 +438,7 @@
                 <div class="industry-content" id="content-automotive">
                     <div class="products-grid" id="grid-automotive">
                         <div class="add-product-card" onclick="openAddModal('automotive')">
-                            <i class="fas fa-plus-circle"></i>
+                            <i class="fas fa-plus-circle" aria-hidden="true"></i>
                             <span>Add Liquid Cooling Product</span>
                         </div>
                     </div>
@@ -445,7 +448,7 @@
                 <div class="industry-content" id="content-medical">
                     <div class="products-grid" id="grid-medical">
                         <div class="add-product-card" onclick="openAddModal('medical')">
-                            <i class="fas fa-plus-circle"></i>
+                            <i class="fas fa-plus-circle" aria-hidden="true"></i>
                             <span>Add Medical Product</span>
                         </div>
                     </div>
@@ -455,7 +458,7 @@
                 <div class="industry-content" id="content-electronics">
                     <div class="products-grid" id="grid-electronics">
                         <div class="add-product-card" onclick="openAddModal('electronics')">
-                            <i class="fas fa-plus-circle"></i>
+                            <i class="fas fa-plus-circle" aria-hidden="true"></i>
                             <span>Add Electronics Product</span>
                         </div>
                     </div>
@@ -465,7 +468,7 @@
                 <div class="industry-content" id="content-robotics">
                     <div class="products-grid" id="grid-robotics">
                         <div class="add-product-card" onclick="openAddModal('robotics')">
-                            <i class="fas fa-plus-circle"></i>
+                            <i class="fas fa-plus-circle" aria-hidden="true"></i>
                             <span>Add Robotics Product</span>
                         </div>
                     </div>
@@ -475,7 +478,7 @@
                 <div class="industry-content" id="content-industrial">
                     <div class="products-grid" id="grid-industrial">
                         <div class="add-product-card" onclick="openAddModal('industrial')">
-                            <i class="fas fa-plus-circle"></i>
+                            <i class="fas fa-plus-circle" aria-hidden="true"></i>
                             <span>Add Industrial Product</span>
                         </div>
                     </div>
@@ -498,7 +501,7 @@
                     <!-- Image Upload -->
                     <img src="" alt="Preview" class="image-preview" id="image-preview">
                     <div class="image-upload-zone" onclick="document.getElementById('product-image-input').click()">
-                        <i class="fas fa-cloud-upload-alt"></i>
+                        <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
                         <p>Click to upload product image</p>
                         <p style="font-size: 0.8rem; color: #9ca3af;">PNG, JPG, WebP up to 5MB</p>
                     </div>
@@ -565,7 +568,7 @@
             <div class="modal-footer">
                 <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
                 <button class="btn btn-primary" onclick="saveProduct()">
-                    <i class="fas fa-save"></i> Save Product
+                    <i class="fas fa-save" aria-hidden="true"></i> Save Product
                 </button>
             </div>
         </div>
@@ -742,7 +745,7 @@
             card.className = 'product-card-wrapper';
             card.innerHTML = `
                 <div class="product-card">
-                    ${product.featured ? '<span class="featured-badge"><i class="fas fa-star"></i> Featured</span>' : ''}
+                    ${product.featured ? '<span class="featured-badge"><i class="fas fa-star" aria-hidden="true"></i> Featured</span>' : ''}
                     <img src="${product.image || 'https://via.placeholder.com/400x300?text=No+Image'}" alt="${product.name}" class="product-image">
                     <div class="product-info">
                         <h4>${product.name}</h4>
@@ -753,10 +756,10 @@
                         </div>
                         <div class="product-actions">
                             <button class="btn btn-outline" onclick="editProduct(${product.id})">
-                                <i class="fas fa-edit"></i> Edit
+                                <i class="fas fa-edit" aria-hidden="true"></i> Edit
                             </button>
                             <button class="btn btn-outline" style="color: #dc2626; border-color: #dc2626;" onclick="deleteProduct(${product.id})">
-                                <i class="fas fa-trash"></i>
+                                <i class="fas fa-trash" aria-hidden="true"></i>
                             </button>
                         </div>
                     </div>
@@ -902,7 +905,7 @@
             const container = document.getElementById('alert-container');
             const alert = document.createElement('div');
             alert.className = 'alert alert-' + type;
-            alert.innerHTML = '<i class="fas fa-' + (type === 'success' ? 'check-circle' : 'exclamation-circle') + '"></i> ' + message;
+            alert.innerHTML = '<i class="fas fa-' + (type === 'success' ? 'check-circle' : 'exclamation-circle') + '" aria-hidden="true"></i> ' + message;
             container.appendChild(alert);
             
             setTimeout(() => {

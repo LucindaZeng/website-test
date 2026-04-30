@@ -179,63 +179,66 @@
     <aside class="admin-sidebar" id="sidebar">
         <div class="sidebar-header">
             <a href="dashboard.html" class="sidebar-logo"><span>WFX Admin</span></a>
-            <button class="sidebar-toggle" id="sidebar-toggle"><i class="fas fa-bars"></i></button>
+            <button class="sidebar-toggle" id="sidebar-toggle"><i class="fas fa-bars" aria-hidden="true"></i></button>
         </div>
         <nav class="sidebar-nav">
             <div class="nav-section">
                 <div class="nav-section-title">Main</div>
                 <a href="dashboard.html" class="nav-item">
-                    <i class="fas fa-home"></i> Dashboard
+                    <i class="fas fa-home" aria-hidden="true"></i> Dashboard
                 </a>
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">Content Management</div>
                 <a href="content-editor.html" class="nav-item">
-                    <i class="fas fa-edit"></i> Content Editor
+                    <i class="fas fa-edit" aria-hidden="true"></i> Content Editor
                 </a>
                 <a href="videos.html" class="nav-item">
-                    <i class="fas fa-video"></i> Video Manager
+                    <i class="fas fa-video" aria-hidden="true"></i> Video Manager
                 </a>
                 <a href="pages.html" class="nav-item">
-                    <i class="fas fa-file-alt"></i> Pages & Text
+                    <i class="fas fa-file-alt" aria-hidden="true"></i> Pages & Text
                 </a>
                 <a href="page-images.html" class="nav-item">
-                    <i class="fas fa-image"></i> Page Images
+                    <i class="fas fa-image" aria-hidden="true"></i> Page Images
                 </a>
                 <a href="products.html" class="nav-item">
-                    <i class="fas fa-boxes"></i> Industry Products
+                    <i class="fas fa-boxes" aria-hidden="true"></i> Industry Products
                 </a>
                 <a href="categories.html" class="nav-item active">
-                    <i class="fas fa-folder-open"></i> Categories
+                    <i class="fas fa-folder-open" aria-hidden="true"></i> Categories
                 </a>
                 <a href="media.html" class="nav-item">
-                    <i class="fas fa-images"></i> Media Library
+                    <i class="fas fa-images" aria-hidden="true"></i> Media Library
                 </a>
                 <a href="blog.html" class="nav-item">
-                    <i class="fas fa-blog"></i> Blog Posts
+                    <i class="fas fa-blog" aria-hidden="true"></i> Blog Posts
                 </a>
                 <a href="news.html" class="nav-item">
-                    <i class="fas fa-newspaper"></i> News
+                    <i class="fas fa-newspaper" aria-hidden="true"></i> News
                 </a>
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">System</div>
                 <a href="users.html" class="nav-item">
-                    <i class="fas fa-users"></i> User Management
+                    <i class="fas fa-users" aria-hidden="true"></i> User Management
                 </a>
                 <a href="activity-log.html" class="nav-item">
-                    <i class="fas fa-history"></i> Activity Log
+                    <i class="fas fa-history" aria-hidden="true"></i> Activity Log
                 </a>
                 <a href="settings.html" class="nav-item">
-                    <i class="fas fa-cog"></i> Settings
+                    <i class="fas fa-cog" aria-hidden="true"></i> Settings
+                </a>
+                <a href="change-password.html" class="nav-item">
+                    <i class="fas fa-key" aria-hidden="true"></i> Change Password
                 </a>
             </div>
             <div class="nav-section">
                 <a href="../index.html" class="nav-item" target="_blank">
-                    <i class="fas fa-external-link-alt"></i> View Website
+                    <i class="fas fa-external-link-alt" aria-hidden="true"></i> View Website
                 </a>
                 <a href="#" class="nav-item" onclick="AdminCore.logout()">
-                    <i class="fas fa-sign-out-alt"></i> Logout
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
                 </a>
             </div>
         </nav>
@@ -243,7 +246,7 @@
 
     <main class="admin-main">
         <header class="admin-header">
-            <button class="mobile-menu-btn" id="mobile-menu-btn"><i class="fas fa-bars"></i></button>
+            <button class="mobile-menu-btn" id="mobile-menu-btn"><i class="fas fa-bars" aria-hidden="true"></i></button>
             <div class="header-title">
                 <h1>Categories</h1>
                 <p>Organize News articles and Products into categories</p>
@@ -256,17 +259,17 @@
         <div class="admin-content">
             <div class="tabs">
                 <button class="tab active" onclick="switchTab('news')" id="tab-news">
-                    <i class="fas fa-newspaper"></i> News & Articles
+                    <i class="fas fa-newspaper" aria-hidden="true"></i> News & Articles
                 </button>
                 <button class="tab" onclick="switchTab('product')" id="tab-product">
-                    <i class="fas fa-boxes"></i> Products
+                    <i class="fas fa-boxes" aria-hidden="true"></i> Products
                 </button>
             </div>
 
             <!-- News categories tab -->
             <div class="tab-content active" id="content-news">
                 <div class="add-form">
-                    <h3><i class="fas fa-plus-circle"></i> Add News / Article Category</h3>
+                    <h3><i class="fas fa-plus-circle" aria-hidden="true"></i> Add News / Article Category</h3>
                     <div class="form-grid">
                         <div class="form-group">
                             <label>Name</label>
@@ -281,7 +284,7 @@
                             <input type="text" id="news-desc" placeholder="Manufacturing trends and analysis">
                         </div>
                         <button class="btn btn-primary" onclick="addCategory('news')">
-                            <i class="fas fa-plus"></i> Add
+                            <i class="fas fa-plus" aria-hidden="true"></i> Add
                         </button>
                     </div>
                 </div>
@@ -304,7 +307,7 @@
             <!-- Product categories tab -->
             <div class="tab-content" id="content-product">
                 <div class="add-form">
-                    <h3><i class="fas fa-plus-circle"></i> Add Product Category</h3>
+                    <h3><i class="fas fa-plus-circle" aria-hidden="true"></i> Add Product Category</h3>
                     <div class="form-grid">
                         <div class="form-group">
                             <label>Name</label>
@@ -319,7 +322,7 @@
                             <input type="text" id="product-desc" placeholder="Aerospace components">
                         </div>
                         <button class="btn btn-primary" onclick="addCategory('product')">
-                            <i class="fas fa-plus"></i> Add
+                            <i class="fas fa-plus" aria-hidden="true"></i> Add
                         </button>
                     </div>
                 </div>
@@ -408,7 +411,7 @@
                     tbody.innerHTML = `
                         <tr><td colspan="6">
                             <div class="empty-state">
-                                <i class="fas fa-folder-open"></i>
+                                <i class="fas fa-folder-open" aria-hidden="true"></i>
                                 <p>No categories yet. Add one above.</p>
                             </div>
                         </td></tr>`;
@@ -427,10 +430,10 @@
                         <td>
                             <div class="actions">
                                 <button class="btn-icon" onclick="editCategory('${type}', ${c.id})" title="Edit">
-                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-edit" aria-hidden="true"></i>
                                 </button>
                                 <button class="btn-icon danger" onclick="deleteCategory('${type}', ${c.id})" title="Delete">
-                                    <i class="fas fa-trash"></i>
+                                    <i class="fas fa-trash" aria-hidden="true"></i>
                                 </button>
                             </div>
                         </td>

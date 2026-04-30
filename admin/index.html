@@ -131,40 +131,108 @@
                 <input type="password" id="password" name="password" placeholder="Enter password" required>
             </div>
             <button type="submit" class="btn-login">
-                <i class="fas fa-sign-in-alt"></i> Sign In
+                <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Sign In
             </button>
         </form>
         
         <div class="back-link">
-            <a href="../index.html"><i class="fas fa-arrow-left"></i> Back to Website</a>
+            <a href="../index.html"><i class="fas fa-arrow-left" aria-hidden="true"></i> Back to Website</a>
         </div>
     </div>
 
     <script src="js/cms-sync.js"></script>
     <script src="js/admin-core.js"></script>
     <script>
-        // Check if already logged in
-        if (AdminCore.isLoggedIn()) {
-            window.location.href = 'dashboard.html';
-        }
+        // If already logged in (server session OR local fallback), redirect
+        (async function checkExistingSession() {
+            try {
+                const r = await fetch('/api/auth/me', { credentials: 'same-origin' });
+                if (r.ok) {
+                    const j = await r.json();
+                    if (j.ok) {
+                        window.location.href = 'dashboard.html';
+                        return;
+                    }
+                }
+            } catch (e) { /* server unreachable, fall through */ }
+            // Fallback: check legacy localStorage flag
+            if (AdminCore.isLoggedIn()) {
+                window.location.href = 'dashboard.html';
+            }
+        })();
 
-        document.getElementById('login-form').addEventListener('submit', function(e) {
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const errorMsg = document.getElementById('error-message');
-            
-            if (AdminCore.login(username, password)) {
-                // Log the action
-                AdminCore.logAction('login', 'User logged in', { username });
-                window.location.href = 'dashboard.html';
-            } else {
-                errorMsg.style.display = 'block';
-                setTimeout(() => {
-                    errorMsg.style.display = 'none';
-                }, 3000);
+
+            // Try server-side authentication first (preferred)
+            let serverAuthOk = false;
+            let serverError = null;
+            try {
+                const r = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const j = await r.json().catch(() => ({}));
+                if (r.ok && j.ok) {
+                    // Store CSRF token in localStorage so cms-sync.js can use it
+                    if (j.csrf_token) {
+                        localStorage.setItem('wfx_csrf_token', j.csrf_token);
+                        window.WFX_CSRF_TOKEN = j.csrf_token;
+                    }
+                    // Sync user to localStorage so AdminCore UI continues to work
+                    localStorage.setItem('wfx_admin_logged_in', 'true');
+                    localStorage.setItem('wfx_admin_user', JSON.stringify({
+                        id: j.user.id,
+                        username: j.user.username,
+                        role: j.user.role,
+                        name: j.user.username,
+                    }));
+                    serverAuthOk = true;
+
+                    // If server reports password is still default, force change
+                    if (j.user.must_change_password) {
+                        sessionStorage.setItem('wfx_must_change_password', '1');
+                        AdminCore.logAction('login', 'User logged in (password change required)', { username });
+                        window.location.href = 'change-password.html';
+                        return;
+                    }
+                } else if (r.status === 429) {
+                    errorMsg.textContent = 'Too many login attempts. Try again in 5 minutes.';
+                    errorMsg.style.display = 'block';
+                    return;
+                } else {
+                    serverError = j.error || 'Invalid credentials';
+                }
+            } catch (err) {
+                // Server unreachable — fall back to legacy client-side check
+                console.warn('Server auth unavailable, using local fallback:', err.message);
             }
+
+            // Fallback: legacy localStorage-based login (offline / dev mode)
+            if (!serverAuthOk) {
+                if (serverError && serverError !== 'Invalid credentials') {
+                    // Server responded but rejected — show that error
+                    errorMsg.textContent = serverError;
+                    errorMsg.style.display = 'block';
+                    return;
+                }
+                if (!AdminCore.login(username, password)) {
+                    errorMsg.textContent = 'Invalid username or password';
+                    errorMsg.style.display = 'block';
+                    setTimeout(() => { errorMsg.style.display = 'none'; }, 3000);
+                    return;
+                }
+            }
+
+            // Login successful (server or fallback)
+            AdminCore.logAction('login', 'User logged in', { username, server: serverAuthOk });
+            window.location.href = 'dashboard.html';
         });
     </script>
 </body>

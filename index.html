@@ -23,6 +23,9 @@
     <link rel="stylesheet" href="styles.css">
 
     <!-- Schema.org structured data for SEO -->
+    <!-- TODO when social accounts are live: populate "sameAs" with full URLs of
+         LinkedIn / YouTube / Alibaba / Facebook etc. company pages. This builds
+         the entity graph Google uses for the right-rail Knowledge Panel. -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -59,7 +62,6 @@
           "image": "https://wanfuxin.com/company-video-poster.jpg",
           "url": "https://wanfuxin.com/",
           "email": "lucindaz@wanfuxin.com",
-          "priceRange": "$$",
           "address": {
             "@type": "PostalAddress",
             "streetAddress": "3 Fuxin West Road, Qingxi Town",
@@ -106,8 +108,8 @@
         <div class="container">
             <div class="top-bar-content">
                 <div class="top-bar-left">
-                    <span><i class="fas fa-phone"></i> +86 13431451998</span>
-                    <span><i class="fas fa-envelope"></i> lucindaz@wanfuxin.com</span>
+                    <span><i class="fas fa-phone" aria-hidden="true"></i> +86 13431451998</span>
+                    <span><i class="fas fa-envelope" aria-hidden="true"></i> lucindaz@wanfuxin.com</span>
                 </div>
                 <div class="top-bar-right">
                     <a href="#quote">Request a Quote</a>
@@ -127,43 +129,43 @@
                 
                 <ul class="nav-menu" id="nav-menu">
                     <li class="nav-item dropdown">
-                        <a href="#" class="nav-link">Services <i class="fas fa-chevron-down"></i></a>
+                        <a href="#" class="nav-link">Services <i class="fas fa-chevron-down" aria-hidden="true"></i></a>
                         <div class="dropdown-menu mega-menu">
                             <div class="mega-menu-content">
                                 <div class="mega-menu-section">
                                     <h4>CNC Machining</h4>
                                     <ul>
-                                        <li><a href="cnc-milling.html"><i class="fas fa-cube"></i> CNC Milling</a></li>
-                                        <li><a href="cnc-turning.html"><i class="fas fa-sync-alt"></i> CNC Turning</a></li>
-                                        <li><a href="5-axis.html"><i class="fas fa-dice-d6"></i> 5-Axis Machining</a></li>
-                                        <li><a href="precision-inspection.html"><i class="fas fa-compress-arrows-alt"></i> Precision Inspection</a></li>
+                                        <li><a href="cnc-milling.html"><i class="fas fa-cube" aria-hidden="true"></i> CNC Milling</a></li>
+                                        <li><a href="cnc-turning.html"><i class="fas fa-sync-alt" aria-hidden="true"></i> CNC Turning</a></li>
+                                        <li><a href="5-axis.html"><i class="fas fa-dice-d6" aria-hidden="true"></i> 5-Axis Machining</a></li>
+                                        <li><a href="precision-inspection.html"><i class="fas fa-compress-arrows-alt" aria-hidden="true"></i> Precision Inspection</a></li>
                                     </ul>
                                 </div>
                                 <div class="mega-menu-section">
                                     <h4>Additional Services</h4>
                                     <ul>
-                                        <li><a href="prototyping.html"><i class="fas fa-drafting-compass"></i> Rapid Prototyping</a></li>
-                                        <li><a href="production.html"><i class="fas fa-industry industry-icon"></i> Production Runs</a></li>
-                                        <li><a href="finishing.html"><i class="fas fa-spray-can"></i> Surface Finishing</a></li>
-                                        <li><a href="assembly.html"><i class="fas fa-puzzle-piece"></i> Assembly Services</a></li>
+                                        <li><a href="prototyping.html"><i class="fas fa-drafting-compass" aria-hidden="true"></i> Rapid Prototyping</a></li>
+                                        <li><a href="production.html"><i class="fas fa-industry industry-icon" aria-hidden="true"></i> Production Runs</a></li>
+                                        <li><a href="finishing.html"><i class="fas fa-spray-can" aria-hidden="true"></i> Surface Finishing</a></li>
+                                        <li><a href="assembly.html"><i class="fas fa-puzzle-piece" aria-hidden="true"></i> Assembly Services</a></li>
                                     </ul>
                                 </div>
                                 <div class="mega-menu-section">
                                     <h4>Metal Forming</h4>
                                     <ul>
-                                        <li><a href="die-casting.html"><i class="fas fa-fill-drip"></i> Die Casting</a></li>
-                                        <li><a href="forging.html"><i class="fas fa-hammer"></i> Forging</a></li>
-                                        <li><a href="stamping.html"><i class="fas fa-compress-alt"></i> Stamping</a></li>
-                                        <li><a href="sheet-metal.html"><i class="fas fa-layer-group"></i> Sheet Metal</a></li>
-                                        <li><a href="investment-casting.html"><i class="fas fa-gem"></i> Investment Casting</a></li>
+                                        <li><a href="die-casting.html"><i class="fas fa-fill-drip" aria-hidden="true"></i> Die Casting</a></li>
+                                        <li><a href="forging.html"><i class="fas fa-hammer" aria-hidden="true"></i> Forging</a></li>
+                                        <li><a href="stamping.html"><i class="fas fa-compress-alt" aria-hidden="true"></i> Stamping</a></li>
+                                        <li><a href="sheet-metal.html"><i class="fas fa-layer-group" aria-hidden="true"></i> Sheet Metal</a></li>
+                                        <li><a href="investment-casting.html"><i class="fas fa-gem" aria-hidden="true"></i> Investment Casting</a></li>
                                     </ul>
                                 </div>
                                 <div class="mega-menu-section">
                                     <h4>Quick Links</h4>
                                     <ul>
-                                        <li><a href="#quote"><i class="fas fa-calculator"></i> Request a Quote</a></li>
-                                        <li><a href="materials.html"><i class="fas fa-layer-group"></i> Material Selection</a></li>
-                                        <li><a href="tolerances.html"><i class="fas fa-ruler-combined"></i> Tolerances Guide</a></li>
+                                        <li><a href="#quote"><i class="fas fa-calculator" aria-hidden="true"></i> Request a Quote</a></li>
+                                        <li><a href="materials.html"><i class="fas fa-layer-group" aria-hidden="true"></i> Material Selection</a></li>
+                                        <li><a href="tolerances.html"><i class="fas fa-ruler-combined" aria-hidden="true"></i> Tolerances Guide</a></li>
                                     </ul>
                                 </div>
                                 
@@ -171,7 +173,7 @@
                         </div>
                     </li>
                     <li class="nav-item dropdown">
-                        <a href="materials.html" class="nav-link">Materials <i class="fas fa-chevron-down"></i></a>
+                        <a href="materials.html" class="nav-link">Materials <i class="fas fa-chevron-down" aria-hidden="true"></i></a>
                         <div class="dropdown-menu">
                             <ul>
                                 <li><a href="metals.html">Metals & Alloys</a></li>
@@ -183,7 +185,7 @@
                         </div>
                     </li>
                     <li class="nav-item dropdown">
-                        <a href="industries.html" class="nav-link">Industries <i class="fas fa-chevron-down"></i></a>
+                        <a href="industries.html" class="nav-link">Industries <i class="fas fa-chevron-down" aria-hidden="true"></i></a>
                         <div class="dropdown-menu">
                             <ul>
                                 <li><a href="aerospace.html">Aerospace Parts</a></li>
@@ -196,7 +198,7 @@
                         </div>
                     </li>
                     <li class="nav-item dropdown">
-                        <a href="resources.html" class="nav-link">Resources <i class="fas fa-chevron-down"></i></a>
+                        <a href="resources.html" class="nav-link">Resources <i class="fas fa-chevron-down" aria-hidden="true"></i></a>
                         <div class="dropdown-menu">
                             <ul>
                                 <li><a href="design-guide.html">Design Guidelines</a></li>
@@ -268,10 +270,10 @@
                 </div>
                 <div class="hero-actions">
                     <a href="#quote" class="btn btn-primary btn-large">
-                        <i class="fas fa-upload"></i> Upload CAD & Get Quote
+                        <i class="fas fa-upload" aria-hidden="true"></i> Upload CAD & Get Quote
                     </a>
                     <a href="#services" class="btn btn-secondary-light btn-large">
-                        <i class="fas fa-cogs"></i> Explore Services
+                        <i class="fas fa-cogs" aria-hidden="true"></i> Explore Services
                     </a>
                 </div>
             </div>
@@ -279,7 +281,7 @@
         <div class="hero-scroll">
             <a href="#trusted-by">
                 <span>Scroll to explore</span>
-                <i class="fas fa-chevron-down"></i>
+                <i class="fas fa-chevron-down" aria-hidden="true"></i>
             </a>
         </div>
     </section>
@@ -318,19 +320,19 @@
                         <img src="https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&h=300&fit=crop" alt="CNC Milling" loading="lazy" decoding="async" width="400" height="300">
                     </div>
                     <div class="service-icon">
-                        <i class="fas fa-cube"></i>
+                        <i class="fas fa-cube" aria-hidden="true"></i>
                     </div>
                     <div class="service-content">
                         <h3>CNC Milling</h3>
                         <p>3-axis to 6-axis milling capabilities for complex geometries. Ideal for prototypes, fixtures, and production parts with tight tolerances.</p>
                         <ul class="service-features">
-                            <li><i class="fas fa-check"></i> Parts in as fast as 7 days</li>
-                            <li><i class="fas fa-check"></i> Tolerances to ±0.005mm</li>
-                            <li><i class="fas fa-check"></i> Complex 3D geometries</li>
-                            <li><i class="fas fa-check"></i> 50+ material options</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Parts in as fast as 7 days</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Tolerances to ±0.005mm</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Complex 3D geometries</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> 50+ material options</li>
                         </ul>
                         <a href="cnc-milling.html" class="service-link">
-                            Learn More <i class="fas fa-arrow-right"></i>
+                            Learn More <i class="fas fa-arrow-right" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
@@ -340,18 +342,18 @@
                         <img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=400&h=300&fit=crop" alt="CNC Turning" loading="lazy" decoding="async" width="400" height="300">
                     </div>
                     <div class="service-icon">
-                        <i class="fas fa-sync-alt"></i>
+                        <i class="fas fa-sync-alt" aria-hidden="true"></i>
                     </div>
                     <div class="service-content">
                         <h3>CNC Turning</h3>
                         <p>High-precision turned components for cylindrical parts, shafts, and complex rotational geometries.</p>
                         <ul class="service-features">
-                            <li><i class="fas fa-check"></i> Live tooling available</li>
-                            <li><i class="fas fa-check"></i> Sub-spindle operations</li>
-                            <li><i class="fas fa-check"></i> Bar feed automation</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Live tooling available</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Sub-spindle operations</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Bar feed automation</li>
                         </ul>
                         <a href="cnc-turning.html" class="service-link">
-                            Learn More <i class="fas fa-arrow-right"></i>
+                            Learn More <i class="fas fa-arrow-right" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
@@ -361,18 +363,18 @@
                         <img src="https://images.unsplash.com/photo-1581091226817-a6a2a5aee158?w=400&h=300&fit=crop" alt="5-Axis Machining" loading="lazy" decoding="async" width="400" height="300">
                     </div>
                     <div class="service-icon">
-                        <i class="fas fa-dice-d6"></i>
+                        <i class="fas fa-dice-d6" aria-hidden="true"></i>
                     </div>
                     <div class="service-content">
                         <h3>5-Axis Machining</h3>
                         <p>Advanced multi-axis machining for aerospace, medical, and complex components requiring superior surface finish.</p>
                         <ul class="service-features">
-                            <li><i class="fas fa-check"></i> Simultaneous 5-axis</li>
-                            <li><i class="fas fa-check"></i> Undercuts & complex angles</li>
-                            <li><i class="fas fa-check"></i> Single-setup accuracy</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Simultaneous 5-axis</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Undercuts & complex angles</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Single-setup accuracy</li>
                         </ul>
                         <a href="5-axis.html" class="service-link">
-                            Learn More <i class="fas fa-arrow-right"></i>
+                            Learn More <i class="fas fa-arrow-right" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
@@ -382,18 +384,18 @@
                         <img src="https://images.unsplash.com/photo-1537462715879-360eeb61a0ad?w=400&h=300&fit=crop" alt="Precision Inspection" loading="lazy" decoding="async" width="400" height="300">
                     </div>
                     <div class="service-icon">
-                        <i class="fas fa-compress-arrows-alt"></i>
+                        <i class="fas fa-compress-arrows-alt" aria-hidden="true"></i>
                     </div>
                     <div class="service-content">
                         <h3>Precision Inspection</h3>
                         <p>Ultra-precision Precision inspection turning for small, complex parts with exceptional accuracy and surface finish.</p>
                         <ul class="service-features">
-                            <li><i class="fas fa-check"></i> Parts as small as 0.020"</li>
-                            <li><i class="fas fa-check"></i> Medical-grade quality</li>
-                            <li><i class="fas fa-check"></i> High-volume production</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Parts as small as 0.020"</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Medical-grade quality</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> High-volume production</li>
                         </ul>
                         <a href="precision-inspection.html" class="service-link">
-                            Learn More <i class="fas fa-arrow-right"></i>
+                            Learn More <i class="fas fa-arrow-right" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
@@ -418,7 +420,7 @@
             <div class="tour-grid">
                 <div class="tour-item">
                     <div class="tour-header">
-                        <i class="fas fa-video"></i>
+                        <i class="fas fa-video" aria-hidden="true"></i>
                         <h3>Company Video</h3>
                     </div>
                     <div class="video-container">
@@ -433,7 +435,7 @@
 
                 <div class="tour-item">
                     <div class="tour-header">
-                        <i class="fas fa-vr-cardboard"></i>
+                        <i class="fas fa-vr-cardboard" aria-hidden="true"></i>
                         <h3>360° AR Factory Tour</h3>
                     </div>
                     <div class="ar-container">
@@ -454,21 +456,21 @@
                     
                     <div class="quote-features">
                         <div class="quote-feature">
-                            <i class="fas fa-clock"></i>
+                            <i class="fas fa-clock" aria-hidden="true"></i>
                             <div>
                                 <h4>Instant Analysis</h4>
                                 <p>Automated DFM feedback within one day</p>
                             </div>
                         </div>
                         <div class="quote-feature">
-                            <i class="fas fa-shield-alt"></i>
+                            <i class="fas fa-shield-alt" aria-hidden="true"></i>
                             <div>
                                 <h4>Secure Upload</h4>
                                 <p>Your files are encrypted and protected</p>
                             </div>
                         </div>
                         <div class="quote-feature">
-                            <i class="fas fa-users"></i>
+                            <i class="fas fa-users" aria-hidden="true"></i>
                             <div>
                                 <h4>Expert Review</h4>
                                 <p>Engineers available for complex projects</p>
@@ -498,13 +500,26 @@
                 <div class="quote-form-wrapper">
                     <form class="quote-form" id="quote-form">
                         <div class="upload-zone" id="upload-zone">
-                            <i class="fas fa-cloud-upload-alt"></i>
+                            <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
                             <h3>Drag & Drop Your CAD File</h3>
                             <p>or click to browse</p>
                             <input type="file" id="cad-file" accept=".step,.stp,.iges,.igs,.stl,.sldprt,.x_t,.sat,.dwg,.dxf,.pdf,.zip,.rar" hidden>
                             <span class="upload-hint">Max file size: 100MB</span>
                         </div>
-                        
+                        <div class="ip-notice" style="display:flex; align-items:flex-start; gap:10px; margin-top:12px; padding:12px 14px; background:#f0f9ff; border:1px solid #bae6fd; border-radius:8px; font-size:0.875rem; color:#075985;">
+                            <i class="fas fa-shield-alt" aria-hidden="true" style="color:#0284c7; margin-top:2px;"></i>
+                            <div>
+                                <strong>100% Secure & Confidential.</strong>
+                                Your CAD files are protected by NDA and transmitted over encrypted HTTPS. We respect your IP and never share, resell, or use your designs for any purpose other than your quote.
+                                <a href="downloads.html#nda" style="color:#0284c7; text-decoration:underline; font-weight:500;">Download our standard NDA &rarr;</a>
+                            </div>
+                        </div>
+
+                        <div style="margin: 25px 0 12px; padding: 14px 16px; background:#f8fafc; border-left:3px solid var(--primary); border-radius:6px;">
+                            <strong style="display:block; margin-bottom:4px; color:var(--dark);">Project specifications (optional)</strong>
+                            <span style="font-size:0.875rem; color:var(--gray);">Don't have all the details? Skip these — we can determine the right material and finish from your CAD file. Just tell us how to reach you below.</span>
+                        </div>
+
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="material">Material</label>
@@ -668,7 +683,7 @@
                         </div>
 
                         <button type="submit" class="btn btn-primary btn-block">
-                            <i class="fas fa-calculator"></i> Request a Quote
+                            <i class="fas fa-calculator" aria-hidden="true"></i> Request a Quote
                         </button>
                     </form>
                 </div>
@@ -689,7 +704,7 @@
                 <div class="process-step">
                     <div class="step-number">01</div>
                     <div class="step-icon">
-                        <i class="fas fa-upload"></i>
+                        <i class="fas fa-upload" aria-hidden="true"></i>
                     </div>
                     <div class="step-content">
                         <h3>Upload CAD File</h3>
@@ -702,7 +717,7 @@
                 <div class="process-step">
                     <div class="step-number">02</div>
                     <div class="step-icon">
-                        <i class="fas fa-search-plus"></i>
+                        <i class="fas fa-search-plus" aria-hidden="true"></i>
                     </div>
                     <div class="step-content">
                         <h3>DFM Analysis & Quote</h3>
@@ -715,7 +730,7 @@
                 <div class="process-step">
                     <div class="step-number">03</div>
                     <div class="step-icon">
-                        <i class="fas fa-cogs"></i>
+                        <i class="fas fa-cogs" aria-hidden="true"></i>
                     </div>
                     <div class="step-content">
                         <h3>Precision Manufacturing</h3>
@@ -728,7 +743,7 @@
                 <div class="process-step">
                     <div class="step-number">04</div>
                     <div class="step-icon">
-                        <i class="fas fa-shipping-fast"></i>
+                        <i class="fas fa-shipping-fast" aria-hidden="true"></i>
                     </div>
                     <div class="step-content">
                         <h3>Quality Inspection & Delivery</h3>
@@ -874,7 +889,7 @@
                         <div class="industry-overlay"></div>
                     </div>
                     <div class="industry-content">
-                        <i class="fas fa-plane industry-icon"></i>
+                        <i class="fas fa-plane industry-icon" aria-hidden="true"></i>
                         <h3>Aerospace Parts</h3>
                         <p>Precision components for aircraft, spacecraft, and defense systems. Flight-critical parts with full traceability and ISO9001-certified quality.</p>
                         <ul>
@@ -882,7 +897,7 @@
                             <li>Engine parts</li>
                             <li>Avionics housings</li>
                         </ul>
-                        <a href="aerospace.html" class="industry-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                        <a href="aerospace.html" class="industry-link">Learn More <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
                     </div>
                 </div>
 
@@ -892,7 +907,7 @@
                         <div class="industry-overlay"></div>
                     </div>
                     <div class="industry-content">
-                        <i class="fas fa-snowflake industry-icon"></i>
+                        <i class="fas fa-snowflake industry-icon" aria-hidden="true"></i>
                         <h3>Liquid Cooling Parts</h3>
                         <p>Precision-machined liquid cooling components for servers, data centers, EVs, and power electronics.</p>
                         <ul>
@@ -900,7 +915,7 @@
                             <li>Cooling manifolds</li>
                             <li>Flow channels</li>
                         </ul>
-                        <a href="liquid-cooling.html" class="industry-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                        <a href="liquid-cooling.html" class="industry-link">Learn More <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
                     </div>
                 </div>
 
@@ -910,7 +925,7 @@
                         <div class="industry-overlay"></div>
                     </div>
                     <div class="industry-content">
-                        <i class="fas fa-heartbeat industry-icon"></i>
+                        <i class="fas fa-heartbeat industry-icon" aria-hidden="true"></i>
                         <h3>Medical Devices</h3>
                         <p>Precision manufacturing for surgical instruments, implants, and diagnostic equipment with full traceability.</p>
                         <ul>
@@ -918,7 +933,7 @@
                             <li>Implant components</li>
                             <li>Diagnostic devices</li>
                         </ul>
-                        <a href="medical.html" class="industry-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                        <a href="medical.html" class="industry-link">Learn More <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
                     </div>
                 </div>
 
@@ -928,7 +943,7 @@
                         <div class="industry-overlay"></div>
                     </div>
                     <div class="industry-content">
-                        <i class="fas fa-microchip industry-icon"></i>
+                        <i class="fas fa-microchip industry-icon" aria-hidden="true"></i>
                         <h3>Electronics & Semiconductors</h3>
                         <p>Precision components for semiconductor equipment, consumer electronics, and telecom infrastructure.</p>
                         <ul>
@@ -936,7 +951,7 @@
                             <li>Semiconductor fixtures</li>
                             <li>RF components</li>
                         </ul>
-                        <a href="electronics.html" class="industry-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                        <a href="electronics.html" class="industry-link">Learn More <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
                     </div>
                 </div>
 
@@ -946,7 +961,7 @@
                         <div class="industry-overlay"></div>
                     </div>
                     <div class="industry-content">
-                        <i class="fas fa-robot industry-icon"></i>
+                        <i class="fas fa-robot industry-icon" aria-hidden="true"></i>
                         <h3>Robotics & Automation</h3>
                         <p>Custom components for industrial robots, cobots, and automated manufacturing systems.</p>
                         <ul>
@@ -954,7 +969,7 @@
                             <li>Actuator housings</li>
                             <li>Precision linkages</li>
                         </ul>
-                        <a href="robotics.html" class="industry-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                        <a href="robotics.html" class="industry-link">Learn More <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
                     </div>
                 </div>
 
@@ -964,7 +979,7 @@
                         <div class="industry-overlay"></div>
                     </div>
                     <div class="industry-content">
-                        <i class="fas fa-industry industry-icon"></i>
+                        <i class="fas fa-industry industry-icon" aria-hidden="true"></i>
                         <h3>Industrial Equipment</h3>
                         <p>Heavy-duty components for manufacturing equipment, pumps, valves, and industrial machinery.</p>
                         <ul>
@@ -972,7 +987,7 @@
                             <li>Valve bodies</li>
                             <li>Custom fixtures</li>
                         </ul>
-                        <a href="industrial.html" class="industry-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                        <a href="industrial.html" class="industry-link">Learn More <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
                     </div>
                 </div>
             </div>
@@ -991,7 +1006,7 @@
                     <div class="features-list">
                         <div class="feature-item">
                             <div class="feature-icon">
-                                <i class="fas fa-certificate"></i>
+                                <i class="fas fa-certificate" aria-hidden="true"></i>
                             </div>
                             <div class="feature-text">
                                 <h4>Certified Quality</h4>
@@ -1001,7 +1016,7 @@
                         
                         <div class="feature-item">
                             <div class="feature-icon">
-                                <i class="fas fa-rocket"></i>
+                                <i class="fas fa-rocket" aria-hidden="true"></i>
                             </div>
                             <div class="feature-text">
                                 <h4>Rapid Turnaround</h4>
@@ -1011,7 +1026,7 @@
                         
                         <div class="feature-item">
                             <div class="feature-icon">
-                                <i class="fas fa-microscope"></i>
+                                <i class="fas fa-microscope" aria-hidden="true"></i>
                             </div>
                             <div class="feature-text">
                                 <h4>Precision Tolerances</h4>
@@ -1021,7 +1036,7 @@
                         
                         <div class="feature-item">
                             <div class="feature-icon">
-                                <i class="fas fa-users-cog"></i>
+                                <i class="fas fa-users-cog" aria-hidden="true"></i>
                             </div>
                             <div class="feature-text">
                                 <h4>Engineering Support</h4>
@@ -1033,22 +1048,22 @@
                 
                 <div class="why-us-stats">
                     <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-trophy"></i></div>
+                        <div class="stat-icon"><i class="fas fa-trophy" aria-hidden="true"></i></div>
                         <div class="stat-value">19+</div>
                         <div class="stat-label">Years Experience</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-cog"></i></div>
+                        <div class="stat-icon"><i class="fas fa-cog" aria-hidden="true"></i></div>
                         <div class="stat-value">50M+</div>
                         <div class="stat-label">Parts Delivered</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-smile"></i></div>
+                        <div class="stat-icon"><i class="fas fa-smile" aria-hidden="true"></i></div>
                         <div class="stat-value">99.7%</div>
                         <div class="stat-label">On-Time Delivery</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-building"></i></div>
+                        <div class="stat-icon"><i class="fas fa-building" aria-hidden="true"></i></div>
                         <div class="stat-value">5,000+</div>
                         <div class="stat-label">Customers Served</div>
                     </div>
@@ -1090,15 +1105,15 @@
                 <div class="testimonial-card">
                     <div class="testimonial-content">
                         <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
                         </div>
                         <p>"WFX consistently delivers precision parts that meet our tight specifications. Their 300+ CNC machines and 24/7 production capability means we can count on reliable turnaround for volume orders."</p>
                         <div class="testimonial-author">
-                            <div style="width:50px;height:50px;border-radius:50%;background:var(--gradient-primary);display:flex;align-items:center;justify-content:center;"><i class="fas fa-industry" style="color:white;font-size:1.2rem;"></i></div>
+                            <div style="width:50px;height:50px;border-radius:50%;background:var(--gradient-primary);display:flex;align-items:center;justify-content:center;"><i class="fas fa-industry" aria-hidden="true" style="color:white;font-size:1.2rem;"></i></div>
                             <div>
                                 <h4>Molex Dongguan</h4>
                                 <span>Awarded WFX "Best Quality Heat Sink Supplier"</span>
@@ -1110,15 +1125,15 @@
                 <div class="testimonial-card">
                     <div class="testimonial-content">
                         <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
                         </div>
                         <p>"The instant quoting system saves us hours every week. We can iterate on designs quickly and get accurate pricing immediately. Their 5-axis capabilities have opened up new design possibilities for our medical devices."</p>
                         <div class="testimonial-author">
-                            <div style="width:50px;height:50px;border-radius:50%;background:var(--gradient-primary);display:flex;align-items:center;justify-content:center;"><i class="fas fa-microchip" style="color:white;font-size:1.2rem;"></i></div>
+                            <div style="width:50px;height:50px;border-radius:50%;background:var(--gradient-primary);display:flex;align-items:center;justify-content:center;"><i class="fas fa-microchip" aria-hidden="true" style="color:white;font-size:1.2rem;"></i></div>
                             <div>
                                 <h4>Electronics OEM Customer</h4>
                                 <span>European Technology Company</span>
@@ -1130,15 +1145,15 @@
                 <div class="testimonial-card">
                     <div class="testimonial-content">
                         <div class="stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
                         </div>
                         <p>"From prototyping to production runs, WFX has been a dependable partner. Their self-built 20,000 sqm facility and in-house anodizing capability means we get complete parts without managing multiple vendors. Quality and communication are top-notch."</p>
                         <div class="testimonial-author">
-                            <div style="width:50px;height:50px;border-radius:50%;background:var(--gradient-primary);display:flex;align-items:center;justify-content:center;"><i class="fas fa-cogs" style="color:white;font-size:1.2rem;"></i></div>
+                            <div style="width:50px;height:50px;border-radius:50%;background:var(--gradient-primary);display:flex;align-items:center;justify-content:center;"><i class="fas fa-cogs" aria-hidden="true" style="color:white;font-size:1.2rem;"></i></div>
                             <div>
                                 <h4>Industrial Equipment Customer</h4>
                                 <span>Domestic Manufacturing Partner</span>
@@ -1150,13 +1165,13 @@
             </div>
 
             <div class="testimonial-nav">
-                <button class="nav-btn prev"><i class="fas fa-chevron-left"></i></button>
+                <button class="nav-btn prev"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
                 <div class="nav-dots">
                     <span class="dot active"></span>
                     <span class="dot"></span>
                     <span class="dot"></span>
                 </div>
-                <button class="nav-btn next"><i class="fas fa-chevron-right"></i></button>
+                <button class="nav-btn next"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
             </div>
         </div>
     </section>
@@ -1179,7 +1194,7 @@
                         <span class="news-date">March 10, 2025</span>
                         <h3>New DMG MORI 5-Axis Machines Expand Our Capabilities</h3>
                         <p>We've added three new DMG MORI DMU 50 5-axis machining centers to our facility, enabling even more complex geometries and tighter tolerances.</p>
-                        <a href="blog.html" class="news-link">Read More <i class="fas fa-arrow-right"></i></a>
+                        <a href="blog.html" class="news-link">Read More <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
                     </div>
                 </div>
 
@@ -1192,7 +1207,7 @@
                         <span class="news-date">February 20, 2025</span>
                         <h3>IATF16949 Recertification Completed with Zero Non-Conformances</h3>
                         <p>Our commitment to quality has been reaffirmed with a flawless IATF16949 audit.</p>
-                        <a href="blog.html" class="news-link">Read More <i class="fas fa-arrow-right"></i></a>
+                        <a href="blog.html" class="news-link">Read More <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
                     </div>
                 </div>
 
@@ -1205,7 +1220,7 @@
                         <span class="news-date">January 15, 2025</span>
                         <h3>24/7 Lights-Out Manufacturing Now Fully Operational</h3>
                         <p>Expanded automation allows us to run production around the clock, reducing lead times.</p>
-                        <a href="blog.html" class="news-link">Read More <i class="fas fa-arrow-right"></i></a>
+                        <a href="blog.html" class="news-link">Read More <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
                     </div>
                 </div>
             </div>
@@ -1225,10 +1240,10 @@
                 <p>Upload your CAD file today and receive your quote request. Our team is standing by to help bring your project to life.</p>
                 <div class="cta-actions">
                     <a href="#quote" class="btn btn-primary btn-large">
-                        <i class="fas fa-upload"></i> Request a Quote
+                        <i class="fas fa-upload" aria-hidden="true"></i> Request a Quote
                     </a>
                     <a href="contact.html" class="btn btn-outline-light btn-large">
-                        <i class="fas fa-phone"></i> Talk to an Expert
+                        <i class="fas fa-phone" aria-hidden="true"></i> Talk to an Expert
                     </a>
                 </div>
                 <div class="cta-contact">
@@ -1306,9 +1321,9 @@
                 <div class="footer-contact">
                     <h4>Contact Us</h4>
                     <address>
-                        <p><i class="fas fa-map-marker-alt"></i> 3 Fuxin West Road<br>QingXi Town, Dongguan City, Guangdong, China</p>
-                        <p><i class="fas fa-phone"></i> <a href="tel:+8613431451998">+86 13431451998</a></p>
-                        <p><i class="fas fa-envelope"></i> <a href="mailto:lucindaz@wanfuxin.com">lucindaz@wanfuxin.com</a></p>
+                        <p><i class="fas fa-map-marker-alt" aria-hidden="true"></i> 3 Fuxin West Road<br>QingXi Town, Dongguan City, Guangdong, China</p>
+                        <p><i class="fas fa-phone" aria-hidden="true"></i> <a href="tel:+8613431451998">+86 13431451998</a></p>
+                        <p><i class="fas fa-envelope" aria-hidden="true"></i> <a href="mailto:lucindaz@wanfuxin.com">lucindaz@wanfuxin.com</a></p>
                     </address>
                     <div class="footer-hours">
                         <h5>Business Hours</h5>
@@ -1333,7 +1348,7 @@
 
     <!-- Back to Top Button -->
     <button class="back-to-top" id="back-to-top" aria-label="Back to top">
-        <i class="fas fa-chevron-up"></i>
+        <i class="fas fa-chevron-up" aria-hidden="true"></i>
     </button>
 
     <script defer src="content-loader.js"></script>
@@ -1433,7 +1448,7 @@
                             const features = cards[i].querySelectorAll('.service-features li');
                             [item.feature1, item.feature2, item.feature3, item.feature4].forEach((f, fi) => {
                                 if (f && features[fi]) {
-                                    features[fi].innerHTML = '<i class="fas fa-check"></i> ' + f;
+                                    features[fi].innerHTML = '<i class="fas fa-check" aria-hidden="true"></i> ' + f;
                                 }
                             });
                         }

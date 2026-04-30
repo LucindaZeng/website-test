@@ -3,6 +3,46 @@
  * Handles authentication, user management, content management, and activity logging
  */
 
+/**
+ * Escape HTML special characters to prevent stored XSS when rendering
+ * user-supplied content into innerHTML. Use sanitizeHtml() for content
+ * that should retain basic markup (b, i, etc.).
+ */
+function escapeHtml(text) {
+    if (text == null) return '';
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+/**
+ * Minimal HTML sanitizer for rich-text fields. Strips <script>, <iframe>,
+ * <object>, <embed>, and any on* event handlers. Allows common formatting
+ * tags. For production, consider DOMPurify (https://github.com/cure53/DOMPurify).
+ */
+function sanitizeHtml(html) {
+    if (html == null) return '';
+    let s = String(html);
+    // Strip dangerous tags entirely
+    s = s.replace(/<\s*(script|iframe|object|embed|link|meta|style|form)\b[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi, '');
+    s = s.replace(/<\s*(script|iframe|object|embed|link|meta|style|form)\b[^>]*\/?>/gi, '');
+    // Strip on*= handlers
+    s = s.replace(/\son\w+\s*=\s*"[^"]*"/gi, '');
+    s = s.replace(/\son\w+\s*=\s*'[^']*'/gi, '');
+    s = s.replace(/\son\w+\s*=\s*[^\s>]*/gi, '');
+    // Strip javascript: in href/src
+    s = s.replace(/\s(href|src)\s*=\s*"javascript:[^"]*"/gi, ' $1="#"');
+    s = s.replace(/\s(href|src)\s*=\s*'javascript:[^']*'/gi, " $1='#'");
+    return s;
+}
+
+// Expose globally
+window.escapeHtml = escapeHtml;
+window.sanitizeHtml = sanitizeHtml;
+
 const AdminCore = {
     // Default admin account
     DEFAULT_ADMIN: {
@@ -43,6 +83,33 @@ const AdminCore = {
         const savedToken = localStorage.getItem('wfx_api_token');
         if (savedToken) {
             window.WFX_ADMIN_TOKEN = savedToken;
+        }
+        // Restore CSRF token from previous login (so cms-sync can authenticate)
+        const savedCsrf = localStorage.getItem('wfx_csrf_token');
+        if (savedCsrf) {
+            window.WFX_CSRF_TOKEN = savedCsrf;
+        }
+        // Verify session with server in the background; if expired, fetch a new CSRF token
+        // (the server's /api/auth/me endpoint validates the cookie, so this confirms login)
+        if (typeof fetch === 'function') {
+            fetch('/api/auth/me', { credentials: 'same-origin' })
+                .then(r => r.json().catch(() => ({})))
+                .then(j => {
+                    if (j && j.ok) {
+                        // Session still valid — refresh CSRF token if missing
+                        if (!savedCsrf) {
+                            return fetch('/api/auth/csrf', { credentials: 'same-origin' })
+                                .then(r => r.json())
+                                .then(c => {
+                                    if (c.ok && c.csrf_token) {
+                                        localStorage.setItem('wfx_csrf_token', c.csrf_token);
+                                        window.WFX_CSRF_TOKEN = c.csrf_token;
+                                    }
+                                });
+                        }
+                    }
+                })
+                .catch(() => { /* server offline — using local fallback */ });
         }
 
         // Initialize users if not exists
@@ -121,8 +188,18 @@ const AdminCore = {
         if (user) {
             this.logAction('logout', 'User logged out', { username: user.username });
         }
+        // Clear server session (best-effort — don't block UI on network)
+        if (typeof fetch === 'function') {
+            fetch('/api/auth/logout', {
+                method: 'POST',
+                credentials: 'same-origin'
+            }).catch(() => { /* ignore */ });
+        }
+        // Clear all local state
         localStorage.removeItem('wfx_admin_logged_in');
         localStorage.removeItem('wfx_admin_user');
+        localStorage.removeItem('wfx_csrf_token');
+        delete window.WFX_CSRF_TOKEN;
         window.location.href = 'index.html';
     },
 
@@ -685,7 +762,81 @@ const PageContentManager = {
 // Initialize on load
 AdminCore.init();
 
-// Load custom logos when DOM is ready
+// Load custom logos when DOM is ready + apply role-based nav filtering
 document.addEventListener('DOMContentLoaded', function() {
     AdminCore.loadCustomLogos();
+    AdminCore.applyRoleBasedNav();
 });
+
+// ─── Role-Based Navigation ────────────────────────────────────────────────
+// Mirror of server's ROLE_PERMISSIONS — used to hide nav items the user can't use.
+// If kept in sync with server, the UI gracefully degrades; if not, the server
+// still enforces permissions, so this is just UX, not security.
+AdminCore.ROLE_PERMISSIONS = {
+    super_admin: ['*'],  // sees everything
+    chief_editor: [
+        'dashboard.html', 'content-editor.html', 'videos.html', 'pages.html',
+        'page-images.html', 'products.html', 'categories.html', 'media.html',
+        'blog.html', 'news.html', 'change-password.html'
+    ],
+    seo_specialist: [
+        'dashboard.html', 'content-editor.html', 'pages.html', 'page-images.html',
+        'media.html', 'blog.html', 'news.html', 'change-password.html'
+    ],
+    sales: [
+        'dashboard.html', 'change-password.html'
+        // (Quotes/contacts management pages would be added here when built)
+    ],
+    viewer: [
+        'dashboard.html', 'change-password.html'
+    ],
+};
+
+AdminCore.applyRoleBasedNav = function() {
+    const user = this.getCurrentUser();
+    if (!user || !user.role) return;
+
+    // Super admin sees all — nothing to hide
+    if (user.role === 'super_admin') return;
+
+    const allowed = this.ROLE_PERMISSIONS[user.role] || [];
+    if (allowed.includes('*')) return;
+
+    // Always allow logout, view website
+    const alwaysAllow = new Set(['../index.html', '#']);
+
+    document.querySelectorAll('.sidebar-nav .nav-item').forEach(link => {
+        const href = link.getAttribute('href') || '';
+        if (alwaysAllow.has(href)) return;
+        // Get just the filename (strip query/hash)
+        const filename = href.split('/').pop().split('?')[0].split('#')[0];
+        if (!allowed.includes(filename)) {
+            link.style.display = 'none';
+        }
+    });
+
+    // Hide section headers if all items in them are hidden
+    document.querySelectorAll('.nav-section').forEach(section => {
+        const visibleItems = Array.from(section.querySelectorAll('.nav-item'))
+            .filter(el => el.style.display !== 'none');
+        if (visibleItems.length === 0) {
+            section.style.display = 'none';
+        }
+    });
+
+    // Show role badge in header
+    const userNameEl = document.getElementById('user-name');
+    if (userNameEl && !userNameEl.dataset.roleApplied) {
+        const roleLabels = {
+            chief_editor: 'Chief Editor',
+            seo_specialist: 'SEO Specialist',
+            sales: 'Sales',
+            viewer: 'Viewer (read-only)',
+        };
+        const badge = document.createElement('span');
+        badge.style.cssText = 'display:inline-block; margin-left:8px; padding:2px 8px; border-radius:10px; background:#dbeafe; color:#1e40af; font-size:0.75rem; font-weight:500;';
+        badge.textContent = roleLabels[user.role] || user.role;
+        badge.dataset.roleApplied = '1';
+        userNameEl.appendChild(badge);
+    }
+};

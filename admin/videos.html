@@ -269,24 +269,24 @@
                 <span>Admin Panel</span>
             </div>
             <nav class="sidebar-nav">
-                <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="dashboard.html"><i class="fas fa-tachometer-alt" aria-hidden="true"></i> Dashboard</a>
                 <a href="content-editor.html" class="nav-item">
-                    <i class="fas fa-edit"></i> Content Editor
+                    <i class="fas fa-edit" aria-hidden="true"></i> Content Editor
                 </a>
-                <a href="videos.html" class="active"><i class="fas fa-video"></i> Video Manager</a>
-                <a href="pages.html"><i class="fas fa-file-alt"></i> Pages</a>
-                <a href="page-images.html"><i class="fas fa-images"></i> Page Images</a>
-                <a href="media.html"><i class="fas fa-photo-video"></i> Media Library</a>
-                <a href="blog.html"><i class="fas fa-blog"></i> Blog Posts</a>
-                <a href="news.html"><i class="fas fa-newspaper"></i> News</a>
-                <a href="products.html"><i class="fas fa-box"></i> Products</a>
-                <a href="users.html"><i class="fas fa-users"></i> Users</a>
-                <a href="activity-log.html"><i class="fas fa-history"></i> Activity Log</a>
-                <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+                <a href="videos.html" class="active"><i class="fas fa-video" aria-hidden="true"></i> Video Manager</a>
+                <a href="pages.html"><i class="fas fa-file-alt" aria-hidden="true"></i> Pages</a>
+                <a href="page-images.html"><i class="fas fa-images" aria-hidden="true"></i> Page Images</a>
+                <a href="media.html"><i class="fas fa-photo-video" aria-hidden="true"></i> Media Library</a>
+                <a href="blog.html"><i class="fas fa-blog" aria-hidden="true"></i> Blog Posts</a>
+                <a href="news.html"><i class="fas fa-newspaper" aria-hidden="true"></i> News</a>
+                <a href="products.html"><i class="fas fa-box" aria-hidden="true"></i> Products</a>
+                <a href="users.html"><i class="fas fa-users" aria-hidden="true"></i> Users</a>
+                <a href="activity-log.html"><i class="fas fa-history" aria-hidden="true"></i> Activity Log</a>
+                <a href="settings.html"><i class="fas fa-cog" aria-hidden="true"></i> Settings</a>
             </nav>
             <div class="sidebar-footer">
                 <button onclick="AdminCore.logout()" class="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i> Logout
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
                 </button>
             </div>
         </aside>
@@ -295,12 +295,12 @@
         <main class="main-content">
             <header class="content-header">
                 <div class="header-left">
-                    <h1><i class="fas fa-video"></i> Video Manager</h1>
+                    <h1><i class="fas fa-video" aria-hidden="true"></i> Video Manager</h1>
                     <p>Manage all videos displayed on the website</p>
                 </div>
                 <div class="header-right">
                     <button class="btn btn-primary" onclick="saveAllVideos()">
-                        <i class="fas fa-save"></i> Save All Changes
+                        <i class="fas fa-save" aria-hidden="true"></i> Save All Changes
                     </button>
                 </div>
             </header>
@@ -311,7 +311,7 @@
                     <!-- Hero Background Video -->
                     <div class="video-card">
                         <div class="video-card-header">
-                            <h3><i class="fas fa-film"></i> Hero Background Video</h3>
+                            <h3><i class="fas fa-film" aria-hidden="true"></i> Hero Background Video</h3>
                             <span class="video-badge hero">Homepage Hero</span>
                         </div>
                         <div class="video-preview">
@@ -336,24 +336,24 @@
                                 <div class="input-group">
                                     <input type="text" id="heroVideoUrl" placeholder="hero-video.mp4 or https://...">
                                     <button class="btn btn-outline" onclick="previewVideo('hero')">
-                                        <i class="fas fa-play"></i> Preview
+                                        <i class="fas fa-play" aria-hidden="true"></i> Preview
                                     </button>
                                 </div>
                                 <small>Enter local filename (e.g., hero-video.mp4) or external URL</small>
                             </div>
 
                             <div class="upload-area" onclick="document.getElementById('heroVideoUpload').click()">
-                                <i class="fas fa-cloud-upload-alt"></i>
+                                <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
                                 <p>Click to upload a new video file</p>
                                 <input type="file" id="heroVideoUpload" accept="video/mp4,video/webm" onchange="handleVideoUpload(event, 'hero')">
                             </div>
 
                             <div class="video-actions">
                                 <button class="btn btn-outline" onclick="playVideo('heroVideoPreview')">
-                                    <i class="fas fa-play"></i> Play
+                                    <i class="fas fa-play" aria-hidden="true"></i> Play
                                 </button>
                                 <button class="btn btn-outline" onclick="pauseVideo('heroVideoPreview')">
-                                    <i class="fas fa-pause"></i> Pause
+                                    <i class="fas fa-pause" aria-hidden="true"></i> Pause
                                 </button>
                             </div>
                         </div>
@@ -362,7 +362,7 @@
                     <!-- Company Introduction Video -->
                     <div class="video-card">
                         <div class="video-card-header">
-                            <h3><i class="fas fa-building"></i> Company Introduction Video</h3>
+                            <h3><i class="fas fa-building" aria-hidden="true"></i> Company Introduction Video</h3>
                             <span class="video-badge content">Content Video</span>
                         </div>
                         <div class="video-preview">
@@ -387,7 +387,7 @@
                                 <div class="input-group">
                                     <input type="text" id="companyVideoUrl" placeholder="company-video.mp4 or https://...">
                                     <button class="btn btn-outline" onclick="previewVideo('company')">
-                                        <i class="fas fa-play"></i> Preview
+                                        <i class="fas fa-play" aria-hidden="true"></i> Preview
                                     </button>
                                 </div>
                                 <small>Enter local filename (e.g., company-video.mp4) or external URL</small>
@@ -398,13 +398,13 @@
                                 <div class="input-group">
                                     <input type="text" id="companyVideoPoster" placeholder="company-video-poster.jpg or https://...">
                                     <button class="btn btn-outline" onclick="previewPoster()">
-                                        <i class="fas fa-image"></i> Preview
+                                        <i class="fas fa-image" aria-hidden="true"></i> Preview
                                     </button>
                                 </div>
                                 <small>Enter a local image filename or paste an image URL</small>
 
                                 <div class="upload-area" style="margin-top:15px;" onclick="document.getElementById('companyVideoPosterUpload').click()">
-                                    <i class="fas fa-image"></i>
+                                    <i class="fas fa-image" aria-hidden="true"></i>
                                     <p>Click to upload a poster image (JPG / PNG / WebP)</p>
                                     <input type="file" id="companyVideoPosterUpload" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handlePosterUpload(event)">
                                 </div>
@@ -413,7 +413,7 @@
                             </div>
 
                             <div class="upload-area" onclick="document.getElementById('companyVideoUpload').click()">
-                                <i class="fas fa-cloud-upload-alt"></i>
+                                <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
                                 <p>Click to upload a new video file</p>
                                 <input type="file" id="companyVideoUpload" accept="video/mp4,video/webm" onchange="handleVideoUpload(event, 'company')">
                             </div>
@@ -423,13 +423,13 @@
 
                 <!-- Video Text Content Section -->
                 <div class="section-divider">
-                    <h2><i class="fas fa-align-left"></i> Video Section Text</h2>
+                    <h2><i class="fas fa-align-left" aria-hidden="true"></i> Video Section Text</h2>
                     <p>Edit the text displayed alongside the company video</p>
                 </div>
 
                 <div class="video-card" style="max-width: 800px;">
                     <div class="video-card-header">
-                        <h3><i class="fas fa-text-height"></i> Company Video Section Content</h3>
+                        <h3><i class="fas fa-text-height" aria-hidden="true"></i> Company Video Section Content</h3>
                     </div>
                     <div class="video-card-body">
                         <div class="form-group">
@@ -445,7 +445,7 @@
 
                 <!-- Usage Guide -->
                 <div class="section-divider">
-                    <h2><i class="fas fa-info-circle"></i> Video Guidelines</h2>
+                    <h2><i class="fas fa-info-circle" aria-hidden="true"></i> Video Guidelines</h2>
                 </div>
 
                 <div class="video-card" style="max-width: 800px;">
@@ -474,7 +474,7 @@
                         </ul>
 
                         <div style="background: #fef3c7; padding: 15px; border-radius: var(--radius); margin-top: 20px;">
-                            <strong style="color: #92400e;"><i class="fas fa-exclamation-triangle"></i> Note:</strong>
+                            <strong style="color: #92400e;"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i> Note:</strong>
                             <span style="color: #92400e;"> Large video files may affect page loading speed. Consider using compressed videos or CDN hosting for better performance.</span>
                         </div>
                     </div>

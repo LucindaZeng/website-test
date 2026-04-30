@@ -823,20 +823,46 @@ input, select, textarea {
 }
 
 .trust-logo-item {
+    /* Visual treatment: emulates a "grayscale logo wall" using typography only.
+       When real customer logos (with permission) are added, replace the text
+       with <img> tags using filter: grayscale(1) opacity(0.65); */
     font-family: var(--font-heading);
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--dark);
-    opacity: 0.7;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #4b5563;       /* desaturated slate gray, mimicking dimmed brand logos */
+    opacity: 0.75;
     transition: var(--transition);
-    letter-spacing: 1px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
     text-decoration: none;
     white-space: nowrap;
+    padding: 8px 4px;
+    border-bottom: 2px solid transparent;
 }
 
 .trust-logo-item:hover {
     opacity: 1;
     color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+/* Support for actual logo images. Usage:
+   <a href="..." class="trust-logo-item trust-logo-img"><img src="logos/molex.png" alt="Molex"></a>
+   Apply only AFTER obtaining usage permission from the customer. */
+.trust-logo-item.trust-logo-img {
+    padding: 0;
+    border-bottom: none;
+}
+.trust-logo-item.trust-logo-img img {
+    height: 40px;
+    width: auto;
+    filter: grayscale(1);
+    opacity: 0.65;
+    transition: var(--transition);
+}
+.trust-logo-item.trust-logo-img:hover img {
+    filter: grayscale(0);
+    opacity: 1;
 }
 
 @media (max-width: 768px) {

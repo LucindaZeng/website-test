@@ -114,60 +114,63 @@
             <div class="nav-section">
                 <div class="nav-section-title">Main</div>
                 <a href="dashboard.html" class="nav-item">
-                    <i class="fas fa-home"></i> Dashboard
+                    <i class="fas fa-home" aria-hidden="true"></i> Dashboard
                 </a>
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">Content Management</div>
                 <a href="content-editor.html" class="nav-item">
-                    <i class="fas fa-edit"></i> Content Editor
+                    <i class="fas fa-edit" aria-hidden="true"></i> Content Editor
                 </a>
                 <a href="videos.html" class="nav-item">
-                    <i class="fas fa-video"></i> Video Manager
+                    <i class="fas fa-video" aria-hidden="true"></i> Video Manager
                 </a>
                 <a href="pages.html" class="nav-item active">
-                    <i class="fas fa-file-alt"></i> Pages & Text
+                    <i class="fas fa-file-alt" aria-hidden="true"></i> Pages & Text
                 </a>
                 <a href="page-images.html" class="nav-item">
-                    <i class="fas fa-image"></i> Page Images
+                    <i class="fas fa-image" aria-hidden="true"></i> Page Images
                 </a>
                 <a href="products.html" class="nav-item">
-                    <i class="fas fa-boxes"></i> Industry Products
+                    <i class="fas fa-boxes" aria-hidden="true"></i> Industry Products
                 </a>
                 <a href="categories.html" class="nav-item">
-                    <i class="fas fa-folder-open"></i> Categories
+                    <i class="fas fa-folder-open" aria-hidden="true"></i> Categories
                 </a>
                 <a href="media.html" class="nav-item">
-                    <i class="fas fa-images"></i> Media Library
+                    <i class="fas fa-images" aria-hidden="true"></i> Media Library
                 </a>
                 <a href="blog.html" class="nav-item">
-                    <i class="fas fa-blog"></i> Blog Posts
+                    <i class="fas fa-blog" aria-hidden="true"></i> Blog Posts
                 </a>
                 <a href="news.html" class="nav-item">
-                    <i class="fas fa-newspaper"></i> News
+                    <i class="fas fa-newspaper" aria-hidden="true"></i> News
                 </a>
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">System</div>
                 <a href="users.html" class="nav-item">
-                    <i class="fas fa-users"></i> User Management
+                    <i class="fas fa-users" aria-hidden="true"></i> User Management
                 </a>
                 <a href="activity-log.html" class="nav-item">
-                    <i class="fas fa-history"></i> Activity Log
+                    <i class="fas fa-history" aria-hidden="true"></i> Activity Log
                 </a>
                 <a href="settings.html" class="nav-item">
-                    <i class="fas fa-cog"></i> Settings
+                    <i class="fas fa-cog" aria-hidden="true"></i> Settings
+                </a>
+                <a href="change-password.html" class="nav-item">
+                    <i class="fas fa-key" aria-hidden="true"></i> Change Password
                 </a>
             </div>
             <div class="nav-section">
                 <a href="../index.html" class="nav-item" target="_blank">
-                    <i class="fas fa-external-link-alt"></i> View EN Site
+                    <i class="fas fa-external-link-alt" aria-hidden="true"></i> View EN Site
                 </a>
                 <a href="../cn/index.html" class="nav-item" target="_blank">
-                    <i class="fas fa-external-link-alt"></i> View CN Site
+                    <i class="fas fa-external-link-alt" aria-hidden="true"></i> View CN Site
                 </a>
                 <a href="#" class="nav-item" onclick="AdminCore.logout()">
-                    <i class="fas fa-sign-out-alt"></i> Logout
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
                 </a>
             </div>
         </nav>
@@ -177,7 +180,7 @@
     <main class="admin-main">
         <header class="admin-header">
             <div class="header-left">
-                <h1><i class="fas fa-language"></i> Bilingual Content Editor</h1>
+                <h1><i class="fas fa-language" aria-hidden="true"></i> Bilingual Content Editor</h1>
             </div>
             <div class="header-right">
                 <div class="user-menu">
@@ -195,7 +198,7 @@
 
             <!-- Bilingual Notice -->
             <div class="bilingual-notice">
-                <i class="fas fa-globe"></i>
+                <i class="fas fa-globe" aria-hidden="true"></i>
                 <p><strong>Bilingual Editing Mode:</strong> Edit English (EN) and Chinese (CN) content side by side. Changes will be applied to both /index.html and /cn/index.html respectively.</p>
             </div>
 
@@ -218,16 +221,16 @@
             <div id="page-homepage" class="page-content">
                 <div class="card">
                     <div class="card-header">
-                        <h3><i class="fas fa-home"></i> Homepage Content</h3>
+                        <h3><i class="fas fa-home" aria-hidden="true"></i> Homepage Content</h3>
                         <button class="btn btn-primary" onclick="savePageContent('homepage')">
-                            <i class="fas fa-save"></i> Save All Changes
+                            <i class="fas fa-save" aria-hidden="true"></i> Save All Changes
                         </button>
                     </div>
                     <div class="card-body">
                         
                         <!-- Hero Section -->
                         <div class="section-divider">
-                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star" aria-hidden="true"></i>
                             <h4>Hero Section</h4>
                         </div>
                         
@@ -287,7 +290,7 @@
 
                         <!-- Statistics -->
                         <div class="section-divider">
-                            <i class="fas fa-chart-bar"></i>
+                            <i class="fas fa-chart-bar" aria-hidden="true"></i>
                             <h4>Statistics (Numbers are shared, labels are bilingual)</h4>
                         </div>
 
@@ -353,7 +356,7 @@
 
                         <!-- Contact Info -->
                         <div class="section-divider">
-                            <i class="fas fa-address-card"></i>
+                            <i class="fas fa-address-card" aria-hidden="true"></i>
                             <h4>Contact Information (Shared across site)</h4>
                         </div>
 
@@ -394,9 +397,9 @@
             <div id="page-about" class="page-content" style="display: none;">
                 <div class="card">
                     <div class="card-header">
-                        <h3><i class="fas fa-info-circle"></i> About Us Content</h3>
+                        <h3><i class="fas fa-info-circle" aria-hidden="true"></i> About Us Content</h3>
                         <button class="btn btn-primary" onclick="savePageContent('about')">
-                            <i class="fas fa-save"></i> Save All Changes
+                            <i class="fas fa-save" aria-hidden="true"></i> Save All Changes
                         </button>
                     </div>
                     <div class="card-body">
@@ -445,9 +448,9 @@
             <div id="page-contact" class="page-content" style="display: none;">
                 <div class="card">
                     <div class="card-header">
-                        <h3><i class="fas fa-address-book"></i> Contact Page Content</h3>
+                        <h3><i class="fas fa-address-book" aria-hidden="true"></i> Contact Page Content</h3>
                         <button class="btn btn-primary" onclick="savePageContent('contact')">
-                            <i class="fas fa-save"></i> Save All Changes
+                            <i class="fas fa-save" aria-hidden="true"></i> Save All Changes
                         </button>
                     </div>
                     <div class="card-body">
@@ -471,7 +474,7 @@
                         </div>
 
                         <div class="section-divider">
-                            <i class="fas fa-building"></i>
+                            <i class="fas fa-building" aria-hidden="true"></i>
                             <h4>Company Information</h4>
                         </div>
 
@@ -492,9 +495,9 @@
             <div id="page-services" class="page-content" style="display: none;">
                 <div class="card">
                     <div class="card-header">
-                        <h3><i class="fas fa-cogs"></i> Services Content</h3>
+                        <h3><i class="fas fa-cogs" aria-hidden="true"></i> Services Content</h3>
                         <button class="btn btn-primary" onclick="savePageContent('services')">
-                            <i class="fas fa-save"></i> Save All Changes
+                            <i class="fas fa-save" aria-hidden="true"></i> Save All Changes
                         </button>
                     </div>
                     <div class="card-body">
@@ -509,7 +512,7 @@
                         </div>
 
                         <div class="section-divider">
-                            <i class="fas fa-cube"></i>
+                            <i class="fas fa-cube" aria-hidden="true"></i>
                             <h4>CNC Milling</h4>
                         </div>
 
@@ -523,7 +526,7 @@
                         </div>
 
                         <div class="section-divider">
-                            <i class="fas fa-sync-alt"></i>
+                            <i class="fas fa-sync-alt" aria-hidden="true"></i>
                             <h4>CNC Turning</h4>
                         </div>
 

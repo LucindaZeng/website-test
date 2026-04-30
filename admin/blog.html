@@ -26,57 +26,60 @@
             <div class="nav-section">
                 <div class="nav-section-title">Main</div>
                 <a href="dashboard.html" class="nav-item">
-                    <i class="fas fa-home"></i> Dashboard
+                    <i class="fas fa-home" aria-hidden="true"></i> Dashboard
                 </a>
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">Content Management</div>
                 <a href="content-editor.html" class="nav-item">
-                    <i class="fas fa-edit"></i> Content Editor
+                    <i class="fas fa-edit" aria-hidden="true"></i> Content Editor
                 </a>
                 <a href="videos.html" class="nav-item">
-                    <i class="fas fa-video"></i> Video Manager
+                    <i class="fas fa-video" aria-hidden="true"></i> Video Manager
                 </a>
                 <a href="pages.html" class="nav-item">
-                    <i class="fas fa-file-alt"></i> Pages & Text
+                    <i class="fas fa-file-alt" aria-hidden="true"></i> Pages & Text
                 </a>
                 <a href="page-images.html" class="nav-item">
-                    <i class="fas fa-image"></i> Page Images
+                    <i class="fas fa-image" aria-hidden="true"></i> Page Images
                 </a>
                 <a href="products.html" class="nav-item">
-                    <i class="fas fa-boxes"></i> Industry Products
+                    <i class="fas fa-boxes" aria-hidden="true"></i> Industry Products
                 </a>
                 <a href="categories.html" class="nav-item">
-                    <i class="fas fa-folder-open"></i> Categories
+                    <i class="fas fa-folder-open" aria-hidden="true"></i> Categories
                 </a>
                 <a href="media.html" class="nav-item">
-                    <i class="fas fa-images"></i> Media Library
+                    <i class="fas fa-images" aria-hidden="true"></i> Media Library
                 </a>
                 <a href="blog.html" class="nav-item active">
-                    <i class="fas fa-blog"></i> Blog Posts
+                    <i class="fas fa-blog" aria-hidden="true"></i> Blog Posts
                 </a>
                 <a href="news.html" class="nav-item">
-                    <i class="fas fa-newspaper"></i> News
+                    <i class="fas fa-newspaper" aria-hidden="true"></i> News
                 </a>
             </div>
             <div class="nav-section">
                 <div class="nav-section-title">System</div>
                 <a href="users.html" class="nav-item">
-                    <i class="fas fa-users"></i> User Management
+                    <i class="fas fa-users" aria-hidden="true"></i> User Management
                 </a>
                 <a href="activity-log.html" class="nav-item">
-                    <i class="fas fa-history"></i> Activity Log
+                    <i class="fas fa-history" aria-hidden="true"></i> Activity Log
                 </a>
                 <a href="settings.html" class="nav-item">
-                    <i class="fas fa-cog"></i> Settings
+                    <i class="fas fa-cog" aria-hidden="true"></i> Settings
+                </a>
+                <a href="change-password.html" class="nav-item">
+                    <i class="fas fa-key" aria-hidden="true"></i> Change Password
                 </a>
             </div>
             <div class="nav-section">
                 <a href="../index.html" class="nav-item" target="_blank">
-                    <i class="fas fa-external-link-alt"></i> View Website
+                    <i class="fas fa-external-link-alt" aria-hidden="true"></i> View Website
                 </a>
                 <a href="#" class="nav-item" onclick="AdminCore.logout()">
-                    <i class="fas fa-sign-out-alt"></i> Logout
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
                 </a>
             </div>
         </nav>
@@ -105,18 +108,18 @@
             <!-- Header Actions -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
                 <div class="search-box">
-                    <i class="fas fa-search"></i>
+                    <i class="fas fa-search" aria-hidden="true"></i>
                     <input type="text" id="search-posts" placeholder="Search posts...">
                 </div>
                 <button class="btn btn-primary" onclick="openPostModal()">
-                    <i class="fas fa-plus"></i> New Blog Post
+                    <i class="fas fa-plus" aria-hidden="true"></i> New Blog Post
                 </button>
             </div>
 
             <!-- Posts Table -->
             <div class="card">
                 <div class="card-header">
-                    <h3><i class="fas fa-blog"></i> All Blog Posts</h3>
+                    <h3><i class="fas fa-blog" aria-hidden="true"></i> All Blog Posts</h3>
                     <span id="post-count">0 posts</span>
                 </div>
                 <div class="card-body" style="padding: 0;">
@@ -181,17 +184,12 @@
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">Content *</label>
-                        <div class="editor-toolbar">
-                            <button type="button" onclick="formatText('bold')"><i class="fas fa-bold"></i></button>
-                            <button type="button" onclick="formatText('italic')"><i class="fas fa-italic"></i></button>
-                            <button type="button" onclick="formatText('underline')"><i class="fas fa-underline"></i></button>
-                            <button type="button" onclick="formatText('insertUnorderedList')"><i class="fas fa-list-ul"></i></button>
-                            <button type="button" onclick="formatText('insertOrderedList')"><i class="fas fa-list-ol"></i></button>
-                            <button type="button" onclick="formatText('createLink')"><i class="fas fa-link"></i></button>
-                            <button type="button" onclick="formatText('formatBlock', 'H2')"><i class="fas fa-heading"></i></button>
+                        <label class="form-label">Content (Markdown supported) *</label>
+                        <div style="margin-bottom: 8px; font-size: 0.85rem; color: var(--gray);">
+                            <i class="fas fa-info-circle" aria-hidden="true"></i>
+                            Use the toolbar OR write Markdown directly (# heading, **bold**, [link](url), etc.). Toggle source view for raw markdown.
                         </div>
-                        <div class="editor-content" id="post-content" contenteditable="true"></div>
+                        <textarea class="form-control" id="post-content" rows="20" placeholder="Write your blog post content here. Markdown syntax is supported."></textarea>
                     </div>
                     
                     <div class="form-group">
@@ -233,6 +231,7 @@
 
     <script src="js/cms-sync.js"></script>
     <script src="js/admin-core.js"></script>
+    <script src="js/markdown-editor.js"></script>
     <script>
         // Check authentication
         if (!AdminCore.checkAuth()) {
@@ -271,17 +270,23 @@
                     <td>
                         <div style="display: flex; gap: 5px;">
                             <button class="btn btn-sm btn-secondary btn-icon" onclick="editPost(${post.id})" title="Edit">
-                                <i class="fas fa-edit"></i>
+                                <i class="fas fa-edit" aria-hidden="true"></i>
                             </button>
                             <button class="btn btn-sm btn-danger btn-icon" onclick="deletePost(${post.id}, '${post.title.replace(/'/g, "\\'")}')" title="Delete">
-                                <i class="fas fa-trash"></i>
+                                <i class="fas fa-trash" aria-hidden="true"></i>
                             </button>
                         </div>
                     </td>
                 </tr>
             `).join('');
         }
-        loadPosts();
+        // Pull fresh server-side data first, then render
+        (async function() {
+            if (window.WFX_CMS_SYNC && window.WFX_CMS_SYNC.pullAll) {
+                try { await window.WFX_CMS_SYNC.pullAll(); } catch (e) {}
+            }
+            loadPosts();
+        })();
 
         // Load categories dynamically from the Categories admin page
         function loadBlogCategoriesIntoDropdown() {
@@ -339,10 +344,10 @@
                         <td>
                             <div style="display: flex; gap: 5px;">
                                 <button class="btn btn-sm btn-secondary btn-icon" onclick="editPost(${post.id})" title="Edit">
-                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-edit" aria-hidden="true"></i>
                                 </button>
                                 <button class="btn btn-sm btn-danger btn-icon" onclick="deletePost(${post.id}, '${post.title.replace(/'/g, "\\'")}')" title="Delete">
-                                    <i class="fas fa-trash"></i>
+                                    <i class="fas fa-trash" aria-hidden="true"></i>
                                 </button>
                             </div>
                         </td>
@@ -351,14 +356,23 @@
             }
         });
 
-        // Format text in editor
+        // Initialize TinyMCE Markdown editor on page load
+        let mdEditor = null;
+        (async function() {
+            try {
+                mdEditor = await WFXMarkdownEditor.init('#post-content');
+            } catch (e) {
+                console.warn('TinyMCE failed to load (will use plain textarea):', e.message);
+            }
+        })();
+
+        // Legacy fallback
         function formatText(command, value = null) {
             if (command === 'createLink') {
                 value = prompt('Enter URL:');
                 if (!value) return;
             }
             document.execCommand(command, false, value);
-            document.getElementById('post-content').focus();
         }
 
         // Modal functions
@@ -366,14 +380,18 @@
             document.getElementById('modal-title').textContent = 'New Blog Post';
             document.getElementById('post-form').reset();
             document.getElementById('post-id').value = '';
-            document.getElementById('post-content').innerHTML = '';
+            if (mdEditor) {
+                mdEditor.clear();
+            } else {
+                document.getElementById('post-content').value = '';
+            }
             document.getElementById('post-modal').classList.add('active');
         }
 
         function editPost(postId) {
             const posts = AdminCore.getBlogPosts();
             const post = posts.find(p => p.id === postId);
-            
+
             if (post) {
                 document.getElementById('modal-title').textContent = 'Edit Blog Post';
                 document.getElementById('post-id').value = post.id;
@@ -381,7 +399,11 @@
                 document.getElementById('post-category').value = post.category || '';
                 document.getElementById('post-status').value = post.status;
                 document.getElementById('post-excerpt').value = post.excerpt || '';
-                document.getElementById('post-content').innerHTML = post.content || '';
+                if (mdEditor) {
+                    mdEditor.setMarkdown(post.content || '');
+                } else {
+                    document.getElementById('post-content').value = post.content || '';
+                }
                 document.getElementById('post-image').value = post.featuredImage || '';
                 document.getElementById('post-tags').value = (post.tags || []).join(', ');
                 document.getElementById('post-modal').classList.add('active');
@@ -394,12 +416,16 @@
 
         function savePost() {
             const postId = document.getElementById('post-id').value;
+            const contentMd = mdEditor
+                ? mdEditor.getMarkdown()
+                : document.getElementById('post-content').value;
             const postData = {
                 title: document.getElementById('post-title').value,
                 category: document.getElementById('post-category').value,
                 status: document.getElementById('post-status').value,
                 excerpt: document.getElementById('post-excerpt').value,
-                content: document.getElementById('post-content').innerHTML,
+                content: contentMd,
+                content_format: 'markdown',
                 featuredImage: document.getElementById('post-image').value,
                 tags: document.getElementById('post-tags').value.split(',').map(t => t.trim()).filter(t => t)
             };
@@ -452,7 +478,7 @@
             const container = document.getElementById('alert-container');
             const alert = document.createElement('div');
             alert.className = `alert alert-${type}`;
-            alert.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+            alert.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}" aria-hidden="true"></i> ${message}`;
             container.appendChild(alert);
             setTimeout(() => alert.remove(), 3000);
         }

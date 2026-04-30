@@ -1,0 +1,49 @@
+# WFX Wanfuxin — systemd service unit
+#
+# Install:
+#   sudo cp deploy/wfx-website.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable wfx-website
+#   sudo systemctl start wfx-website
+#
+# Operate:
+#   sudo systemctl status wfx-website
+#   sudo systemctl restart wfx-website
+#   sudo journalctl -u wfx-website -f       # live logs
+
+[Unit]
+Description=WFX Wanfuxin Website Server
+After=network.target mysql.service
+Requires=network.target
+
+[Service]
+Type=simple
+User=wfx
+Group=wfx
+WorkingDirectory=/var/www/wanfuxin
+ExecStart=/var/www/wanfuxin/venv/bin/python /var/www/wanfuxin/server.py --host 127.0.0.1 --port 8000 --production --no-browser
+Restart=on-failure
+RestartSec=5s
+StandardOutput=journal
+StandardError=journal
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/www/wanfuxin/uploads
+# Allow writing to uploads/ but nothing else outside the working directory
+
+# Resource limits
+LimitNOFILE=65535
+TasksMax=512
+
+# Environment (alternative to config.py — uncomment to use)
+# Environment="WFX_ENV=production"
+# Environment="WFX_HOST=127.0.0.1"
+# Environment="WFX_PORT=8000"
+# EnvironmentFile=/var/www/wanfuxin/.env
+
+[Install]
+WantedBy=multi-user.target

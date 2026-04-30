@@ -162,3 +162,61 @@ CREATE TABLE IF NOT EXISTS cms_news (
     INDEX idx_type_published (type, is_published, published_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+-- ============================================================================
+-- RBAC: User Accounts (Round 4)
+-- ============================================================================
+
+USE wfx_website;
+
+CREATE TABLE IF NOT EXISTS admin_users (
+    id              INT AUTO_INCREMENT PRIMARY KEY,
+    username        VARCHAR(64)     NOT NULL,
+    email           VARCHAR(200),
+    full_name       VARCHAR(200),
+    password_hash   VARCHAR(255)    NOT NULL,
+    role            ENUM('super_admin','chief_editor','seo_specialist','sales','viewer')
+                                    NOT NULL DEFAULT 'viewer',
+    is_active       TINYINT(1)      NOT NULL DEFAULT 1,
+    must_change_password TINYINT(1) NOT NULL DEFAULT 0,
+    last_login_at   DATETIME,
+    created_at      DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                    ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_username (username),
+    UNIQUE KEY uk_email (email),
+    INDEX idx_role (role)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Audit log: who did what, when. Append-only.
+CREATE TABLE IF NOT EXISTS admin_audit_log (
+    id              BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id         INT,
+    username        VARCHAR(64),
+    action          VARCHAR(100)    NOT NULL,
+    resource_type   VARCHAR(50),
+    resource_id     VARCHAR(100),
+    detail          TEXT,
+    ip_address      VARCHAR(45),
+    created_at      DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user_time (user_id, created_at),
+    INDEX idx_resource (resource_type, resource_id),
+    INDEX idx_action_time (action, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================================
+-- Optimistic Locking: version column on editable resources
+-- ============================================================================
+
+ALTER TABLE cms_content
+    ADD COLUMN IF NOT EXISTS version BIGINT NOT NULL DEFAULT 1,
+    ADD COLUMN IF NOT EXISTS updated_by INT;
+
+ALTER TABLE cms_industry_products
+    ADD COLUMN IF NOT EXISTS version BIGINT NOT NULL DEFAULT 1,
+    ADD COLUMN IF NOT EXISTS updated_by INT;
+
+ALTER TABLE cms_news
+    ADD COLUMN IF NOT EXISTS version BIGINT NOT NULL DEFAULT 1,
+    ADD COLUMN IF NOT EXISTS updated_by INT;
+

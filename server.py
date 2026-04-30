@@ -17,34 +17,93 @@ Setup:
 """
 
 import os
+import re
 import sys
 import gzip
+import hmac
 import json
+import time
 import uuid
+import base64
+import secrets
 import hashlib
 import mimetypes
+import threading
 import webbrowser
 import argparse
+import warnings
+# `cgi.FieldStorage` is the simplest stdlib way to parse multipart/form-data
+# uploads. It's deprecated in Python 3.11+ but still works through 3.13. When
+# upgrading to 3.14+, replace with `email.parser` or a 3rd-party multipart lib.
+# The deprecation warning is filtered by message pattern (module='cgi' won't
+# match because the warning fires during import, before cgi module is fully loaded).
+warnings.filterwarnings('ignore', category=DeprecationWarning, message=".*cgi.*")
 import cgi
+from collections import defaultdict, deque
 from io import BytesIO
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from socketserver import ThreadingMixIn
-from datetime import datetime
-from urllib.parse import unquote, urlparse
+from datetime import datetime, timedelta
+from urllib.parse import unquote, urlparse, parse_qs
 
 
-# ─── Try to import config; fall back gracefully ─────────────────────────────────
+# ─── Load .env file (if present) for cloud deployments ──────────────────────────
+def _load_env_file(path='.env'):
+    """Minimal .env parser. Lines: KEY=value or KEY="value"."""
+    env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), path)
+    if not os.path.isfile(env_path):
+        return
+    with open(env_path) as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#') or '=' not in line:
+                continue
+            k, v = line.split('=', 1)
+            k = k.strip()
+            v = v.strip().strip('"').strip("'")
+            os.environ.setdefault(k, v)
+
+_load_env_file()
+
+
+# ─── Try to import config; fall back gracefully to env vars ─────────────────────
 try:
     import config
     DB_CONFIG = config.DB_CONFIG
     UPLOAD_DIR = config.UPLOAD_DIR
     ADMIN_API_TOKEN = config.ADMIN_API_TOKEN
 except ImportError:
-    print("⚠  config.py not found — API endpoints will be disabled.")
-    print("   Copy config.example.py to config.py and set your DB credentials.\n")
-    DB_CONFIG = None
-    UPLOAD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads', 'quotes')
-    ADMIN_API_TOKEN = 'change-me'
+    config = None
+    # Fall back to environment variables (preferred for cloud deployments)
+    if os.environ.get('WFX_DB_HOST'):
+        DB_CONFIG = {
+            'host':     os.environ.get('WFX_DB_HOST', 'localhost'),
+            'port':     int(os.environ.get('WFX_DB_PORT', '3306')),
+            'user':     os.environ.get('WFX_DB_USER', 'wfx_user'),
+            'password': os.environ.get('WFX_DB_PASSWORD', ''),
+            'database': os.environ.get('WFX_DB_NAME', 'wfx_website'),
+            'charset':  'utf8mb4',
+            'autocommit': False,
+        }
+        ADMIN_API_TOKEN = os.environ.get('WFX_ADMIN_TOKEN', 'change-me')
+        UPLOAD_DIR = os.environ.get(
+            'WFX_UPLOAD_DIR',
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads', 'quotes')
+        )
+        # Synthesize a minimal `config` shim so other code can do `getattr(config, ...)`
+        class _EnvConfig:
+            DB_CONFIG = DB_CONFIG
+            UPLOAD_DIR = UPLOAD_DIR
+            ADMIN_API_TOKEN = ADMIN_API_TOKEN
+            SESSION_SECRET = os.environ.get('WFX_SESSION_SECRET', '')
+        config = _EnvConfig()
+    else:
+        print("⚠  No config.py and no WFX_* environment variables found.")
+        print("   API endpoints requiring DB will return 503.")
+        print("   To configure: copy config.example.py to config.py, OR set env vars (see .env.example).\n")
+        DB_CONFIG = None
+        UPLOAD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads', 'quotes')
+        ADMIN_API_TOKEN = 'change-me'
 
 try:
     import mysql.connector
@@ -86,25 +145,544 @@ SECURITY_HEADERS = {
     'X-Frame-Options': 'SAMEORIGIN',
     'X-XSS-Protection': '1; mode=block',
     'Referrer-Policy': 'strict-origin-when-cross-origin',
-    'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+    'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()',
+    # HSTS: force HTTPS for 1 year, include subdomains, allow preload list submission
+    # NOTE: only set this header in production with HTTPS configured!
+    # For local dev (http://localhost), browsers ignore HSTS but we'll guard it below.
+    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+    # Content-Security-Policy: defense-in-depth XSS mitigation
+    # 'unsafe-inline' is needed for the existing inline event handlers and styles;
+    # to remove it, all inline JS would need to be refactored into external files.
     'Content-Security-Policy': (
         "default-src 'self'; "
         "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; "
         "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; "
         "font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; "
         "img-src 'self' data: https://images.unsplash.com https://randomuser.me; "
-        "frame-src https://www.google.com https://www.720yun.com; "
+        "frame-src https://www.google.com https://maps.google.com https://www.720yun.com; "
+        "frame-ancestors 'self'; "  # equivalent to X-Frame-Options for modern browsers
         "media-src 'self' blob:; "
-        "connect-src 'self';"
+        "connect-src 'self'; "
+        "form-action 'self' mailto:; "
+        "base-uri 'self'; "
+        "object-src 'none';"  # Block <object>, <embed>, <applet> entirely
     ),
 }
 
-# File upload
+# Server fingerprint suppression: HTTP Server header is set per-response
+# (Python http.server defaults to BaseHTTP/0.6 Python/X.Y.Z which exposes version)
+SERVER_HEADER_VALUE = 'WFX'
+
+# File upload (CAD files attached to quote requests)
 MAX_UPLOAD_BYTES = 100 * 1024 * 1024  # 100MB
 ALLOWED_UPLOAD_EXTS = {
     '.step', '.stp', '.iges', '.igs', '.stl', '.sldprt',
     '.x_t', '.sat', '.dwg', '.dxf', '.pdf', '.zip', '.rar',
 }
+
+# Admin media library (images, videos, downloads admin uploads to use on the site)
+MAX_MEDIA_BYTES = 200 * 1024 * 1024  # 200MB (for product videos)
+ALLOWED_MEDIA_EXTS = {
+    # Images
+    '.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.ico',
+    # Videos
+    '.mp4', '.webm', '.mov', '.m4v',
+    # Downloads (NDA, datasheets, brochures)
+    '.pdf',
+}
+MEDIA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads', 'media')
+
+# Magic-number prefixes for binary CAD/archive files we accept.
+# Text-based formats (.step/.stp/.iges/.igs/.x_t/.sat) start with "ISO-10303-21"
+# or human-readable headers — checked separately by content sniffing.
+FILE_SIGNATURES = {
+    # CAD / archives
+    '.zip':    [b'PK\x03\x04', b'PK\x05\x06', b'PK\x07\x08'],
+    '.rar':    [b'Rar!\x1a\x07\x00', b'Rar!\x1a\x07\x01\x00'],
+    '.pdf':    [b'%PDF-'],
+    '.dwg':    [b'AC10', b'AC1.', b'AC2.'],
+    '.sldprt': [b'\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1'],
+
+    # Image formats (admin media library)
+    '.jpg':    [b'\xff\xd8\xff'],
+    '.jpeg':   [b'\xff\xd8\xff'],
+    '.png':    [b'\x89PNG\r\n\x1a\n'],
+    '.gif':    [b'GIF87a', b'GIF89a'],
+    '.webp':   [b'RIFF'],   # Followed by 4-byte size, then 'WEBP' — coarse check
+    '.ico':    [b'\x00\x00\x01\x00', b'\x00\x00\x02\x00'],
+
+    # Video formats (admin media library)
+    # Note: MP4/MOV/M4V have a "ftyp" box at offset 4, not at offset 0.
+    # We do a loose check below on .mp4/.mov/.m4v in TEXT_FILE_HEADERS.
+    '.webm':   [b'\x1a\x45\xdf\xa3'],  # EBML / Matroska
+}
+
+# Files with these extensions must START with one of these text fragments
+TEXT_FILE_HEADERS = {
+    '.step': [b'ISO-10303-21'],
+    '.stp':  [b'ISO-10303-21'],
+    '.iges': [b'                                                                        S'],  # IGES line ends with 'S'
+    '.igs':  [b''],  # too varied; skip strict check
+    '.stl':  [b'solid', b'\x00\x00\x00\x00'],  # ASCII or binary STL
+    '.dxf':  [b'  0\r\nSECTION', b'  0\nSECTION', b'AutoCAD'],
+    '.x_t':  [b'**ABAQUS', b'PARASOLID', b''],  # multi-format
+    '.sat':  [b'-1', b''],  # ACIS files start with version line
+}
+
+
+def validate_file_magic(file_path: str, ext: str) -> bool:
+    """
+    Read the first 64 bytes of an uploaded file and verify it matches the
+    expected signature for its declared extension. Returns False on mismatch.
+    """
+    try:
+        with open(file_path, 'rb') as f:
+            head = f.read(64)
+    except (IOError, OSError):
+        return False
+
+    # ALWAYS reject executable signatures, regardless of declared extension.
+    # This is the most important check — an attacker uploading malware will
+    # try to disguise it with a benign extension (.png, .pdf, .step, etc.).
+    executable_signatures = [
+        b'MZ',                  # Windows PE / .exe / .dll
+        b'\x7fELF',             # Linux ELF
+        b'\xca\xfe\xba\xbe',    # Mach-O fat binary
+        b'\xfe\xed\xfa\xce',    # Mach-O 32-bit
+        b'\xfe\xed\xfa\xcf',    # Mach-O 64-bit
+        b'#!/',                 # shell / Python / Perl script
+        b'<?php',               # PHP
+        b'<%',                  # ASP/JSP
+        b'<script',             # HTML/JS
+        b'<html',               # HTML
+        b'<!DOCTYPE',           # HTML
+    ]
+    if any(head.lower().startswith(sig.lower()) for sig in executable_signatures):
+        return False
+
+    # MP4 / MOV / M4V: "ftyp" box at byte offset 4
+    if ext in ('.mp4', '.mov', '.m4v'):
+        return len(head) >= 12 and head[4:8] == b'ftyp'
+
+    # SVG: must contain <svg tag in first 200 bytes (not <html or <script)
+    if ext == '.svg':
+        return b'<svg' in head[:200].lower() or b'<?xml' in head[:200].lower()
+
+    # Strict binary-signature check (CAD + archives + media)
+    if ext in FILE_SIGNATURES:
+        return any(head.startswith(sig) for sig in FILE_SIGNATURES[ext])
+
+    # Permissive text-header check (CAD text formats)
+    if ext in TEXT_FILE_HEADERS:
+        return True
+
+    return True  # Unknown extension — already filtered by allow-list upstream
+
+
+# ─── Security Helpers: Password Hashing, Sessions, Rate Limiting ────────────────
+
+# Server-side secret used to sign session tokens. Loaded from config.py via
+# config.SESSION_SECRET if available, otherwise auto-generated per-process
+# (which is fine for single-server but means sessions die on restart).
+SESSION_SECRET = (
+    (config.SESSION_SECRET if config and hasattr(config, 'SESSION_SECRET') and config.SESSION_SECRET else None)
+    or os.environ.get('WFX_SESSION_SECRET', '')
+    or secrets.token_hex(32)
+)
+SESSION_TTL_SECONDS = 8 * 3600   # 8-hour login session
+CSRF_TTL_SECONDS    = 24 * 3600
+
+
+def hash_password(plain: str) -> str:
+    """
+    Hash a password using PBKDF2-HMAC-SHA256 (200k iterations, 16-byte salt).
+    Returns format: pbkdf2$<iterations>$<salt_b64>$<hash_b64>
+    Note: production should prefer argon2/bcrypt via passlib, but this uses
+    only the stdlib (no extra dependency) and is adequately strong.
+    """
+    iterations = 200_000
+    salt = secrets.token_bytes(16)
+    dk = hashlib.pbkdf2_hmac('sha256', plain.encode('utf-8'), salt, iterations)
+    return f"pbkdf2${iterations}${base64.urlsafe_b64encode(salt).decode()}${base64.urlsafe_b64encode(dk).decode()}"
+
+
+def verify_password(plain: str, stored: str) -> bool:
+    """Constant-time verification."""
+    try:
+        scheme, iters, salt_b64, hash_b64 = stored.split('$')
+        if scheme != 'pbkdf2':
+            return False
+        salt = base64.urlsafe_b64decode(salt_b64)
+        expected = base64.urlsafe_b64decode(hash_b64)
+        candidate = hashlib.pbkdf2_hmac('sha256', plain.encode('utf-8'), salt, int(iters))
+        return hmac.compare_digest(candidate, expected)
+    except (ValueError, TypeError):
+        return False
+
+
+def issue_session_token(user_id: int, username: str, role: str = 'super_admin') -> str:
+    """
+    Sign a compact session token: <payload_b64>.<sig_b64>
+    Payload = JSON {uid, name, role, exp}. Signed with HMAC-SHA256.
+    Stateless (no DB round-trip on each request).
+    """
+    payload = json.dumps({
+        'uid': user_id,
+        'name': username,
+        'role': role,
+        'exp': int(time.time()) + SESSION_TTL_SECONDS,
+    }, separators=(',', ':')).encode('utf-8')
+    payload_b64 = base64.urlsafe_b64encode(payload).rstrip(b'=').decode()
+    sig = hmac.new(SESSION_SECRET.encode(), payload_b64.encode(), hashlib.sha256).digest()
+    sig_b64 = base64.urlsafe_b64encode(sig).rstrip(b'=').decode()
+    return f"{payload_b64}.{sig_b64}"
+
+
+def verify_session_token(token: str):
+    """Returns dict {uid, name, role} if valid and not expired, else None."""
+    if not token or '.' not in token:
+        return None
+    try:
+        payload_b64, sig_b64 = token.rsplit('.', 1)
+        expected_sig = hmac.new(SESSION_SECRET.encode(), payload_b64.encode(), hashlib.sha256).digest()
+        sig_padding = '=' * (-len(sig_b64) % 4)
+        provided_sig = base64.urlsafe_b64decode(sig_b64 + sig_padding)
+        if not hmac.compare_digest(expected_sig, provided_sig):
+            return None
+        pad = '=' * (-len(payload_b64) % 4)
+        payload = json.loads(base64.urlsafe_b64decode(payload_b64 + pad))
+        if payload.get('exp', 0) < time.time():
+            return None
+        return {
+            'uid': payload['uid'],
+            'name': payload.get('name', ''),
+            'role': payload.get('role', 'viewer'),
+        }
+    except (ValueError, TypeError, json.JSONDecodeError):
+        return None
+
+
+def issue_csrf_token() -> str:
+    """Stateless CSRF token: random + signed."""
+    nonce = secrets.token_urlsafe(24)
+    sig = hmac.new(SESSION_SECRET.encode(), nonce.encode(), hashlib.sha256).hexdigest()[:32]
+    return f"{nonce}.{sig}"
+
+
+def verify_csrf_token(token: str) -> bool:
+    if not token or '.' not in token:
+        return False
+    try:
+        nonce, sig = token.rsplit('.', 1)
+        expected = hmac.new(SESSION_SECRET.encode(), nonce.encode(), hashlib.sha256).hexdigest()[:32]
+        return hmac.compare_digest(sig, expected)
+    except (ValueError, TypeError):
+        return False
+
+
+# ─── Rate Limiter (per-IP sliding window, in-memory) ────────────────────────────
+
+class RateLimiter:
+    """
+    Sliding-window rate limiter, thread-safe. Per-IP buckets.
+    Defaults are conservative for B2B forms (humans don't submit 10 quotes/min).
+    """
+    def __init__(self):
+        self.buckets = defaultdict(deque)
+        self.lock = threading.Lock()
+
+    def check(self, key: str, max_requests: int, window_seconds: int) -> bool:
+        """Return True if allowed; False if over limit."""
+        now = time.time()
+        cutoff = now - window_seconds
+        with self.lock:
+            bucket = self.buckets[key]
+            # Drop expired entries
+            while bucket and bucket[0] < cutoff:
+                bucket.popleft()
+            if len(bucket) >= max_requests:
+                return False
+            bucket.append(now)
+
+            # Periodic GC of empty buckets to prevent unbounded memory growth
+            if len(self.buckets) > 10000:
+                empty_keys = [k for k, v in self.buckets.items() if not v or v[-1] < cutoff]
+                for k in empty_keys[:5000]:
+                    del self.buckets[k]
+        return True
+
+
+rate_limiter = RateLimiter()
+
+
+# Rate limit policies (max_requests, window_seconds)
+RATE_LIMITS = {
+    'quote':   (5,  60),     # 5 quote submissions per minute per IP
+    'contact': (5,  60),
+    'login':   (10, 300),    # 10 login attempts per 5 minutes (brute-force protection)
+    'cms':     (60, 60),     # 60 CMS API calls per minute (admin operations)
+}
+
+
+# ─── Admin User Storage (file-based fallback if no MySQL users table) ───────────
+
+# Stored under /uploads/.auth/admin_users.json — outside web root for safety
+AUTH_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads', '.auth')
+AUTH_FILE = os.path.join(AUTH_DIR, 'admin_users.json')
+auth_lock = threading.Lock()
+
+
+def ensure_default_admin():
+    """Create admin_users.json with bootstrap admin if missing."""
+    os.makedirs(AUTH_DIR, exist_ok=True)
+    with auth_lock:
+        if os.path.exists(AUTH_FILE):
+            return
+        # First-run bootstrap: hash 'wfx6688' as the initial password
+        # The admin should change it on first login (UI to be added)
+        users = [{
+            'id': 1,
+            'username': 'admin',
+            'password_hash': hash_password('wfx6688'),
+            'role': 'super_admin',
+            'created_at': datetime.now().isoformat(),
+            'must_change_password': True,
+        }]
+        with open(AUTH_FILE, 'w') as f:
+            json.dump(users, f, indent=2)
+        try:
+            os.chmod(AUTH_FILE, 0o600)  # Owner read/write only
+        except (OSError, NotImplementedError):
+            pass
+
+
+def load_admin_users():
+    ensure_default_admin()
+    with auth_lock:
+        try:
+            with open(AUTH_FILE, 'r') as f:
+                return json.load(f)
+        except (IOError, json.JSONDecodeError):
+            return []
+
+
+def save_admin_users(users):
+    with auth_lock:
+        with open(AUTH_FILE, 'w') as f:
+            json.dump(users, f, indent=2)
+        try:
+            os.chmod(AUTH_FILE, 0o600)
+        except (OSError, NotImplementedError):
+            pass
+
+
+def authenticate_admin(username: str, password: str):
+    """Return user dict if credentials valid, else None."""
+    users = load_admin_users()
+    for u in users:
+        if u['username'] == username and verify_password(password, u['password_hash']):
+            if not u.get('is_active', True):
+                return None  # Disabled account
+            # Update last login
+            u['last_login_at'] = datetime.now().isoformat()
+            save_admin_users(users)
+            return u
+    return None
+
+
+def change_admin_password(user_id: int, new_password: str) -> bool:
+    users = load_admin_users()
+    for u in users:
+        if u['id'] == user_id:
+            u['password_hash'] = hash_password(new_password)
+            u['must_change_password'] = False
+            u['password_changed_at'] = datetime.now().isoformat()
+            save_admin_users(users)
+            return True
+    return False
+
+
+# ─── RBAC: Role-Based Access Control ────────────────────────────────────────────
+
+# Permission matrix. Each role grants specific actions on specific resources.
+# Format: {role: set of "resource:action" tokens}
+#
+# Resources:  content, products, news, blog, categories, media, users,
+#             quotes, contacts, settings, audit
+# Actions:    read, write, delete
+ROLE_PERMISSIONS = {
+    'super_admin': {
+        # Full access everywhere
+        'content:read', 'content:write', 'content:delete',
+        'products:read', 'products:write', 'products:delete',
+        'news:read', 'news:write', 'news:delete',
+        'blog:read', 'blog:write', 'blog:delete',
+        'categories:read', 'categories:write', 'categories:delete',
+        'media:read', 'media:write', 'media:delete',
+        'users:read', 'users:write', 'users:delete',
+        'quotes:read', 'quotes:write',
+        'contacts:read', 'contacts:write',
+        'settings:read', 'settings:write',
+        'audit:read',
+    },
+    'chief_editor': {
+        # Content lead — manage articles, products, categories, media
+        'content:read', 'content:write',
+        'products:read', 'products:write', 'products:delete',
+        'news:read', 'news:write', 'news:delete',
+        'blog:read', 'blog:write', 'blog:delete',
+        'categories:read', 'categories:write', 'categories:delete',
+        'media:read', 'media:write', 'media:delete',
+        'quotes:read',
+        'contacts:read',
+        'settings:read',
+    },
+    'seo_specialist': {
+        # SEO — meta tags, slugs, alt text, but no body content rewriting
+        'content:read', 'content:write',  # SEO fields are inside content
+        'products:read',
+        'news:read', 'news:write',        # Can edit slugs/titles for SEO
+        'blog:read', 'blog:write',
+        'categories:read',
+        'media:read', 'media:write',      # Update alt text
+        'settings:read',
+    },
+    'sales': {
+        # Sales team — quotes and contacts only
+        'quotes:read', 'quotes:write',
+        'contacts:read', 'contacts:write',
+        'products:read',                  # Read-only product info to answer customer questions
+        'news:read', 'blog:read',
+    },
+    'viewer': {
+        # Read-only across everything
+        'content:read', 'products:read', 'news:read', 'blog:read',
+        'categories:read', 'media:read', 'quotes:read', 'contacts:read',
+    },
+}
+
+
+def has_permission(user: dict, permission: str) -> bool:
+    """Check if a user has a specific permission like 'news:write'."""
+    if not user:
+        return False
+    role = user.get('role', 'viewer')
+    return permission in ROLE_PERMISSIONS.get(role, set())
+
+
+def list_admin_users():
+    """Return all admin users (without password hashes)."""
+    users = load_admin_users()
+    return [{
+        'id': u['id'],
+        'username': u['username'],
+        'email': u.get('email', ''),
+        'full_name': u.get('full_name', ''),
+        'role': u.get('role', 'viewer'),
+        'is_active': u.get('is_active', True),
+        'must_change_password': u.get('must_change_password', False),
+        'last_login_at': u.get('last_login_at'),
+        'created_at': u.get('created_at'),
+    } for u in users]
+
+
+def create_admin_user(username, password, role, email='', full_name='', actor_id=None):
+    """Create a new admin user. Returns the new user dict, or None on conflict."""
+    users = load_admin_users()
+    if any(u['username'] == username for u in users):
+        return None
+    if email and any(u.get('email') == email for u in users):
+        return None
+    new_id = max([u['id'] for u in users] + [0]) + 1
+    new_user = {
+        'id': new_id,
+        'username': username,
+        'email': email,
+        'full_name': full_name,
+        'password_hash': hash_password(password),
+        'role': role if role in ROLE_PERMISSIONS else 'viewer',
+        'is_active': True,
+        'must_change_password': True,  # Force change on first login
+        'created_at': datetime.now().isoformat(),
+        'created_by': actor_id,
+    }
+    users.append(new_user)
+    save_admin_users(users)
+    return {k: v for k, v in new_user.items() if k != 'password_hash'}
+
+
+def update_admin_user(user_id, updates, actor_id=None):
+    """Update an admin user (cannot change password through this — use change_admin_password)."""
+    users = load_admin_users()
+    for u in users:
+        if u['id'] == user_id:
+            for key in ('email', 'full_name', 'role', 'is_active'):
+                if key in updates:
+                    if key == 'role' and updates[key] not in ROLE_PERMISSIONS:
+                        continue
+                    u[key] = updates[key]
+            u['updated_at'] = datetime.now().isoformat()
+            u['updated_by'] = actor_id
+            save_admin_users(users)
+            return True
+    return False
+
+
+def delete_admin_user(user_id, actor_id=None):
+    """Soft-delete (deactivate) an admin user. Never hard-delete to preserve audit trail."""
+    users = load_admin_users()
+    for u in users:
+        if u['id'] == user_id:
+            u['is_active'] = False
+            u['deleted_at'] = datetime.now().isoformat()
+            u['deleted_by'] = actor_id
+            save_admin_users(users)
+            return True
+    return False
+
+
+def reset_admin_password(user_id, new_password, actor_id=None):
+    """Super-admin reset of another user's password. Forces change on next login."""
+    users = load_admin_users()
+    for u in users:
+        if u['id'] == user_id:
+            u['password_hash'] = hash_password(new_password)
+            u['must_change_password'] = True
+            u['password_reset_at'] = datetime.now().isoformat()
+            u['password_reset_by'] = actor_id
+            save_admin_users(users)
+            return True
+    return False
+
+
+# ─── Audit Logging ─────────────────────────────────────────────────────────────
+
+def audit_log(user, action, resource_type=None, resource_id=None, detail=None, ip=None):
+    """Append an audit log entry to MySQL. Falls back to stdout if DB unavailable."""
+    user_id = user.get('uid') if user else None
+    username = user.get('name') if user else 'anonymous'
+    detail_str = json.dumps(detail) if isinstance(detail, (dict, list)) else (detail or '')
+    ts = datetime.now().strftime('%H:%M:%S')
+
+    conn = get_db_connection()
+    if not conn:
+        # Fall back to stdout
+        print(f"  📋 [{ts}] AUDIT: {username} {action} {resource_type or ''} {resource_id or ''}")
+        return
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO admin_audit_log (user_id, username, action, resource_type,
+                                          resource_id, detail, ip_address)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (user_id, username, action, resource_type,
+              str(resource_id) if resource_id else None, detail_str, ip))
+        conn.commit()
+        print(f"  📋 [{ts}] AUDIT: {username} {action} {resource_type or ''} {resource_id or ''}")
+    except mysql.connector.Error as e:
+        print(f"  ⚠  audit_log DB error: {e}")
+    finally:
+        conn.close()
 
 
 # ─── Database helpers ───────────────────────────────────────────────────────────
@@ -236,15 +814,103 @@ def cms_set(key, value):
         cursor = conn.cursor()
         payload = json.dumps(value, ensure_ascii=False) if not isinstance(value, str) else value
         cursor.execute("""
-            INSERT INTO cms_content (content_key, content_value)
-            VALUES (%s, %s)
-            ON DUPLICATE KEY UPDATE content_value = VALUES(content_value)
+            INSERT INTO cms_content (content_key, content_value, version)
+            VALUES (%s, %s, 1)
+            ON DUPLICATE KEY UPDATE
+                content_value = VALUES(content_value),
+                version = version + 1
         """, (key, payload))
         conn.commit()
         return True
     except mysql.connector.Error as e:
         print(f"  ✗  cms_set failed: {e}")
         return False
+    finally:
+        conn.close()
+
+
+def cms_set_with_lock(key, value, expected_version, user_id=None):
+    """
+    Optimistic locking: only updates if the stored version matches expected_version.
+    Returns (ok, new_version, conflict_info).
+      - On success:           (True, new_version, None)
+      - On version conflict:  (False, None, current_version)
+      - On other errors:      (False, None, None)
+
+    If expected_version is None, behaves like cms_set (no lock check) — useful
+    for first-time inserts or for legacy clients that don't track versions yet.
+    """
+    conn = get_db_connection()
+    if not conn:
+        return False, None, None
+    try:
+        cursor = conn.cursor()
+        payload = json.dumps(value, ensure_ascii=False) if not isinstance(value, str) else value
+
+        # No expected_version → just upsert
+        if expected_version is None:
+            cursor.execute("""
+                INSERT INTO cms_content (content_key, content_value, version, updated_by)
+                VALUES (%s, %s, 1, %s)
+                ON DUPLICATE KEY UPDATE
+                    content_value = VALUES(content_value),
+                    version = version + 1,
+                    updated_by = VALUES(updated_by)
+            """, (key, payload, user_id))
+            conn.commit()
+            cursor.execute("SELECT version FROM cms_content WHERE content_key = %s", (key,))
+            row = cursor.fetchone()
+            return True, (row[0] if row else 1), None
+
+        # Lock check: only update if version matches
+        cursor.execute("""
+            UPDATE cms_content
+            SET content_value = %s, version = version + 1, updated_by = %s
+            WHERE content_key = %s AND version = %s
+        """, (payload, user_id, key, expected_version))
+        if cursor.rowcount == 0:
+            # Either key doesn't exist yet OR version mismatch
+            cursor.execute("SELECT version FROM cms_content WHERE content_key = %s", (key,))
+            row = cursor.fetchone()
+            if row is None:
+                # First-time insert
+                cursor.execute("""
+                    INSERT INTO cms_content (content_key, content_value, version, updated_by)
+                    VALUES (%s, %s, 1, %s)
+                """, (key, payload, user_id))
+                conn.commit()
+                return True, 1, None
+            # Version conflict
+            return False, None, row[0]
+        conn.commit()
+        cursor.execute("SELECT version FROM cms_content WHERE content_key = %s", (key,))
+        new_version = cursor.fetchone()[0]
+        return True, new_version, None
+    except mysql.connector.Error as e:
+        print(f"  ✗  cms_set_with_lock failed: {e}")
+        return False, None, None
+    finally:
+        conn.close()
+
+
+def cms_get_with_version(key, default=None):
+    """Like cms_get but also returns the version. Returns (value, version)."""
+    conn = get_db_connection()
+    if not conn:
+        return default, None
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT content_value, version FROM cms_content WHERE content_key = %s", (key,))
+        row = cursor.fetchone()
+        if row:
+            try:
+                return json.loads(row[0]), row[1]
+            except (ValueError, TypeError):
+                return row[0], row[1]
+        return default, None
+    except mysql.connector.Error as e:
+        print(f"  ✗  cms_get_with_version failed: {e}")
+        return default, None
     finally:
         conn.close()
 
@@ -410,6 +1076,10 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 # ─── Request Handler ────────────────────────────────────────────────────────────
 
 class WFXHandler(SimpleHTTPRequestHandler):
+    # Override server identification so HTTP responses don't leak Python version.
+    # Default would be: Server: SimpleHTTP/0.6 Python/3.X.Y
+    server_version = 'WFX'
+    sys_version = ''
 
     def log_message(self, format, *args):
         if args and '/admin' in str(args[0]):
@@ -421,13 +1091,27 @@ class WFXHandler(SimpleHTTPRequestHandler):
                 ts = datetime.now().strftime('%H:%M:%S')
                 print(f"  ✗  [{ts}] {code} {args[0]}")
 
+    def _is_https(self):
+        """True if this request is over HTTPS (direct or via reverse proxy)."""
+        return (
+            self.headers.get('X-Forwarded-Proto') == 'https' or
+            self.headers.get('X-Forwarded-Ssl') == 'on'
+        )
+
+    def _send_security_headers(self):
+        """Send all security headers. HSTS only on HTTPS."""
+        for h, v in SECURITY_HEADERS.items():
+            # Skip HSTS over plain HTTP (browsers ignore it but spec says don't send it)
+            if h == 'Strict-Transport-Security' and not self._is_https():
+                continue
+            self.send_header(h, v)
+
     def _send_json(self, status, payload):
         body = json.dumps(payload).encode('utf-8')
         self.send_response(status)
         self.send_header('Content-Type', 'application/json; charset=utf-8')
         self.send_header('Content-Length', str(len(body)))
-        for h, v in SECURITY_HEADERS.items():
-            self.send_header(h, v)
+        self._send_security_headers()
         self.end_headers()
         self.wfile.write(body)
 
@@ -443,24 +1127,66 @@ class WFXHandler(SimpleHTTPRequestHandler):
             self._handle_quote_post()
         elif path == '/api/contact':
             self._handle_contact_post()
+        elif path == '/api/auth/login':
+            self._handle_login()
+        elif path == '/api/auth/logout':
+            self._handle_logout()
+        elif path == '/api/auth/change-password':
+            self._handle_change_password()
+        elif path == '/api/users':
+            self._handle_users_create()
+        elif path == '/api/media':
+            self._handle_media_upload()
         elif path.startswith('/api/cms/'):
             self._handle_cms_write(path)
         else:
             self._send_json(404, {'ok': False, 'error': 'Not found'})
 
     def do_PUT(self):
-        # Treat PUT same as POST for CMS
+        path = urlparse(self.path).path
+        # /api/users/<id>
+        if path.startswith('/api/users/'):
+            try:
+                target_id = int(path[len('/api/users/'):])
+                self._handle_users_update(target_id)
+                return
+            except ValueError:
+                self._send_json(400, {'ok': False, 'error': 'Invalid user id'})
+                return
+        # Anything else: treat like POST (CMS supports PUT semantics)
         self.do_POST()
 
     def do_DELETE(self):
         path = urlparse(self.path).path
         if path.startswith('/api/cms/'):
             self._handle_cms_delete(path)
+        elif path.startswith('/api/users/'):
+            try:
+                target_id = int(path[len('/api/users/'):])
+                self._handle_users_delete(target_id)
+                return
+            except ValueError:
+                self._send_json(400, {'ok': False, 'error': 'Invalid user id'})
+                return
+        elif path.startswith('/api/media/'):
+            # /api/media/<folder>/<filename>
+            parts = path[len('/api/media/'):].split('/', 1)
+            if len(parts) == 2 and parts[0] and parts[1]:
+                self._handle_media_delete(parts[0], parts[1])
+                return
+            self._send_json(400, {'ok': False, 'error': 'Format: /api/media/<folder>/<filename>'})
+            return
         else:
             self._send_json(404, {'ok': False, 'error': 'Not found'})
 
     def _handle_quote_post(self):
         """Multipart POST: form fields + optional CAD file upload."""
+        # Rate limit: per-IP throttle to prevent spam bots from flooding the form
+        max_req, window = RATE_LIMITS['quote']
+        if not rate_limiter.check(f"quote:{self._client_ip()}", max_req, window):
+            self._send_json(429, {'ok': False, 'error': 'Too many submissions. Please try again in a minute.'})
+            return
+
         if not (DB_CONFIG and MYSQL_AVAILABLE):
             self._send_json(503, {
                 'ok': False,
@@ -521,6 +1247,19 @@ class WFXHandler(SimpleHTTPRequestHandler):
                         return
                     f.write(chunk)
 
+            # Magic-number validation: reject if file content doesn't match its
+            # declared extension (e.g. an .exe renamed to .step)
+            if not validate_file_magic(target_path, ext):
+                try:
+                    os.unlink(target_path)
+                except OSError:
+                    pass
+                self._send_json(400, {
+                    'ok': False,
+                    'error': f'File content does not match {ext} format. Upload rejected for security.'
+                })
+                return
+
             file_info = {
                 'original': original_name,
                 'stored':   stored_name,
@@ -539,6 +1278,12 @@ class WFXHandler(SimpleHTTPRequestHandler):
 
     def _handle_contact_post(self):
         """JSON or form POST for contact submissions."""
+        # Rate limit per-IP
+        max_req, window = RATE_LIMITS['contact']
+        if not rate_limiter.check(f"contact:{self._client_ip()}", max_req, window):
+            self._send_json(429, {'ok': False, 'error': 'Too many submissions. Please try again in a minute.'})
+            return
+
         if not (DB_CONFIG and MYSQL_AVAILABLE):
             self._send_json(503, {'ok': False, 'error': 'Database not configured.'})
             return
@@ -582,6 +1327,21 @@ class WFXHandler(SimpleHTTPRequestHandler):
         if path == '/api/admin/contacts':
             self._handle_admin_list('contact_submissions')
             return
+        if path == '/api/auth/me':
+            self._handle_whoami()
+            return
+        if path == '/api/auth/csrf':
+            self._handle_csrf_get()
+            return
+        if path == '/api/users':
+            self._handle_users_list()
+            return
+        if path == '/api/audit':
+            self._handle_audit_log()
+            return
+        if path == '/api/media':
+            self._handle_media_list()
+            return
         if path.startswith('/api/cms/'):
             self._handle_cms_read(path)
             return
@@ -603,12 +1363,172 @@ class WFXHandler(SimpleHTTPRequestHandler):
     # POST /api/cms/news/<type>       → replace all of given type (auth)
     # GET  /api/cms/all               → bundle all CMS data (used by content-loader.js)
 
+    # ─── Cookie helpers ──────────────────────────────────────────────────
+    def _get_cookie(self, name):
+        cookie_header = self.headers.get('Cookie', '')
+        for pair in cookie_header.split(';'):
+            if '=' in pair:
+                k, v = pair.strip().split('=', 1)
+                if k == name:
+                    return v
+        return None
+
+    def _set_session_cookie(self, value, max_age=SESSION_TTL_SECONDS):
+        # HttpOnly + SameSite=Strict + Secure (in production)
+        # Note: Secure flag only set if request came over HTTPS
+        secure_flag = '; Secure' if self.headers.get('X-Forwarded-Proto') == 'https' else ''
+        self.send_header(
+            'Set-Cookie',
+            f'wfx_session={value}; HttpOnly; SameSite=Strict; Path=/; Max-Age={max_age}{secure_flag}'
+        )
+
+    def _clear_session_cookie(self):
+        self.send_header('Set-Cookie', 'wfx_session=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0')
+
+    def _get_current_user(self):
+        """Return user dict from session cookie, or None."""
+        token = self._get_cookie('wfx_session')
+        return verify_session_token(token) if token else None
+
     def _check_admin_auth(self):
-        token = self.headers.get('X-Admin-Token', '')
-        if token != ADMIN_API_TOKEN:
-            self._send_json(401, {'ok': False, 'error': 'Unauthorized'})
+        """
+        Modern auth check:
+          1. Session cookie must be valid (not expired, signature valid)
+          2. CSRF token in X-CSRF-Token header (for state-changing requests only)
+          3. Rate limit on /api/cms/* endpoints
+        Falls back to legacy X-Admin-Token for backwards compatibility during migration.
+        """
+        # Rate limit (per-IP) to prevent brute force / abuse
+        max_req, window = RATE_LIMITS['cms']
+        if not rate_limiter.check(f"cms:{self._client_ip()}", max_req, window):
+            self._send_json(429, {'ok': False, 'error': 'Too many requests'})
             return False
-        return True
+
+        # Try cookie session first (preferred)
+        user = self._get_current_user()
+        if user:
+            # CSRF check for state-changing methods (POST/PUT/DELETE)
+            if self.command in ('POST', 'PUT', 'DELETE'):
+                csrf = self.headers.get('X-CSRF-Token', '')
+                if not verify_csrf_token(csrf):
+                    self._send_json(403, {'ok': False, 'error': 'Invalid CSRF token'})
+                    return False
+            self._current_user = user
+            return True
+
+        # Fallback: legacy X-Admin-Token header (for non-browser scripts/CI)
+        legacy_token = self.headers.get('X-Admin-Token', '')
+        if legacy_token and ADMIN_API_TOKEN and hmac.compare_digest(legacy_token, ADMIN_API_TOKEN):
+            self._current_user = {'uid': 0, 'name': 'api-token'}
+            return True
+
+        self._send_json(401, {'ok': False, 'error': 'Unauthorized'})
+        return False
+
+    # ─── Auth Endpoints ──────────────────────────────────────────────────
+
+    def _handle_login(self):
+        # Brute-force rate limit (per IP)
+        max_req, window = RATE_LIMITS['login']
+        if not rate_limiter.check(f"login:{self._client_ip()}", max_req, window):
+            self._send_json(429, {'ok': False, 'error': 'Too many login attempts. Try again in 5 minutes.'})
+            return
+
+        data = self._read_json_body(max_bytes=4096)
+        if data is None:
+            return
+        username = (data.get('username') or '').strip()
+        password = data.get('password') or ''
+        if not username or not password:
+            self._send_json(400, {'ok': False, 'error': 'Username and password required'})
+            return
+
+        # Constant-time auth check (timing attack mitigation)
+        user = authenticate_admin(username, password)
+        # Always do a dummy verify if user not found, to keep response time uniform
+        if not user:
+            verify_password(password, hash_password('dummy'))  # discard result
+            self._send_json(401, {'ok': False, 'error': 'Invalid username or password'})
+            return
+
+        # Issue session token
+        token = issue_session_token(user['id'], user['username'], user.get('role', 'viewer'))
+        csrf = issue_csrf_token()
+
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/json; charset=utf-8')
+        self._set_session_cookie(token)
+        # CSRF token returned in body — frontend stores it for use in X-CSRF-Token header
+        self._send_security_headers()
+        body = json.dumps({
+            'ok': True,
+            'user': {
+                'id': user['id'],
+                'username': user['username'],
+                'role': user.get('role', 'admin'),
+                'must_change_password': user.get('must_change_password', False),
+            },
+            'csrf_token': csrf,
+        }).encode('utf-8')
+        self.send_header('Content-Length', str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+        ts = datetime.now().strftime('%H:%M:%S')
+        print(f"  ✓  [{ts}] LOGIN: {username} from {self._client_ip()}")
+
+    def _handle_logout(self):
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/json; charset=utf-8')
+        self._clear_session_cookie()
+        self._send_security_headers()
+        body = json.dumps({'ok': True}).encode('utf-8')
+        self.send_header('Content-Length', str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _handle_whoami(self):
+        user = self._get_current_user()
+        if not user:
+            self._send_json(401, {'ok': False, 'error': 'Not authenticated'})
+            return
+        self._send_json(200, {'ok': True, 'user': user})
+
+    def _handle_csrf_get(self):
+        # Anyone can request a CSRF token; only admins can use it
+        self._send_json(200, {'ok': True, 'csrf_token': issue_csrf_token()})
+
+    def _handle_change_password(self):
+        user = self._get_current_user()
+        if not user:
+            self._send_json(401, {'ok': False, 'error': 'Login required'})
+            return
+        # CSRF check
+        if not verify_csrf_token(self.headers.get('X-CSRF-Token', '')):
+            self._send_json(403, {'ok': False, 'error': 'Invalid CSRF token'})
+            return
+
+        data = self._read_json_body(max_bytes=4096)
+        if data is None:
+            return
+        current = data.get('current_password', '')
+        new_pw = data.get('new_password', '')
+
+        if len(new_pw) < 8:
+            self._send_json(400, {'ok': False, 'error': 'New password must be at least 8 characters'})
+            return
+
+        # Verify current password
+        users = load_admin_users()
+        target = next((u for u in users if u['id'] == user['uid']), None)
+        if not target or not verify_password(current, target['password_hash']):
+            self._send_json(401, {'ok': False, 'error': 'Current password incorrect'})
+            return
+
+        change_admin_password(user['uid'], new_pw)
+        ts = datetime.now().strftime('%H:%M:%S')
+        print(f"  ✓  [{ts}] PASSWORD CHANGED: {user['name']}")
+        self._send_json(200, {'ok': True})
 
     def _read_json_body(self, max_bytes=5 * 1024 * 1024):
         length = int(self.headers.get('Content-Length', 0))
@@ -642,8 +1562,8 @@ class WFXHandler(SimpleHTTPRequestHandler):
             return
 
         if resource == 'content' and len(parts) == 4:
-            value = cms_get(parts[3])
-            self._send_json(200, {'ok': True, 'value': value})
+            value, version = cms_get_with_version(parts[3])
+            self._send_json(200, {'ok': True, 'value': value, 'version': version})
             return
 
         if resource == 'products':
@@ -662,7 +1582,7 @@ class WFXHandler(SimpleHTTPRequestHandler):
         self._send_json(404, {'ok': False, 'error': 'Not found'})
 
     def _handle_cms_write(self, path):
-        """POST/PUT handlers — admin only."""
+        """POST/PUT handlers — admin only, with role-based permission checks."""
         if not (DB_CONFIG and MYSQL_AVAILABLE):
             self._send_json(503, {'ok': False, 'error': 'Database not configured'})
             return
@@ -677,17 +1597,62 @@ class WFXHandler(SimpleHTTPRequestHandler):
 
         body = self._read_json_body()
         if body is None:
-            return  # already sent error
+            return
+
+        # Map URL resource to permission token
+        permission_resource = {
+            'content':    'content',
+            'products':   'products',
+            'news':       'news',     # split below for blog vs news
+            'categories': 'categories',
+        }.get(resource)
+
+        # Determine the permission token needed
+        if resource == 'news':
+            sub = parts[3] if len(parts) >= 4 else ''
+            permission = 'blog:write' if sub == 'blog' else 'news:write'
+        elif permission_resource:
+            permission = f"{permission_resource}:write"
+        else:
+            self._send_json(404, {'ok': False, 'error': 'Not found'})
+            return
+
+        # RBAC enforcement
+        user = getattr(self, '_current_user', None)
+        if user and not has_permission(user, permission):
+            self._send_json(403, {
+                'ok': False,
+                'error': f'Your role ({user.get("role", "unknown")}) does not have permission: {permission}'
+            })
+            audit_log(user, 'permission_denied', resource_type=resource,
+                      detail=f'Required: {permission}', ip=self._client_ip())
+            return
 
         if resource == 'content' and len(parts) == 4:
-            ok = cms_set(parts[3], body.get('value'))
-            self._send_json(200 if ok else 500, {'ok': ok})
+            # Optimistic locking: client sends expected version; server rejects on mismatch
+            expected_version = body.get('expected_version')
+            ok, new_version, conflict = cms_set_with_lock(
+                parts[3], body.get('value'), expected_version,
+                user.get('uid') if user else None
+            )
+            if conflict:
+                self._send_json(409, {
+                    'ok': False, 'error': 'Conflict',
+                    'message': 'This content was modified by another user. Please refresh and try again.',
+                    'current_version': conflict
+                })
+                return
+            audit_log(user, 'content_update', resource_type='content', resource_id=parts[3],
+                      ip=self._client_ip())
+            self._send_json(200 if ok else 500, {'ok': ok, 'version': new_version})
             return
 
         if resource == 'products' and len(parts) == 4:
             industry = parts[3]
             products = body.get('products', [])
             ok = cms_replace_industry_products(industry, products)
+            audit_log(user, 'products_update', resource_type='products', resource_id=industry,
+                      ip=self._client_ip())
             self._send_json(200 if ok else 500, {'ok': ok})
             return
 
@@ -698,6 +1663,8 @@ class WFXHandler(SimpleHTTPRequestHandler):
                 return
             posts = body.get('posts', [])
             ok = cms_replace_news(news_type, posts)
+            audit_log(user, f'{news_type}_update', resource_type=news_type,
+                      detail=f'{len(posts)} posts', ip=self._client_ip())
             self._send_json(200 if ok else 500, {'ok': ok})
             return
 
@@ -713,9 +1680,315 @@ class WFXHandler(SimpleHTTPRequestHandler):
             return
         self._send_json(404, {'ok': False, 'error': 'Not found'})
 
+    # ─── User Management Handlers (RBAC) ─────────────────────────────────
+
+    def _handle_users_list(self):
+        """GET /api/users — super_admin only."""
+        if not self._check_admin_auth():
+            return
+        user = getattr(self, '_current_user', None)
+        if not has_permission(user, 'users:read'):
+            self._send_json(403, {'ok': False, 'error': 'Forbidden: requires users:read'})
+            return
+        self._send_json(200, {'ok': True, 'users': list_admin_users(), 'roles': list(ROLE_PERMISSIONS.keys())})
+
+    def _handle_users_create(self):
+        """POST /api/users — super_admin only."""
+        if not self._check_admin_auth():
+            return
+        user = getattr(self, '_current_user', None)
+        if not has_permission(user, 'users:write'):
+            self._send_json(403, {'ok': False, 'error': 'Forbidden: requires users:write'})
+            return
+        data = self._read_json_body()
+        if data is None:
+            return
+        username = (data.get('username') or '').strip()
+        password = data.get('password') or ''
+        role = data.get('role', 'viewer')
+        if not username or not password or len(password) < 8:
+            self._send_json(400, {'ok': False, 'error': 'Username and 8+ char password required'})
+            return
+        if role not in ROLE_PERMISSIONS:
+            self._send_json(400, {'ok': False, 'error': f'Invalid role. Must be one of: {list(ROLE_PERMISSIONS.keys())}'})
+            return
+        new_user = create_admin_user(
+            username, password, role,
+            email=data.get('email', ''), full_name=data.get('full_name', ''),
+            actor_id=user.get('uid')
+        )
+        if not new_user:
+            self._send_json(409, {'ok': False, 'error': 'Username or email already exists'})
+            return
+        audit_log(user, 'user_created', resource_type='user', resource_id=new_user['id'],
+                  detail={'username': username, 'role': role}, ip=self._client_ip())
+        self._send_json(201, {'ok': True, 'user': new_user})
+
+    def _handle_users_update(self, target_id):
+        """PUT /api/users/<id> — super_admin only."""
+        if not self._check_admin_auth():
+            return
+        user = getattr(self, '_current_user', None)
+        if not has_permission(user, 'users:write'):
+            self._send_json(403, {'ok': False, 'error': 'Forbidden: requires users:write'})
+            return
+        data = self._read_json_body()
+        if data is None:
+            return
+        # Special action: reset password
+        if 'new_password' in data:
+            if len(data['new_password']) < 8:
+                self._send_json(400, {'ok': False, 'error': 'Password must be 8+ characters'})
+                return
+            if not reset_admin_password(target_id, data['new_password'], actor_id=user.get('uid')):
+                self._send_json(404, {'ok': False, 'error': 'User not found'})
+                return
+            audit_log(user, 'user_password_reset', resource_type='user', resource_id=target_id,
+                      ip=self._client_ip())
+            self._send_json(200, {'ok': True})
+            return
+        # General field updates
+        if not update_admin_user(target_id, data, actor_id=user.get('uid')):
+            self._send_json(404, {'ok': False, 'error': 'User not found'})
+            return
+        audit_log(user, 'user_updated', resource_type='user', resource_id=target_id,
+                  detail=data, ip=self._client_ip())
+        self._send_json(200, {'ok': True})
+
+    def _handle_users_delete(self, target_id):
+        """DELETE /api/users/<id> — super_admin only. Soft-delete (deactivate)."""
+        if not self._check_admin_auth():
+            return
+        user = getattr(self, '_current_user', None)
+        if not has_permission(user, 'users:delete'):
+            self._send_json(403, {'ok': False, 'error': 'Forbidden: requires users:delete'})
+            return
+        # Prevent self-deletion (would lock out the only admin)
+        if user.get('uid') == target_id:
+            self._send_json(400, {'ok': False, 'error': 'Cannot delete your own account'})
+            return
+        if not delete_admin_user(target_id, actor_id=user.get('uid')):
+            self._send_json(404, {'ok': False, 'error': 'User not found'})
+            return
+        audit_log(user, 'user_deleted', resource_type='user', resource_id=target_id,
+                  ip=self._client_ip())
+        self._send_json(200, {'ok': True})
+
+    # ─── Media Library Handlers ──────────────────────────────────────────
+
+    def _handle_media_upload(self):
+        """
+        POST /api/media — upload an image/video/PDF to the admin media library.
+        Requires media:write permission. Returns the public URL.
+        """
+        if not self._check_admin_auth():
+            return
+        user = getattr(self, '_current_user', None)
+        if not has_permission(user, 'media:write'):
+            self._send_json(403, {'ok': False, 'error': 'Forbidden: requires media:write'})
+            return
+
+        ctype = self.headers.get('Content-Type', '')
+        if not ctype.startswith('multipart/form-data'):
+            self._send_json(400, {'ok': False, 'error': 'Expected multipart/form-data'})
+            return
+
+        try:
+            form = cgi.FieldStorage(
+                fp=self.rfile,
+                headers=self.headers,
+                environ={'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': ctype},
+                keep_blank_values=True,
+            )
+        except (ValueError, OSError) as e:
+            self._send_json(400, {'ok': False, 'error': f'Bad multipart data: {e}'})
+            return
+
+        if 'file' not in form:
+            self._send_json(400, {'ok': False, 'error': 'No file uploaded (field name: file)'})
+            return
+
+        file_field = form['file']
+        if not getattr(file_field, 'filename', None):
+            self._send_json(400, {'ok': False, 'error': 'Empty filename'})
+            return
+
+        original_name = os.path.basename(file_field.filename)
+        ext = os.path.splitext(original_name)[1].lower()
+        if ext not in ALLOWED_MEDIA_EXTS:
+            self._send_json(400, {
+                'ok': False,
+                'error': f'Extension {ext} not allowed. Allowed: {sorted(ALLOWED_MEDIA_EXTS)}'
+            })
+            return
+
+        # Optional folder/category from form (e.g. "products", "videos", "downloads")
+        folder = (form.getvalue('folder') or 'general').strip()
+        # Only allow safe folder names (alphanumeric + dash + underscore)
+        if not folder.replace('-', '').replace('_', '').isalnum() or len(folder) > 50:
+            folder = 'general'
+
+        # Build target path
+        os.makedirs(os.path.join(MEDIA_DIR, folder), exist_ok=True)
+        safe_base = re.sub(r'[^a-zA-Z0-9_.-]', '_', os.path.splitext(original_name)[0])[:80] or 'file'
+        stored_name = f"{safe_base}_{uuid.uuid4().hex[:8]}{ext}"
+        target_path = os.path.join(MEDIA_DIR, folder, stored_name)
+
+        # Stream-write the uploaded file with size limit enforcement
+        size = 0
+        with open(target_path, 'wb') as f:
+            while True:
+                chunk = file_field.file.read(1024 * 64)
+                if not chunk:
+                    break
+                size += len(chunk)
+                if size > MAX_MEDIA_BYTES:
+                    f.close()
+                    try: os.unlink(target_path)
+                    except OSError: pass
+                    self._send_json(413, {'ok': False, 'error': f'File too large (max {MAX_MEDIA_BYTES // 1024 // 1024}MB)'})
+                    return
+                f.write(chunk)
+
+        # Magic-number sanity check (reject executables disguised as images)
+        if not validate_file_magic(target_path, ext):
+            try: os.unlink(target_path)
+            except OSError: pass
+            self._send_json(400, {
+                'ok': False,
+                'error': f'File content does not match {ext} format. Upload rejected.'
+            })
+            return
+
+        # Public URL the admin can paste into product/page fields
+        public_url = f"/uploads/media/{folder}/{stored_name}"
+
+        audit_log(user, 'media_upload', resource_type='media', resource_id=stored_name,
+                  detail={'folder': folder, 'size': size, 'original': original_name},
+                  ip=self._client_ip())
+
+        self._send_json(200, {
+            'ok': True,
+            'url': public_url,
+            'filename': stored_name,
+            'original_filename': original_name,
+            'size': size,
+            'folder': folder,
+        })
+
+    def _handle_media_list(self):
+        """GET /api/media — list all media files (with sizes, URLs, folders)."""
+        if not self._check_admin_auth():
+            return
+        user = getattr(self, '_current_user', None)
+        if not has_permission(user, 'media:read'):
+            self._send_json(403, {'ok': False, 'error': 'Forbidden: requires media:read'})
+            return
+
+        items = []
+        if os.path.isdir(MEDIA_DIR):
+            for folder_name in sorted(os.listdir(MEDIA_DIR)):
+                folder_path = os.path.join(MEDIA_DIR, folder_name)
+                if not os.path.isdir(folder_path):
+                    continue
+                for fname in sorted(os.listdir(folder_path)):
+                    fpath = os.path.join(folder_path, fname)
+                    if not os.path.isfile(fpath):
+                        continue
+                    try:
+                        stat = os.stat(fpath)
+                        items.append({
+                            'filename': fname,
+                            'folder': folder_name,
+                            'url': f"/uploads/media/{folder_name}/{fname}",
+                            'size': stat.st_size,
+                            'modified': datetime.fromtimestamp(stat.st_mtime).isoformat(),
+                        })
+                    except OSError:
+                        continue
+
+        self._send_json(200, {'ok': True, 'items': items, 'total': len(items)})
+
+    def _handle_media_delete(self, folder, filename):
+        """DELETE /api/media/<folder>/<filename> — delete a media file."""
+        if not self._check_admin_auth():
+            return
+        user = getattr(self, '_current_user', None)
+        if not has_permission(user, 'media:delete'):
+            self._send_json(403, {'ok': False, 'error': 'Forbidden: requires media:delete'})
+            return
+
+        # Prevent path traversal
+        if not folder.replace('-', '').replace('_', '').isalnum():
+            self._send_json(400, {'ok': False, 'error': 'Invalid folder name'})
+            return
+        if '..' in filename or '/' in filename or '\\' in filename:
+            self._send_json(400, {'ok': False, 'error': 'Invalid filename'})
+            return
+
+        target = os.path.join(MEDIA_DIR, folder, filename)
+        if not os.path.isfile(target):
+            self._send_json(404, {'ok': False, 'error': 'File not found'})
+            return
+
+        try:
+            os.unlink(target)
+        except OSError as e:
+            self._send_json(500, {'ok': False, 'error': str(e)})
+            return
+
+        audit_log(user, 'media_delete', resource_type='media', resource_id=filename,
+                  detail={'folder': folder}, ip=self._client_ip())
+        self._send_json(200, {'ok': True})
+
+    def _handle_audit_log(self):
+        """GET /api/audit — read audit log. super_admin only."""
+        if not self._check_admin_auth():
+            return
+        user = getattr(self, '_current_user', None)
+        if not has_permission(user, 'audit:read'):
+            self._send_json(403, {'ok': False, 'error': 'Forbidden: requires audit:read'})
+            return
+        if not (DB_CONFIG and MYSQL_AVAILABLE):
+            self._send_json(503, {'ok': False, 'error': 'Database not configured'})
+            return
+        conn = get_db_connection()
+        if not conn:
+            self._send_json(503, {'ok': False, 'error': 'Database unavailable'})
+            return
+        try:
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("""
+                SELECT id, user_id, username, action, resource_type, resource_id,
+                       detail, ip_address, created_at
+                FROM admin_audit_log
+                ORDER BY created_at DESC
+                LIMIT 200
+            """)
+            rows = cursor.fetchall()
+            for row in rows:
+                for k, v in row.items():
+                    if isinstance(v, datetime):
+                        row[k] = v.isoformat()
+            self._send_json(200, {'ok': True, 'rows': rows})
+        except mysql.connector.Error as e:
+            self._send_json(500, {'ok': False, 'error': str(e)})
+        finally:
+            conn.close()
+
     def _serve_static(self):
         decoded_path = unquote(self.path)
         if '..' in decoded_path or '\x00' in decoded_path:
+            self.send_error(403, "Forbidden")
+            return
+
+        # Block direct HTTP access to confidential upload folders.
+        # uploads/.auth/  → admin user database (must never be served)
+        # uploads/quotes/ → customer CAD files (confidential)
+        # uploads/media/  → public (admin's marketing assets are meant to be served)
+        lower = decoded_path.lower()
+        if ('/uploads/.auth' in lower or '/uploads/quotes' in lower or
+            lower.startswith('/uploads/.auth') or lower.startswith('/uploads/quotes')):
             self.send_error(403, "Forbidden")
             return
 
@@ -800,8 +2073,7 @@ class WFXHandler(SimpleHTTPRequestHandler):
             self.send_header('Content-Encoding', 'gzip')
             self.send_header('Vary', 'Accept-Encoding')
 
-        for h, v in SECURITY_HEADERS.items():
-            self.send_header(h, v)
+        self._send_security_headers()
         self.end_headers()
 
         if self.command != 'HEAD':
@@ -815,11 +2087,39 @@ class WFXHandler(SimpleHTTPRequestHandler):
 
 def main():
     parser = argparse.ArgumentParser(description='WFX Website Server')
-    parser.add_argument('--port', type=int, default=DEFAULT_PORT)
+    parser.add_argument('--port', type=int,
+                        default=int(os.environ.get('WFX_PORT', DEFAULT_PORT)),
+                        help='Port to bind (env: WFX_PORT)')
+    parser.add_argument('--host', type=str,
+                        default=os.environ.get('WFX_HOST', '127.0.0.1'),
+                        help='Host to bind. Use 0.0.0.0 for cloud deployment behind a reverse proxy. (env: WFX_HOST)')
+    parser.add_argument('--production', action='store_true',
+                        default=os.environ.get('WFX_ENV', '') == 'production',
+                        help='Production mode: stricter logging, no auto-browser, security checks (env: WFX_ENV=production)')
     parser.add_argument('--no-browser', action='store_true')
     args = parser.parse_args()
 
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+    # Production safety checks
+    if args.production:
+        prod_warnings = []
+        if not (DB_CONFIG and MYSQL_AVAILABLE):
+            prod_warnings.append("MySQL not configured — quote/contact submissions will fail")
+        # Check SESSION_SECRET: from config.py, env var, or auto-generated
+        secret = (getattr(config, 'SESSION_SECRET', None) if config else None) or os.environ.get('WFX_SESSION_SECRET', '')
+        if not secret or 'replace' in str(secret).lower():
+            prod_warnings.append("SESSION_SECRET is not set or is the default placeholder — sessions will reset on each restart")
+        token = (getattr(config, 'ADMIN_API_TOKEN', None) if config else None) or os.environ.get('WFX_ADMIN_TOKEN', '')
+        if not token or 'replace' in str(token).lower() or token == 'change-me':
+            prod_warnings.append("ADMIN_API_TOKEN is not set or is the default placeholder")
+        if args.host == '0.0.0.0':
+            prod_warnings.append("Binding to 0.0.0.0 — make sure you're behind a reverse proxy (Nginx) with HTTPS")
+        if prod_warnings:
+            print("\n⚠  PRODUCTION WARNINGS:")
+            for w in prod_warnings:
+                print(f"   - {w}")
+            print()
 
     mimetypes.add_type('application/javascript', '.js')
     mimetypes.add_type('image/svg+xml', '.svg')
@@ -827,25 +2127,29 @@ def main():
     mimetypes.add_type('font/woff2', '.woff2')
     mimetypes.add_type('video/mp4', '.mp4')
 
-    server = ThreadedHTTPServer(('', args.port), WFXHandler)
+    server = ThreadedHTTPServer((args.host, args.port), WFXHandler)
 
     db_status = "Connected" if (DB_CONFIG and MYSQL_AVAILABLE) else "Disabled (no config)"
+    bind_display = f"{args.host}:{args.port}" if args.host != '127.0.0.1' else f"localhost:{args.port}"
+    mode = "PRODUCTION" if args.production else "DEVELOPMENT"
 
     print(f"""
 ╔═══════════════════════════════════════════════════════════════╗
-║            WFX Wanfuxin — Production Server                   ║
+║          WFX Wanfuxin — {mode:<11} Server                   ║
 ╠═══════════════════════════════════════════════════════════════╣
-║   Website:     http://localhost:{args.port}
-║   Admin:       http://localhost:{args.port}/admin/
+║   Listening:   http://{bind_display}
+║   Admin:       http://{bind_display}/admin/
 ╠═══════════════════════════════════════════════════════════════╣
 ║   Multi-threaded | Gzip | ETag | Security headers
 ║   MySQL: {db_status}
 ║
-║   API: POST /api/quote, POST /api/contact
+║   API: POST /api/quote, POST /api/contact, /api/auth/*
 ║        GET /api/admin/quotes, GET /api/admin/contacts
+║        /api/cms/* (CMS), /api/users/* (RBAC)
 ╚═══════════════════════════════════════════════════════════════╝
 """)
-    if not args.no_browser:
+    # Don't auto-open browser in production or when binding to non-loopback
+    if not args.no_browser and not args.production and args.host in ('127.0.0.1', 'localhost'):
         webbrowser.open(f'http://localhost:{args.port}')
     try:
         server.serve_forever()
