@@ -88,15 +88,57 @@ function initMobileMenu() {
         });
     }
 
-    // Close menu when clicking a link
+    // Mobile mega-menu / dropdown — tap parent link to expand instead of navigate.
+    // On desktop, hover handles this; on touch devices, hover doesn't exist.
+    document.querySelectorAll('.nav-item').forEach(item => {
+        const subMenu = item.querySelector('.dropdown-menu, .mega-menu');
+        const parentLink = item.querySelector('.nav-link');
+        if (!subMenu || !parentLink) return;
+
+        parentLink.addEventListener('click', (e) => {
+            // Only intercept on mobile breakpoint
+            if (window.innerWidth > 768) return;
+            // First tap → expand the submenu (don't navigate yet)
+            // Second tap on same item → navigate to parent's href
+            if (!item.classList.contains('mobile-open')) {
+                e.preventDefault();
+                // Close any other open submenus
+                document.querySelectorAll('.nav-item.mobile-open').forEach(other => {
+                    if (other !== item) other.classList.remove('mobile-open');
+                });
+                item.classList.add('mobile-open');
+                parentLink.setAttribute('aria-expanded', 'true');
+            }
+            // If already open, fall through and let default link navigation happen
+        });
+        // Mark this link as a disclosure widget for screen readers
+        parentLink.setAttribute('aria-expanded', 'false');
+        parentLink.setAttribute('aria-haspopup', 'true');
+    });
+
+    // Close menu when clicking a sublink (mobile)
     navLinks.forEach(link => {
         link.addEventListener('click', () => {
-            if (window.innerWidth <= 768) {
+            // Only close the whole menu if it's a leaf link (no sub-menu children)
+            const parentItem = link.closest('.nav-item');
+            const hasSubMenu = parentItem && parentItem.querySelector('.dropdown-menu, .mega-menu');
+            if (window.innerWidth <= 768 && !hasSubMenu) {
                 navMenu.classList.remove('active');
                 mobileToggle.classList.remove('active');
                 document.body.style.overflow = '';
             }
         });
+    });
+
+    // Reset mobile-open state when window resizes back to desktop
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+            document.querySelectorAll('.nav-item.mobile-open').forEach(item => {
+                item.classList.remove('mobile-open');
+                const link = item.querySelector('.nav-link');
+                if (link) link.setAttribute('aria-expanded', 'false');
+            });
+        }
     });
 
     // Close menu on window resize
@@ -198,6 +240,12 @@ function handleFileUpload(file) {
     `;
 
     showNotification('File uploaded successfully!', 'success');
+
+    // Progressive disclosure: auto-reveal the project specs section once the
+    // user has committed to uploading. Sunk-cost effect — they're now invested.
+    if (typeof showSpecsSection === 'function') {
+        showSpecsSection();
+    }
 }
 
 function formatFileSize(bytes) {
@@ -857,3 +905,45 @@ function contactFallbackToMailto(data) {
         'success'
     );
 }
+
+// ─── Progressive quote form (step-2 reveal) ──────────────────────────────
+// Reduces friction: users see only upload + email at first; specs appear
+// after they've committed to the form.
+function showSpecsSection() {
+    const fields = document.getElementById('step-2-fields');
+    const chevron = document.getElementById('step-2-chevron');
+    const button = document.getElementById('step-2-button');
+    if (!fields) return;
+    if (fields.style.display === 'none' || !fields.style.display) {
+        fields.style.display = 'block';
+        if (chevron) chevron.style.transform = 'rotate(90deg)';
+        if (button) button.setAttribute('aria-expanded', 'true');
+        // Smooth scroll into view
+        setTimeout(() => fields.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
+    }
+}
+
+function hideSpecsSection() {
+    const fields = document.getElementById('step-2-fields');
+    const chevron = document.getElementById('step-2-chevron');
+    const button = document.getElementById('step-2-button');
+    if (!fields) return;
+    fields.style.display = 'none';
+    if (chevron) chevron.style.transform = 'rotate(0deg)';
+    if (button) button.setAttribute('aria-expanded', 'false');
+}
+
+function toggleSpecsSection() {
+    const fields = document.getElementById('step-2-fields');
+    if (!fields) return;
+    if (fields.style.display === 'none' || !fields.style.display) {
+        showSpecsSection();
+    } else {
+        hideSpecsSection();
+    }
+}
+
+// Expose globally so inline onclick handlers can find them
+window.toggleSpecsSection = toggleSpecsSection;
+window.showSpecsSection = showSpecsSection;
+window.hideSpecsSection = hideSpecsSection;

@@ -267,3 +267,75 @@ Server now actively blocks public HTTP access to:
 - `/uploads/quotes/` (customer CAD files)
 
 While keeping `/uploads/media/` publicly accessible for site assets.
+
+## Round 6: Anti-Scraping Defenses (Layered)
+
+After deciding NOT to geo-block (would harm SEO + own team + legitimate Chinese
+buyers), the following layered defenses target the real concern: competitors
+copying content programmatically.
+
+### Layer 1: Bot/Scraper User-Agent Detection
+- `is_likely_scraper()` in server.py
+- ALLOWED_BOT_PATTERNS: googlebot, bingbot, baiduspider, sogou, 360spider (Chinese SEO!)
+- BLOCKED_SCRAPER_PATTERNS: scrapy, wget, curl, python-requests, httrack, headlesschrome, puppeteer, playwright, mj12bot, dotbot, etc.
+- Empty/short UAs also blocked
+- Returns 403 with licensing email contact
+
+### Layer 2: Page Rate Limiting
+- New `pages` rate limit: 60 page loads/min/IP (humans browse <1/sec, scrapers 5+/sec)
+- Asset requests (CSS/JS/images/fonts) bypass — don't break legitimate users
+- Admin pages bypass — admins go through auth anyway
+- Returns 429 with Retry-After header
+
+### Layer 3: Honeypot Trap
+- `/honeypot-do-not-follow.html` route — invisible link in every public page
+- Real browsers won't render `display:none` links
+- If anything fetches the URL → IP banned for 24h via rate-limit budget burn
+- Disallowed in robots.txt so well-behaved crawlers skip it
+- Logs `🍯 HONEYPOT-HIT` for monitoring
+
+### Layer 4: Copyright Notice in HTML Source
+- Every public page has detailed copyright comment as first thing in `<head>`
+- Cites Berne Convention, China Copyright Law (《中华人民共和国著作权法》), DMCA
+- Provides documentary basis for DMCA takedown requests
+- Bilingual licensing contact
+
+### Layer 5: Image Watermarking (`watermark.py`)
+- Standalone Python tool admins run before uploading product photos
+- Diagonal repeating "© WFX wanfuxin.com" pattern at 35% opacity
+- Plus clear corner watermark with shadow box
+- Even scraped/screenshotted images carry attribution
+- `python watermark.py photo.jpg` (single) or `python watermark.py --batch ./photos/`
+
+### What These DON'T Stop
+Determined attackers can still:
+- Use VPN + headless Chrome with patched UA → most defenses bypassed
+- Render the site in real Chrome and screenshot manually
+- Use Google's cached version
+
+Real defenses against motivated competitors:
+- DMCA takedown when stolen content is found
+- Make the watermark survive their scraping attempts
+- Update content frequently (stale stolen content quickly outdated)
+
+## Targeted IP Blocking
+
+For blocking specific competitors or known bad actors (not geo-blocking):
+
+1. Edit `blocklist.txt` in the project root
+2. Add IP, CIDR range, or ASN, one per line:
+   ```
+   203.0.113.45                    # Specific IP
+   203.0.113.0/24                  # Whole subnet
+   AS64500                         # Entire ASN (requires `pip install ipwhois`)
+   2001:db8::/32                   # IPv6 range
+   ```
+3. Restart the server: `sudo systemctl restart wfx-website`
+4. Verify in logs: `journalctl -u wfx-website | grep "Blocklist loaded"`
+
+Blocked IPs see HTTP 404 (looks like broken site, doesn't reveal they're blocked).
+Each block hit is logged with `🛑 BLOCKED-IP` prefix.
+
+**This is targeted blocking only.** For "block someone you don't know yet",
+the existing 5 anti-scraping layers (UA filter, rate limit, honeypot, copyright
+notice, image watermarking) are the better tools.

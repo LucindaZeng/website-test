@@ -1,6 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!--
+    ════════════════════════════════════════════════════════════════════════
+    COPYRIGHT NOTICE
+    ════════════════════════════════════════════════════════════════════════
+    © 2026 Dongguan Wanfuxin Hardware Products Co., Ltd. (东莞万富鑫五金制品有限公司)
+    All rights reserved. 版权所有，翻版必究。
+
+    This website's content (text, images, photographs, videos, technical
+    specifications, product descriptions, layout, and source code) is the
+    intellectual property of WFX Wanfuxin and is protected by international
+    copyright treaties including the Berne Convention, China Copyright Law
+    (《中华人民共和国著作权法》), and the U.S. DMCA.
+
+    Unauthorized reproduction, redistribution, scraping, or use of this
+    content for commercial purposes is strictly prohibited and may result
+    in legal action.
+
+    Licensing inquiries: lucindaz@wanfuxin.com
+    内容许可咨询: lucindaz@wanfuxin.com
+    ════════════════════════════════════════════════════════════════════════
+-->
+
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
@@ -12,6 +34,9 @@
     <meta name="keywords" content="CNC machining industries, aerospace machining, medical device manufacturing, electronics machining, automotive parts, industrial equipment">
     <title>Industries We Serve | Precision CNC Machining | WFX</title>
     <link rel="canonical" href="https://wanfuxin.com/industries.html">
+    <link rel="alternate" hreflang="en" href="https://wanfuxin.com/industries.html">
+    <link rel="alternate" hreflang="x-default" href="https://wanfuxin.com/industries.html">
+    <!-- TODO: when /de/ /ja/ /fr/ subpaths exist, add additional hreflang tags here -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -516,8 +541,9 @@
                     <h4>Contact Us</h4>
                     <address>
                         <p><i class="fas fa-map-marker-alt" aria-hidden="true"></i> 3 Fuxin West Road<br>QingXi Town, Dongguan City, Guangdong, China</p>
-                        <p><i class="fas fa-phone" aria-hidden="true"></i> <a href="tel:+8613431451998">+86 13431451998</a></p>
-                        <p><i class="fas fa-envelope" aria-hidden="true"></i> <a href="mailto:lucindaz@wanfuxin.com">lucindaz@wanfuxin.com</a></p>
+                        <p style="font-size:0.85rem; color:rgba(255,255,255,0.6); margin-top:-8px;" lang="zh-CN">广东省东莞市清溪镇福鑫西路3号 (523648)</p>
+                        <p><i class="fas fa-phone" aria-hidden="true"></i> <a href="tel:+8613431451998" class="copyable">+86 13431451998</a></p>
+                        <p><i class="fas fa-envelope" aria-hidden="true"></i> <a href="mailto:lucindaz@wanfuxin.com" class="copyable">lucindaz@wanfuxin.com</a></p>
                     </address>
                     <div class="footer-hours">
                         <h5>Business Hours</h5>
@@ -590,5 +616,20 @@
             }
         });
     </script>
+
+    <!-- Mobile quick-contact float (visible <769px viewport) -->
+    <div class="mobile-quick-contact" aria-label="Quick contact">
+        <a href="tel:+8615876543210" class="copyable qc-call" aria-label="Call us">
+            <i class="fas fa-phone" aria-hidden="true"></i>
+        </a>
+        <a href="mailto:lucindaz@wanfuxin.com" class="copyable qc-mail" aria-label="Email us">
+            <i class="fas fa-envelope" aria-hidden="true"></i>
+        </a>
+    </div>
+
+    <script src="copy-protect.js" defer></script>
+
+    <!-- Honeypot: real browsers won't render this; only bots crawling every <a> will follow it -->
+    <a href="/honeypot-do-not-follow.html" style="display:none !important; visibility:hidden !important; position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;" tabindex="-1" aria-hidden="true" rel="nofollow">.</a>
 </body>
 </html>

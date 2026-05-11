@@ -421,7 +421,236 @@ RATE_LIMITS = {
     'contact': (5,  60),
     'login':   (10, 300),    # 10 login attempts per 5 minutes (brute-force protection)
     'cms':     (60, 60),     # 60 CMS API calls per minute (admin operations)
+    'pages':   (60, 60),     # 60 page requests per minute per IP — humans browse < 1/sec; scrapers go 5+/sec
 }
+
+
+# ─── Anti-Scraping: User-Agent Signatures ───────────────────────────────────────
+#
+# Hard-block known scraping/automation user agents. This stops casual scrapers
+# but NOT:
+#   - Custom UA strings (any scraper can spoof)
+#   - Headless Chromium with patched UA (this is harder — see _is_headless_browser)
+#   - Determined humans copy-pasting
+#
+# Allowlist legitimate crawlers we WANT (Googlebot, Bingbot, Baiduspider for
+# Chinese SEO, etc.) — they should be respected and verified by reverse DNS in
+# production. The pattern matching here is case-insensitive substring.
+#
+# Defense in depth: this complements (does NOT replace) the in-page copy-protect
+# and rate limiting.
+
+
+# ─── IP / ASN Blocklist ────────────────────────────────────────────────────────
+#
+# Loaded from `blocklist.txt` at startup. Supports:
+#   - Single IPv4/IPv6 addresses
+#   - CIDR ranges (203.0.113.0/24)
+#   - ASN entries (AS12345) — checked via reverse lookup (whois) lazily
+#
+# Returns HTTP 404 on blocked access (not 403 — avoids signaling "you're banned").
+# Reload server (systemctl restart wfx-website) after editing blocklist.txt.
+
+import ipaddress
+
+BLOCKLIST_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'blocklist.txt')
+# Storage shape: each entry is a dict with original string, parsed network/ASN,
+# admin notes, and timestamps. This allows the admin UI to round-trip edits
+# without losing context.
+BLOCKLIST_ENTRIES = []  # list of dicts
+_blocklist_lock = threading.Lock()
+_ASN_CACHE = {}         # IP string → ASN int (or None) — populated lazily
+
+
+def _parse_blocklist_entry(raw_line: str):
+    """
+    Parse one line of blocklist.txt. Returns dict or None.
+    Tolerates `IP # comment` or `IP   note text` formats.
+    """
+    line = raw_line.rstrip('\n')
+    if not line.strip() or line.strip().startswith('#'):
+        return None
+    # Split on first '#' to extract note
+    if '#' in line:
+        entry_part, note = line.split('#', 1)
+        note = note.strip()
+    else:
+        entry_part = line
+        note = ''
+    entry_part = entry_part.strip()
+    if not entry_part:
+        return None
+    try:
+        if entry_part.upper().startswith('AS') and entry_part[2:].isdigit():
+            return {
+                'type': 'asn',
+                'value': entry_part.upper(),
+                'asn': int(entry_part[2:]),
+                'network': None,
+                'note': note,
+                'enabled': True,
+            }
+        net = ipaddress.ip_network(entry_part, strict=False)
+        return {
+            'type': 'network',
+            'value': entry_part,
+            'asn': None,
+            'network': net,
+            'note': note,
+            'enabled': True,
+        }
+    except ValueError:
+        return None
+
+
+def load_blocklist():
+    """Parse blocklist.txt at startup. Tolerates malformed lines (logged + skipped)."""
+    global BLOCKLIST_ENTRIES
+    with _blocklist_lock:
+        BLOCKLIST_ENTRIES = []
+        if not os.path.isfile(BLOCKLIST_FILE):
+            return
+        with open(BLOCKLIST_FILE, 'r', encoding='utf-8') as f:
+            for lineno, raw in enumerate(f, 1):
+                entry = _parse_blocklist_entry(raw)
+                if entry is not None:
+                    BLOCKLIST_ENTRIES.append(entry)
+                elif raw.strip() and not raw.strip().startswith('#'):
+                    print(f"  ⚠  blocklist.txt:{lineno}: invalid entry '{raw.strip()}'")
+        net_count = sum(1 for e in BLOCKLIST_ENTRIES if e['type'] == 'network' and e['enabled'])
+        asn_count = sum(1 for e in BLOCKLIST_ENTRIES if e['type'] == 'asn' and e['enabled'])
+        if net_count + asn_count > 0:
+            print(f"  🛡  Blocklist loaded: {net_count} network(s), {asn_count} ASN(s)")
+
+
+def save_blocklist():
+    """
+    Atomically rewrite blocklist.txt from BLOCKLIST_ENTRIES.
+    Preserves the file header comment block.
+    """
+    with _blocklist_lock:
+        lines = [
+            '# ════════════════════════════════════════════════════════════════════════',
+            '# WFX IP / ASN Blocklist',
+            '# ════════════════════════════════════════════════════════════════════════',
+            '# Managed via /admin/blocklist.html — manual edits also work.',
+            '# Format: <ip-or-cidr-or-ASN>    # optional note',
+            '# ════════════════════════════════════════════════════════════════════════',
+            '',
+        ]
+        for e in BLOCKLIST_ENTRIES:
+            prefix = '' if e.get('enabled', True) else '# DISABLED: '
+            note = f'    # {e["note"]}' if e.get('note') else ''
+            lines.append(f'{prefix}{e["value"]}{note}')
+        tmp_path = BLOCKLIST_FILE + '.tmp'
+        with open(tmp_path, 'w', encoding='utf-8') as f:
+            f.write('\n'.join(lines) + '\n')
+        os.replace(tmp_path, BLOCKLIST_FILE)
+
+
+def is_ip_blocked(ip_str: str) -> str:
+    """
+    Return a reason string if IP is blocklisted, else empty.
+    Cheap: O(N) network check; ASN check is lazy and cached.
+    """
+    if not ip_str or not BLOCKLIST_ENTRIES:
+        return ''
+    try:
+        ip = ipaddress.ip_address(ip_str)
+    except ValueError:
+        return ''
+
+    for e in BLOCKLIST_ENTRIES:
+        if not e.get('enabled', True):
+            continue
+        if e['type'] == 'network' and e['network'] is not None:
+            if ip in e['network']:
+                return f'IP matches blocked network {e["value"]}'
+
+    # ASN check (lazy, cached, optional)
+    asn_entries = [e for e in BLOCKLIST_ENTRIES if e['type'] == 'asn' and e.get('enabled', True)]
+    if asn_entries:
+        asn = _lookup_asn(ip_str)
+        if asn is not None:
+            for e in asn_entries:
+                if e['asn'] == asn:
+                    return f'IP belongs to blocked ASN AS{asn}'
+
+    return ''
+
+
+def _lookup_asn(ip_str: str):
+    """
+    Best-effort ASN lookup. Returns int or None.
+    Cached after first lookup. Won't crash if whois library is missing.
+    """
+    if ip_str in _ASN_CACHE:
+        return _ASN_CACHE[ip_str]
+    asn = None
+    try:
+        # Try ipwhois library if installed (pip install ipwhois)
+        from ipwhois import IPWhois  # type: ignore
+        result = IPWhois(ip_str).lookup_rdap(depth=1)
+        asn_str = result.get('asn', '')
+        if asn_str and asn_str.isdigit():
+            asn = int(asn_str)
+    except (ImportError, Exception):
+        pass
+    _ASN_CACHE[ip_str] = asn
+    return asn
+
+
+# Load at module import time
+load_blocklist()
+
+
+ALLOWED_BOT_PATTERNS = [
+    'googlebot', 'google-inspectiontool', 'google-site-verification',
+    'bingbot', 'bingpreview',
+    'baiduspider', 'sogou', '360spider', 'yisouspider',  # Chinese-language SEO
+    'duckduckbot', 'yandexbot',
+    'applebot',
+    'facebookexternalhit', 'twitterbot', 'linkedinbot', 'whatsapp',  # link previews
+    'slackbot', 'telegrambot',
+    'ahrefsbot', 'semrushbot',  # SEO tools — let them in or your team can't audit
+]
+
+BLOCKED_SCRAPER_PATTERNS = [
+    # Generic scraping libraries
+    'scrapy', 'wget/', 'curl/', 'python-requests', 'python-urllib',
+    'httpie', 'http_request', 'go-http-client', 'java/',
+    'libwww-perl', 'lwp::', 'mechanize',
+    # Headless / automation tools
+    'phantomjs', 'headlesschrome', 'puppeteer', 'playwright', 'selenium',
+    # Site-copier tools
+    'httrack', 'webcopier', 'webzip', 'sitescraper', 'siteripper',
+    'offline explorer', 'wgetbot', 'getright', 'teleport',
+    # Aggressive scrapers known for content theft
+    'mj12bot', 'dotbot', 'seokicks', 'blexbot', 'serpstatbot',
+    'petalbot', 'megaindex', 'dataforseobot',
+    # No-UA-or-near-empty (suspicious)
+]
+
+def is_likely_scraper(user_agent: str) -> str:
+    """
+    Return a string reason if the UA looks like a scraper, else empty string.
+    Allowlist wins over blocklist.
+    """
+    if not user_agent:
+        return 'empty user-agent'
+    ua = user_agent.lower()
+    # Allowlist first
+    for pat in ALLOWED_BOT_PATTERNS:
+        if pat in ua:
+            return ''
+    # Blocklist
+    for pat in BLOCKED_SCRAPER_PATTERNS:
+        if pat in ua:
+            return f'blocked UA pattern: {pat}'
+    # Suspiciously short UAs (real browsers are 80+ chars)
+    if len(user_agent) < 20:
+        return 'user-agent too short'
+    return ''
 
 
 # ─── Admin User Storage (file-based fallback if no MySQL users table) ───────────
@@ -524,6 +753,8 @@ ROLE_PERMISSIONS = {
         'contacts:read', 'contacts:write',
         'settings:read', 'settings:write',
         'audit:read',
+        # IP blocklist — security-critical, super_admin only
+        'blocklist:read', 'blocklist:write',
     },
     'chief_editor': {
         # Content lead — manage articles, products, categories, media
@@ -1122,6 +1353,14 @@ class WFXHandler(SimpleHTTPRequestHandler):
         return self.headers.get('User-Agent', '')
 
     def do_POST(self):
+        # Blocklist check: blocked IPs can't submit forms either
+        block_reason = is_ip_blocked(self._client_ip())
+        if block_reason:
+            ts = datetime.now().strftime('%H:%M:%S')
+            print(f"  🛑  [{ts}] BLOCKED-IP: {self._client_ip()} POST {self.path} ({block_reason})")
+            self._send_json(404, {'error': 'Not Found'})
+            return
+
         path = urlparse(self.path).path
         if path == '/api/quote':
             self._handle_quote_post()
@@ -1137,6 +1376,8 @@ class WFXHandler(SimpleHTTPRequestHandler):
             self._handle_users_create()
         elif path == '/api/media':
             self._handle_media_upload()
+        elif path == '/api/blocklist':
+            self._handle_blocklist_create()
         elif path.startswith('/api/cms/'):
             self._handle_cms_write(path)
         else:
@@ -1153,6 +1394,12 @@ class WFXHandler(SimpleHTTPRequestHandler):
             except ValueError:
                 self._send_json(400, {'ok': False, 'error': 'Invalid user id'})
                 return
+        # /api/blocklist/<value> — value may include slashes (CIDR notation), so
+        # URL-decode and treat the rest of path as the entry value
+        if path.startswith('/api/blocklist/'):
+            value = unquote(path[len('/api/blocklist/'):])
+            self._handle_blocklist_update(value)
+            return
         # Anything else: treat like POST (CMS supports PUT semantics)
         self.do_POST()
 
@@ -1168,6 +1415,10 @@ class WFXHandler(SimpleHTTPRequestHandler):
             except ValueError:
                 self._send_json(400, {'ok': False, 'error': 'Invalid user id'})
                 return
+        elif path.startswith('/api/blocklist/'):
+            value = unquote(path[len('/api/blocklist/'):])
+            self._handle_blocklist_delete(value)
+            return
         elif path.startswith('/api/media/'):
             # /api/media/<folder>/<filename>
             parts = path[len('/api/media/'):].split('/', 1)
@@ -1321,6 +1572,25 @@ class WFXHandler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         path = urlparse(self.path).path
+        # ─── Honeypot: invisible link only bots will follow ──────────────
+        # Real browsers won't render display:none links. If anything fetches
+        # /honeypot-do-not-follow.html, it's a scraper — ban its IP for 24h
+        # by burning through its rate-limit budget instantly.
+        if path == '/honeypot-do-not-follow.html':
+            ip = self._client_ip()
+            ua = self.headers.get('User-Agent', '')[:80]
+            ts = datetime.now().strftime('%H:%M:%S')
+            # Burn this IP's rate-limit budget so subsequent page requests get 429.
+            # Use a large max so each call appends; check() only appends when len < max.
+            for _ in range(200):
+                rate_limiter.check(f"pages:{ip}", 9999, 86400)
+            print(f"  🍯  [{ts}] HONEYPOT-HIT: {ip} (UA: {ua})")
+            self.send_response(403)
+            self.send_header('Content-Type', 'text/plain')
+            self.end_headers()
+            self.wfile.write(b'Forbidden.')
+            return
+
         if path == '/api/admin/quotes':
             self._handle_admin_list('quote_requests')
             return
@@ -1341,6 +1611,9 @@ class WFXHandler(SimpleHTTPRequestHandler):
             return
         if path == '/api/media':
             self._handle_media_list()
+            return
+        if path == '/api/blocklist':
+            self._handle_blocklist_list()
             return
         if path.startswith('/api/cms/'):
             self._handle_cms_read(path)
@@ -1941,6 +2214,171 @@ class WFXHandler(SimpleHTTPRequestHandler):
                   detail={'folder': folder}, ip=self._client_ip())
         self._send_json(200, {'ok': True})
 
+    # ─── Blocklist Handlers (super_admin only) ─────────────────────────
+
+    def _handle_blocklist_list(self):
+        """GET /api/blocklist — list all blocklist entries with metadata."""
+        if not self._check_admin_auth():
+            return
+        user = getattr(self, '_current_user', None)
+        if not has_permission(user, 'blocklist:read'):
+            self._send_json(403, {'ok': False, 'error': 'Forbidden: requires blocklist:read'})
+            return
+        entries = []
+        for e in BLOCKLIST_ENTRIES:
+            entries.append({
+                'value': e['value'],
+                'type': e['type'],
+                'note': e.get('note', ''),
+                'enabled': e.get('enabled', True),
+            })
+        # Also report the current request's own IP so admin can sanity-check
+        # they're not about to ban themselves
+        self._send_json(200, {
+            'ok': True,
+            'entries': entries,
+            'your_ip': self._client_ip(),
+            'total': len(entries),
+        })
+
+    def _handle_blocklist_create(self):
+        """POST /api/blocklist — add a new entry."""
+        if not self._check_admin_auth():
+            return
+        user = getattr(self, '_current_user', None)
+        if not has_permission(user, 'blocklist:write'):
+            self._send_json(403, {'ok': False, 'error': 'Forbidden: requires blocklist:write'})
+            return
+        data = self._read_json_body()
+        if data is None:
+            return
+        value = (data.get('value') or '').strip()
+        note = (data.get('note') or '').strip()
+        if not value:
+            self._send_json(400, {'ok': False, 'error': 'IP/CIDR/ASN is required'})
+            return
+
+        # Parse and validate
+        fake_line = f"{value}    # {note}" if note else value
+        entry = _parse_blocklist_entry(fake_line)
+        if entry is None:
+            self._send_json(400, {
+                'ok': False,
+                'error': f'Invalid entry "{value}". Use IP (203.0.113.45), CIDR (203.0.113.0/24), or AS<number>.'
+            })
+            return
+
+        # Safety check: don't let admin lock themselves out
+        client_ip = self._client_ip()
+        try:
+            if entry['type'] == 'network' and ipaddress.ip_address(client_ip) in entry['network']:
+                self._send_json(400, {
+                    'ok': False,
+                    'error': f'Refusing: this rule would block YOUR OWN IP ({client_ip}). '
+                             f'If intended, edit blocklist.txt directly via SSH.'
+                })
+                return
+        except ValueError:
+            pass
+
+        # Check duplicate
+        for existing in BLOCKLIST_ENTRIES:
+            if existing['value'] == entry['value']:
+                self._send_json(409, {'ok': False, 'error': f'Entry "{value}" already exists'})
+                return
+
+        with _blocklist_lock:
+            BLOCKLIST_ENTRIES.append(entry)
+        try:
+            save_blocklist()
+        except OSError as e:
+            with _blocklist_lock:
+                BLOCKLIST_ENTRIES.remove(entry)
+            self._send_json(500, {'ok': False, 'error': f'Could not write blocklist.txt: {e}'})
+            return
+
+        audit_log(user, 'blocklist_add', resource_type='blocklist', resource_id=value,
+                  detail={'note': note, 'type': entry['type']}, ip=self._client_ip())
+        self._send_json(201, {
+            'ok': True,
+            'entry': {
+                'value': entry['value'],
+                'type': entry['type'],
+                'note': entry.get('note', ''),
+                'enabled': True,
+            }
+        })
+
+    def _handle_blocklist_update(self, value):
+        """PUT /api/blocklist/<value> — toggle enabled or edit note."""
+        if not self._check_admin_auth():
+            return
+        user = getattr(self, '_current_user', None)
+        if not has_permission(user, 'blocklist:write'):
+            self._send_json(403, {'ok': False, 'error': 'Forbidden: requires blocklist:write'})
+            return
+        data = self._read_json_body()
+        if data is None:
+            return
+
+        target = None
+        with _blocklist_lock:
+            for e in BLOCKLIST_ENTRIES:
+                if e['value'] == value:
+                    target = e
+                    break
+        if target is None:
+            self._send_json(404, {'ok': False, 'error': f'Entry "{value}" not found'})
+            return
+
+        if 'enabled' in data:
+            target['enabled'] = bool(data['enabled'])
+        if 'note' in data:
+            target['note'] = str(data['note']).strip()
+
+        try:
+            save_blocklist()
+        except OSError as e:
+            self._send_json(500, {'ok': False, 'error': f'Could not write blocklist.txt: {e}'})
+            return
+
+        audit_log(user, 'blocklist_update', resource_type='blocklist', resource_id=value,
+                  detail=data, ip=self._client_ip())
+        self._send_json(200, {'ok': True})
+
+    def _handle_blocklist_delete(self, value):
+        """DELETE /api/blocklist/<value> — remove an entry permanently."""
+        if not self._check_admin_auth():
+            return
+        user = getattr(self, '_current_user', None)
+        if not has_permission(user, 'blocklist:write'):
+            self._send_json(403, {'ok': False, 'error': 'Forbidden: requires blocklist:write'})
+            return
+
+        removed = None
+        with _blocklist_lock:
+            for i, e in enumerate(BLOCKLIST_ENTRIES):
+                if e['value'] == value:
+                    removed = BLOCKLIST_ENTRIES.pop(i)
+                    break
+
+        if removed is None:
+            self._send_json(404, {'ok': False, 'error': f'Entry "{value}" not found'})
+            return
+
+        try:
+            save_blocklist()
+        except OSError as e:
+            # Restore on failure
+            with _blocklist_lock:
+                BLOCKLIST_ENTRIES.append(removed)
+            self._send_json(500, {'ok': False, 'error': f'Could not write blocklist.txt: {e}'})
+            return
+
+        audit_log(user, 'blocklist_delete', resource_type='blocklist', resource_id=value,
+                  ip=self._client_ip())
+        self._send_json(200, {'ok': True})
+
     def _handle_audit_log(self):
         """GET /api/audit — read audit log. super_admin only."""
         if not self._check_admin_auth():
@@ -1982,6 +2420,22 @@ class WFXHandler(SimpleHTTPRequestHandler):
             self.send_error(403, "Forbidden")
             return
 
+        # ─── IP / ASN Blocklist check ────────────────────────────────────
+        # Runs FIRST so blocked IPs never reach anything else (saves CPU).
+        # Returns 404 (not 403) to avoid confirming "you're banned" — looks
+        # like a broken site to the blocked party.
+        client_ip = self._client_ip()
+        block_reason = is_ip_blocked(client_ip)
+        if block_reason:
+            ts = datetime.now().strftime('%H:%M:%S')
+            print(f"  🛑  [{ts}] BLOCKED-IP: {client_ip} {decoded_path} ({block_reason})")
+            self.send_response(404)
+            self.send_header('Content-Type', 'text/html; charset=utf-8')
+            self.end_headers()
+            self.wfile.write(b'<!DOCTYPE html><html><head><title>Not Found</title></head>'
+                             b'<body><h1>404 Not Found</h1></body></html>')
+            return
+
         # Block direct HTTP access to confidential upload folders.
         # uploads/.auth/  → admin user database (must never be served)
         # uploads/quotes/ → customer CAD files (confidential)
@@ -1991,6 +2445,57 @@ class WFXHandler(SimpleHTTPRequestHandler):
             lower.startswith('/uploads/.auth') or lower.startswith('/uploads/quotes')):
             self.send_error(403, "Forbidden")
             return
+
+        # ─── Anti-Scraping Defenses (HTML pages only) ─────────────────────
+        # Apply to HTML page requests — let assets (CSS/JS/images/fonts) flow
+        # freely so legitimate users aren't broken by overzealous filtering.
+        is_html_request = (
+            decoded_path.endswith('.html') or
+            decoded_path == '/' or
+            decoded_path.endswith('/') or
+            ('.' not in os.path.basename(decoded_path) and decoded_path != '/')
+        )
+        # Skip enforcement for admin pages — admins go through auth anyway,
+        # and they may need to access from atypical environments
+        is_admin = decoded_path.startswith('/admin')
+
+        if is_html_request and not is_admin:
+            # 1. Per-IP page rate limit. Humans browse < 1 page/sec; scrapers
+            #    typically request 5+/sec. 60 pages/min still allows aggressive
+            #    legit browsing (e.g., comparison shopping across all 37 pages).
+            max_req, window = RATE_LIMITS['pages']
+            if not rate_limiter.check(f"pages:{self._client_ip()}", max_req, window):
+                self.send_response(429)
+                self.send_header('Content-Type', 'text/html; charset=utf-8')
+                self.send_header('Retry-After', str(window))
+                self._send_security_headers()
+                self.end_headers()
+                self.wfile.write(b'<!DOCTYPE html><html><head><title>Slow Down</title></head>'
+                                 b'<body><h1>429 Too Many Requests</h1>'
+                                 b'<p>You are browsing too fast. Please wait a minute.</p>'
+                                 b'<p>Real browsing? <a href="mailto:lucindaz@wanfuxin.com">Contact us</a>.</p>'
+                                 b'</body></html>')
+                ts = datetime.now().strftime('%H:%M:%S')
+                print(f"  🚫  [{ts}] RATE-LIMIT: {self._client_ip()} {decoded_path}")
+                return
+
+            # 2. User-Agent scraper signature check
+            ua = self.headers.get('User-Agent', '')
+            block_reason = is_likely_scraper(ua)
+            if block_reason:
+                self.send_response(403)
+                self.send_header('Content-Type', 'text/html; charset=utf-8')
+                self._send_security_headers()
+                self.end_headers()
+                self.wfile.write(b'<!DOCTYPE html><html><head><title>Forbidden</title></head>'
+                                 b'<body><h1>403 Forbidden</h1>'
+                                 b'<p>Automated access is not permitted. '
+                                 b'For licensing inquiries, contact '
+                                 b'<a href="mailto:lucindaz@wanfuxin.com">lucindaz@wanfuxin.com</a>.</p>'
+                                 b'</body></html>')
+                ts = datetime.now().strftime('%H:%M:%S')
+                print(f"  🚫  [{ts}] BLOCKED-UA: {self._client_ip()} ({block_reason}): {ua[:80]}")
+                return
 
         path = self.translate_path(self.path)
         if os.path.isdir(path):

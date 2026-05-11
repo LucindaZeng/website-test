@@ -9,5 +9,6 @@ Allow: /
 # Block specific assets we don't want indexed
 Disallow: /uploads/
 Disallow: /*.json$
+Disallow: /honeypot-do-not-follow.html
 
 Sitemap: https://wanfuxin.com/sitemap.xml

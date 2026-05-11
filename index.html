@@ -1,12 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!--
+    ════════════════════════════════════════════════════════════════════════
+    COPYRIGHT NOTICE
+    ════════════════════════════════════════════════════════════════════════
+    © 2026 Dongguan Wanfuxin Hardware Products Co., Ltd. (东莞万富鑫五金制品有限公司)
+    All rights reserved. 版权所有，翻版必究。
+
+    This website's content (text, images, photographs, videos, technical
+    specifications, product descriptions, layout, and source code) is the
+    intellectual property of WFX Wanfuxin and is protected by international
+    copyright treaties including the Berne Convention, China Copyright Law
+    (《中华人民共和国著作权法》), and the U.S. DMCA.
+
+    Unauthorized reproduction, redistribution, scraping, or use of this
+    content for commercial purposes is strictly prohibited and may result
+    in legal action.
+
+    Licensing inquiries: lucindaz@wanfuxin.com
+    内容许可咨询: lucindaz@wanfuxin.com
+    ════════════════════════════════════════════════════════════════════════
+-->
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="WFX - Leading CNC machining services provider offering rapid prototyping, precision manufacturing, and production solutions for aerospace, automotive, and medical industries.">
     <meta name="keywords" content="CNC machining, precision manufacturing, rapid prototyping, aerospace parts, medical device machining, automotive components">
     <title>WFX | Custom CNC Machining Services & Rapid Prototyping</title>
     <link rel="canonical" href="https://wanfuxin.com/">
+    <link rel="alternate" hreflang="en" href="https://wanfuxin.com/">
+    <link rel="alternate" hreflang="x-default" href="https://wanfuxin.com/">
+    <!-- TODO: when /de/ /ja/ /fr/ subpaths exist, add additional hreflang tags here -->
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
@@ -41,6 +66,7 @@
           "foundingDate": "2007",
           "email": "lucindaz@wanfuxin.com",
           "sameAs": [],
+          "alternateName": "东莞万富鑫五金制品有限公司",
           "address": {
             "@type": "PostalAddress",
             "streetAddress": "3 Fuxin West Road, Qingxi Town",
@@ -51,14 +77,16 @@
           },
           "geo": {
             "@type": "GeoCoordinates",
-            "latitude": 22.85,
-            "longitude": 114.17
+            "latitude": 22.8357,
+            "longitude": 114.1608
           }
         },
         {
           "@type": "LocalBusiness",
           "@id": "https://wanfuxin.com/#localbusiness",
           "name": "WFX Wanfuxin Precision Manufacturing",
+          "alternateName": "东莞万富鑫五金制品有限公司",
+          "description": "Precision CNC machining manufacturer in Dongguan, China. 精密五金CNC加工制造商, 位于广东省东莞市清溪镇福鑫西路3号。",
           "image": "https://wanfuxin.com/company-video-poster.jpg",
           "url": "https://wanfuxin.com/",
           "email": "lucindaz@wanfuxin.com",
@@ -72,8 +100,8 @@
           },
           "geo": {
             "@type": "GeoCoordinates",
-            "latitude": 22.85,
-            "longitude": 114.17
+            "latitude": 22.8357,
+            "longitude": 114.1608
           },
           "openingHoursSpecification": [
             {
@@ -515,11 +543,18 @@
                             </div>
                         </div>
 
-                        <div style="margin: 25px 0 12px; padding: 14px 16px; background:#f8fafc; border-left:3px solid var(--primary); border-radius:6px;">
-                            <strong style="display:block; margin-bottom:4px; color:var(--dark);">Project specifications (optional)</strong>
-                            <span style="font-size:0.875rem; color:var(--gray);">Don't have all the details? Skip these — we can determine the right material and finish from your CAD file. Just tell us how to reach you below.</span>
+                        <div id="step-2-toggle" style="margin: 25px 0 0;">
+                            <button type="button" id="step-2-button" onclick="toggleSpecsSection()"
+                                    style="width:100%; padding:14px 18px; background:#f8fafc; border:1px solid var(--light-gray); border-left:3px solid var(--primary); border-radius:6px; text-align:left; cursor:pointer; font-family:inherit; font-size:1rem; display:flex; align-items:center; gap:12px; transition:background 0.2s;">
+                                <i id="step-2-chevron" class="fas fa-chevron-right" aria-hidden="true" style="color:var(--primary); transition:transform 0.2s;"></i>
+                                <span style="flex:1;">
+                                    <strong style="display:block; color:var(--dark); margin-bottom:2px;">Add project specifications (optional)</strong>
+                                    <span style="font-size:0.875rem; color:var(--gray);">Material, quantity, finish — or skip and let us figure it out from your CAD file</span>
+                                </span>
+                            </button>
                         </div>
 
+                        <div id="step-2-fields" style="display:none; margin-top:20px;">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="material">Material</label>
@@ -655,6 +690,7 @@
                             <label for="notes">Additional Notes</label>
                             <textarea id="notes" name="notes" placeholder="Special requirements, tolerances, or questions..."></textarea>
                         </div>
+                        </div><!-- /#step-2-fields -->
 
                         <hr style="margin: 25px 0; border: none; border-top: 1px solid var(--light-gray);">
 
@@ -1248,7 +1284,7 @@
                 </div>
                 <div class="cta-contact">
                     <span>Or call us directly:</span>
-                    <a href="tel:+8613431451998" class="phone-number">+86 13431451998</a>
+                    <a href="tel:+8613431451998" class="copyable phone-number">+86 13431451998</a>
                 </div>
             </div>
         </div>
@@ -1322,8 +1358,9 @@
                     <h4>Contact Us</h4>
                     <address>
                         <p><i class="fas fa-map-marker-alt" aria-hidden="true"></i> 3 Fuxin West Road<br>QingXi Town, Dongguan City, Guangdong, China</p>
-                        <p><i class="fas fa-phone" aria-hidden="true"></i> <a href="tel:+8613431451998">+86 13431451998</a></p>
-                        <p><i class="fas fa-envelope" aria-hidden="true"></i> <a href="mailto:lucindaz@wanfuxin.com">lucindaz@wanfuxin.com</a></p>
+                        <p style="font-size:0.85rem; color:rgba(255,255,255,0.6); margin-top:-8px;" lang="zh-CN">广东省东莞市清溪镇福鑫西路3号 (523648)</p>
+                        <p><i class="fas fa-phone" aria-hidden="true"></i> <a href="tel:+8613431451998" class="copyable">+86 13431451998</a></p>
+                        <p><i class="fas fa-envelope" aria-hidden="true"></i> <a href="mailto:lucindaz@wanfuxin.com" class="copyable">lucindaz@wanfuxin.com</a></p>
                     </address>
                     <div class="footer-hours">
                         <h5>Business Hours</h5>
@@ -1514,5 +1551,20 @@
             }
         });
     </script>
+
+    <!-- Mobile quick-contact float (visible <769px viewport) -->
+    <div class="mobile-quick-contact" aria-label="Quick contact">
+        <a href="tel:+8615876543210" class="copyable qc-call" aria-label="Call us">
+            <i class="fas fa-phone" aria-hidden="true"></i>
+        </a>
+        <a href="mailto:lucindaz@wanfuxin.com" class="copyable qc-mail" aria-label="Email us">
+            <i class="fas fa-envelope" aria-hidden="true"></i>
+        </a>
+    </div>
+
+    <script src="copy-protect.js" defer></script>
+
+    <!-- Honeypot: real browsers won't render this; only bots crawling every <a> will follow it -->
+    <a href="/honeypot-do-not-follow.html" style="display:none !important; visibility:hidden !important; position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;" tabindex="-1" aria-hidden="true" rel="nofollow">.</a>
 </body>
 </html>

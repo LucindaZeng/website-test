@@ -2388,7 +2388,9 @@ input, select, textarea {
         padding: 15px 0;
         border-bottom: 1px solid var(--light-gray);
     }
-    
+
+    /* Mobile dropdown/mega-menu — tap to expand, hidden by default.
+       Hover doesn't exist on touch — we wire explicit click handlers via JS. */
     .dropdown-menu,
     .mega-menu {
         position: static;
@@ -2396,17 +2398,63 @@ input, select, textarea {
         visibility: visible;
         transform: none;
         box-shadow: none;
-        padding: 0 0 0 20px;
-        display: none;
+        width: 100%;
+        max-height: 0;
+        overflow: hidden;
+        padding: 0;
+        margin: 0;
+        background: var(--off-white);
+        border-radius: 0;
+        transition: max-height 0.3s ease-out;
     }
-    
-    .nav-item:hover .dropdown-menu,
-    .nav-item:hover .mega-menu {
-        display: block;
+
+    .nav-item.mobile-open .dropdown-menu,
+    .nav-item.mobile-open .mega-menu {
+        max-height: 1500px;  /* large enough to fit content; transitions smoothly */
+        padding: 8px 0 16px 16px;
     }
-    
+
+    /* Show a chevron indicator on parents of dropdowns/mega-menus */
+    .nav-item:has(.dropdown-menu) > .nav-link::after,
+    .nav-item:has(.mega-menu) > .nav-link::after {
+        content: '\f078';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        font-size: 0.75rem;
+        margin-left: auto;
+        padding-left: 12px;
+        color: var(--gray);
+        transition: transform 0.2s;
+    }
+    .nav-item.mobile-open > .nav-link::after {
+        transform: rotate(180deg);
+    }
+
+    /* Mega-menu mobile layout — single column, sections stack with breathing room */
     .mega-menu-content {
         grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .mega-menu-section h4 {
+        font-size: 0.8rem;
+        margin-top: 8px;
+        margin-bottom: 8px;
+        padding-bottom: 6px;
+    }
+
+    /* Mega-menu links → 48px tap targets per Apple HIG */
+    .mega-menu-section ul li a,
+    .dropdown-menu a {
+        min-height: 48px;
+        padding: 12px 8px;
+        font-size: 0.95rem;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    /* Hide the visual "featured" promo image on mobile (saves vertical space) */
+    .mega-menu-featured {
+        display: none;
     }
     
     .mobile-toggle {
@@ -2816,4 +2864,199 @@ html[lang="zh-CN"] .hero-title {
     html[lang="zh-CN"] .hero-title {
         font-size: 2rem;
     }
+}
+
+/* ============================================================================
+   Mobile Touch-Target Compliance (Apple HIG + WCAG 2.5.5 Level AAA)
+   ============================================================================
+   All interactive elements on touch devices should be at least 44x44 CSS pixels
+   (Apple HIG) / 48x48 dp (Material Design). This prevents misclicks on dense
+   navigation, especially on iPhone Pro Max and large-screen Android devices.
+*/
+@media (max-width: 768px), (pointer: coarse) {
+    /* Primary navigation links */
+    .nav-link,
+    .mega-menu-link,
+    .mobile-nav-link,
+    .mega-menu a {
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+
+    /* All buttons (anchor or button element) */
+    .btn,
+    button.btn,
+    a.btn,
+    .btn-primary,
+    .btn-secondary,
+    .btn-outline {
+        min-height: 48px;
+        padding-top: 14px;
+        padding-bottom: 14px;
+        line-height: 1.4;
+    }
+
+    /* Smaller "btn-sm" variants stay tappable */
+    .btn-sm,
+    .btn-icon {
+        min-height: 40px;
+        min-width: 40px;
+    }
+
+    /* Form inputs and selects */
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="url"],
+    input[type="password"],
+    input[type="number"],
+    input[type="search"],
+    select,
+    textarea {
+        min-height: 48px;
+        font-size: 16px;  /* Prevents iOS Safari from zooming on focus */
+    }
+    textarea {
+        min-height: 96px;
+    }
+
+    /* Footer links and social icons */
+    footer a,
+    .footer-links a,
+    .social-link {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    /* Mobile sticky quick-contact (call/WhatsApp) — always visible */
+    .mobile-quick-contact {
+        position: fixed;
+        bottom: 16px;
+        right: 16px;
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .mobile-quick-contact a {
+        width: 56px;
+        height: 56px;
+        border-radius: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        transition: transform 0.15s;
+    }
+    .mobile-quick-contact a:active {
+        transform: scale(0.94);
+    }
+    .mobile-quick-contact .qc-call    { background: var(--primary); }
+    .mobile-quick-contact .qc-mail    { background: #16a34a; }
+    .mobile-quick-contact a i {
+        font-size: 1.4rem;
+    }
+}
+
+/* Hide the floating quick-contact on desktop */
+@media (min-width: 769px) {
+    .mobile-quick-contact {
+        display: none;
+    }
+}
+
+/* ============================================================================
+   Content Protection (Public Pages Only)
+   ============================================================================
+   Disables text selection, drag, and image dragging on public marketing pages.
+   This is a casual deterrent, NOT real security — anyone determined can still
+   view source, use DevTools, or screenshot. The goal is to prevent
+   unsophisticated copy-paste of marketing copy and product images.
+
+   IMPORTANT exceptions (allowing selection/copy):
+     - All form inputs and textareas (users must type/paste in quote form)
+     - Anything tagged .copyable (use sparingly: emails, phones, addresses)
+     - The entire /admin/ section (handled by NOT loading copy-protect.js there)
+   ============================================================================ */
+
+body.copy-protected {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Inputs ALWAYS keep selection — the quote form has to work */
+body.copy-protected input,
+body.copy-protected textarea,
+body.copy-protected select,
+body.copy-protected [contenteditable="true"],
+body.copy-protected .copyable,
+body.copy-protected .copyable * {
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+    -webkit-touch-callout: default !important;
+}
+
+/* Disable selection-color so users don't see fragments while trying */
+body.copy-protected ::selection {
+    background: transparent;
+    color: inherit;
+}
+body.copy-protected ::-moz-selection {
+    background: transparent;
+    color: inherit;
+}
+/* Inputs still get a visible selection so users can edit text */
+body.copy-protected input::selection,
+body.copy-protected textarea::selection,
+body.copy-protected .copyable ::selection {
+    background: rgba(0, 82, 204, 0.25);
+    color: inherit;
+}
+
+/* Block drag-and-save on images and videos */
+body.copy-protected img,
+body.copy-protected video {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+    pointer-events: auto;  /* keep clickable */
+}
+
+/* Toast shown when user tries to copy/right-click */
+.copy-protect-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: rgba(10, 22, 40, 0.95);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: var(--font-body);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    z-index: 99999;
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    pointer-events: none;
+    max-width: 90vw;
+    text-align: center;
+}
+.copy-protect-toast.visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
 }

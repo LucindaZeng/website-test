@@ -64,6 +64,9 @@
                 <a href="users.html" class="nav-item">
                     <i class="fas fa-users" aria-hidden="true"></i> User Management
                 </a>
+                <a href="blocklist.html" class="nav-item">
+                    <i class="fas fa-ban" aria-hidden="true"></i> IP Blocklist
+                </a>
                 <a href="activity-log.html" class="nav-item">
                     <i class="fas fa-history" aria-hidden="true"></i> Activity Log
                 </a>
@@ -390,38 +393,46 @@
             }
         }
 
-        // Change password
-        function changePassword() {
+        // Change password (uses server-side /api/auth/change-password)
+        async function changePassword() {
             const currentPwd = document.getElementById('current-password').value;
             const newPwd = document.getElementById('new-password').value;
             const confirmPwd = document.getElementById('confirm-password').value;
-            
-            // Verify current password
-            const users = AdminCore.getUsers();
-            const user = users.find(u => u.id === currentUser.id);
-            
-            if (!user || user.password !== currentPwd) {
-                showAlert('Current password is incorrect', 'danger');
-                return;
-            }
-            
+
             if (newPwd !== confirmPwd) {
                 showAlert('New passwords do not match', 'danger');
                 return;
             }
-            
-            if (newPwd.length < 6) {
-                showAlert('Password must be at least 6 characters', 'danger');
+            if (newPwd.length < 8) {
+                showAlert('Password must be at least 8 characters', 'danger');
                 return;
             }
-            
-            const result = AdminCore.changePassword(currentUser.id, newPwd);
-            
-            if (result.success) {
-                showAlert('Password changed successfully', 'success');
-                document.getElementById('current-password').value = '';
-                document.getElementById('new-password').value = '';
-                document.getElementById('confirm-password').value = '';
+
+            const csrf = window.WFX_CSRF_TOKEN || localStorage.getItem('wfx_csrf_token') || '';
+            try {
+                const r = await fetch('/api/auth/change-password', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': csrf,
+                    },
+                    body: JSON.stringify({
+                        current_password: currentPwd,
+                        new_password: newPwd,
+                    })
+                });
+                const j = await r.json().catch(() => ({}));
+                if (r.ok && j.ok) {
+                    showAlert('Password changed successfully', 'success');
+                    document.getElementById('current-password').value = '';
+                    document.getElementById('new-password').value = '';
+                    document.getElementById('confirm-password').value = '';
+                } else {
+                    showAlert(j.error || 'Password change failed', 'danger');
+                }
+            } catch (e) {
+                showAlert('Server unreachable: ' + e.message, 'danger');
             }
         }
 

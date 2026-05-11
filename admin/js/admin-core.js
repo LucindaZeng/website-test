@@ -44,11 +44,29 @@ window.escapeHtml = escapeHtml;
 window.sanitizeHtml = sanitizeHtml;
 
 const AdminCore = {
-    // Default admin account
+    // ─────────────────────────────────────────────────────────────────────
+    // SECURITY NOTE
+    // ─────────────────────────────────────────────────────────────────────
+    // Authentication is server-side ONLY. The frontend NEVER stores or
+    // verifies passwords. Login flow:
+    //
+    //   1. User submits credentials → POST /api/auth/login
+    //   2. Server verifies via PBKDF2-HMAC-SHA256 (200k iterations) against
+    //      the hash stored in uploads/.auth/admin_users.json (mode 0600)
+    //   3. Server issues HMAC-signed session token in HttpOnly+SameSite=Strict
+    //      cookie + returns CSRF token in response body
+    //   4. Frontend caches CSRF in memory + localStorage for subsequent
+    //      state-changing requests; it has NO access to the session cookie
+    //
+    // The bootstrap admin password (`wfx6688`) lives ONLY in server.py's
+    // ensure_default_admin() and is hashed before storage. On first login,
+    // `must_change_password: true` forces the user to change it via
+    // /admin/change-password.html before any other action is allowed.
+    //
+    // Default admin profile metadata (no credentials):
     DEFAULT_ADMIN: {
         id: 1,
         username: 'admin',
-        password: 'wfx6688',
         role: 'super_admin',
         name: 'Administrator',
         email: 'lucindaz@wanfuxin.com',
@@ -148,38 +166,18 @@ const AdminCore = {
     },
 
     // ==================== Authentication ====================
-    
+
+    /**
+     * DEPRECATED — kept only for emergency offline access from older code.
+     * Real authentication happens server-side via POST /api/auth/login (see
+     * admin/index.html). Without the server, no login should be possible.
+     *
+     * This function previously checked passwords stored in localStorage,
+     * which is unsafe — XSS attacks can read localStorage. It now always
+     * returns false, forcing all auth through the server.
+     */
     login: function(username, password) {
-        this.init();
-        const users = JSON.parse(localStorage.getItem('wfx_users'));
-        const user = users.find(u => u.username === username && u.password === password);
-        
-        if (user) {
-            // Update last login
-            user.lastLogin = new Date().toISOString();
-            localStorage.setItem('wfx_users', JSON.stringify(users));
-            
-            // Set session
-            localStorage.setItem('wfx_admin_logged_in', 'true');
-            localStorage.setItem('wfx_admin_user', JSON.stringify({
-                id: user.id,
-                username: user.username,
-                role: user.role,
-                name: user.name
-            }));
-
-            // Set the API token used by cms-sync.js to authenticate with the server.
-            // For security, in production this should be issued by the server after
-            // verifying credentials. For this client-side setup, we use a fixed
-            // value that must match config.py's ADMIN_API_TOKEN on the server.
-            // The admin can override by setting localStorage.wfx_api_token manually.
-            if (!localStorage.getItem('wfx_api_token')) {
-                localStorage.setItem('wfx_api_token', 'replace-with-long-random-string');
-            }
-            window.WFX_ADMIN_TOKEN = localStorage.getItem('wfx_api_token');
-
-            return true;
-        }
+        console.warn('AdminCore.login() is deprecated; use POST /api/auth/login');
         return false;
     },
 

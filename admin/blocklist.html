@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Blocklist | WFX Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../logo.png" alt="WFX">
+            <h2>Admin Panel</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard.html" class="nav-item">
+                    <i class="fas fa-home" aria-hidden="true"></i> Dashboard
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Content Management</div>
+                <a href="content-editor.html" class="nav-item">
+                    <i class="fas fa-edit" aria-hidden="true"></i> Content Editor
+                </a>
+                <a href="pages.html" class="nav-item">
+                    <i class="fas fa-file-alt" aria-hidden="true"></i> Pages
+                </a>
+                <a href="news.html" class="nav-item">
+                    <i class="fas fa-newspaper" aria-hidden="true"></i> News
+                </a>
+                <a href="blog.html" class="nav-item">
+                    <i class="fas fa-blog" aria-hidden="true"></i> Blog
+                </a>
+                <a href="media.html" class="nav-item">
+                    <i class="fas fa-photo-video" aria-hidden="true"></i> Media
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+                <a href="users.html" class="nav-item">
+                    <i class="fas fa-users" aria-hidden="true"></i> User Management
+                </a>
+                <a href="blocklist.html" class="nav-item active">
+                    <i class="fas fa-ban" aria-hidden="true"></i> IP Blocklist
+                </a>
+                <a href="activity-log.html" class="nav-item">
+                    <i class="fas fa-history" aria-hidden="true"></i> Activity Log
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <i class="fas fa-cog" aria-hidden="true"></i> Settings
+                </a>
+                <a href="change-password.html" class="nav-item">
+                    <i class="fas fa-key" aria-hidden="true"></i> Change Password
+                </a>
+            </div>
+            <div class="nav-section">
+                <a href="../index.html" class="nav-item" target="_blank">
+                    <i class="fas fa-external-link-alt" aria-hidden="true"></i> View Website
+                </a>
+                <a href="#" class="nav-item" onclick="AdminCore.logout()">
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <header class="admin-header">
+            <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('active')">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+            <div class="header-title">
+                <h1><i class="fas fa-ban" aria-hidden="true"></i> IP Blocklist</h1>
+                <p>Block specific IPs, networks, or ASNs from accessing the site</p>
+            </div>
+            <div class="header-user">
+                <i class="fas fa-user-circle" aria-hidden="true"></i>
+                <span id="user-name">Loading...</span>
+            </div>
+        </header>
+
+        <div class="admin-content">
+            <!-- Info banner -->
+            <div class="alert alert-info" style="margin-bottom: 20px;">
+                <i class="fas fa-info-circle" aria-hidden="true"></i>
+                <div>
+                    <strong>What this does:</strong> Blocked IPs/networks see HTTP 404 (looks like a broken site) when visiting any page or submitting forms. Add entries here BEFORE you need them — the list is empty by default. Reload not required; changes take effect immediately.
+                    <br>
+                    <strong>What this does NOT do:</strong> Geo-blocking. Stopping VPN users. Stopping someone who switches to a phone hotspot. Use this for targeted blocks against specific identified threats.
+                </div>
+            </div>
+
+            <!-- Your-IP awareness banner -->
+            <div class="alert alert-warning" style="margin-bottom: 20px;" id="your-ip-banner">
+                <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+                <div>
+                    Your current IP: <code id="your-ip-display">detecting...</code> &mdash; the system will refuse to add a rule that would block you, but be careful with broad CIDR ranges (e.g. <code>0.0.0.0/0</code> would block everyone including you).
+                </div>
+            </div>
+
+            <!-- Add new entry card -->
+            <div class="card" style="margin-bottom: 24px;">
+                <div class="card-header">
+                    <h2>Add Block Rule</h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 2;">
+                            <label class="form-label">IP / CIDR / ASN <span style="color: #dc2626;">*</span></label>
+                            <input type="text" class="form-control" id="entry-value"
+                                   placeholder="e.g. 203.0.113.45 or 203.0.113.0/24 or AS64500"
+                                   autocomplete="off">
+                            <small style="color: var(--admin-gray);">
+                                Examples: <code>1.2.3.4</code> (single IP) &middot;
+                                <code>1.2.3.0/24</code> (256 IPs) &middot;
+                                <code>AS12345</code> (whole network, needs ipwhois)
+                            </small>
+                        </div>
+                        <div class="form-group" style="flex: 3;">
+                            <label class="form-label">Note (recommended)</label>
+                            <input type="text" class="form-control" id="entry-note"
+                                   placeholder="e.g. Competitor Acme Precision office IP"
+                                   autocomplete="off">
+                            <small style="color: var(--admin-gray);">
+                                Document WHY you're blocking — future-you will appreciate it.
+                            </small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="addEntry()">
+                        <i class="fas fa-plus" aria-hidden="true"></i> Add to Blocklist
+                    </button>
+                    <div id="add-status" style="margin-top: 12px; font-size: 0.9rem;"></div>
+                </div>
+            </div>
+
+            <!-- Quick-block templates -->
+            <div class="card" style="margin-bottom: 24px;">
+                <div class="card-header">
+                    <h2>Quick Templates &mdash; Block by Lookup</h2>
+                </div>
+                <div class="card-body">
+                    <p style="color: var(--admin-gray); margin-bottom: 12px;">
+                        Don't know the IP of someone you want to block? Use these resources:
+                    </p>
+                    <ul style="margin: 0 0 0 20px; line-height: 1.8;">
+                        <li><a href="https://bgp.he.net" target="_blank" rel="noopener">bgp.he.net</a> &mdash; look up a company name &rarr; get their ASN(s) and IP ranges</li>
+                        <li><a href="https://ipinfo.io" target="_blank" rel="noopener">ipinfo.io</a> &mdash; paste an IP from your access logs &rarr; see which company owns it</li>
+                        <li><a href="https://whois.domaintools.com" target="_blank" rel="noopener">whois.domaintools.com</a> &mdash; look up a website &rarr; get the hosting IP block</li>
+                    </ul>
+                    <p style="margin-top: 16px; font-size: 0.9rem; color: var(--admin-gray);">
+                        <strong>Tip:</strong> Watch the Activity Log for suspicious access patterns (e.g. one IP fetching 100+ pages in a minute). Those are the IPs worth blocking.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Active blocklist -->
+            <div class="card">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2>Active Block Rules</h2>
+                    <span id="entry-count" style="color: var(--admin-gray);"></span>
+                </div>
+                <div class="card-body">
+                    <div style="overflow-x: auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 24%;">Entry</th>
+                                    <th style="width: 12%;">Type</th>
+                                    <th>Note</th>
+                                    <th style="width: 100px;">Status</th>
+                                    <th style="width: 140px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="blocklist-table">
+                                <tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--admin-gray);">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast container -->
+    <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 99999;"></div>
+
+    <script src="js/admin-core.js"></script>
+    <script>
+        // Require auth
+        if (!AdminCore.checkAuth()) {
+            window.location.href = 'index.html';
+        }
+        document.getElementById('user-name').textContent =
+            (AdminCore.getCurrentUser() || {}).username || 'admin';
+
+        // ─── Helpers ─────────────────────────────────────────────────────
+        function escapeHtml(s) {
+            if (s === null || s === undefined) return '';
+            return String(s).replace(/[&<>"']/g, c => ({
+                '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+            }[c]));
+        }
+
+        function getCsrf() {
+            return window.WFX_CSRF_TOKEN || localStorage.getItem('wfx_csrf_token') || '';
+        }
+
+        function showToast(message, kind) {
+            const el = document.createElement('div');
+            el.style.cssText = 'background:' + (kind === 'success' ? '#16a34a' :
+                                                kind === 'danger' ? '#dc2626' :
+                                                kind === 'warning' ? '#d97706' : '#0369a1') +
+                '; color:white; padding:12px 18px; border-radius:8px; ' +
+                'margin-bottom:10px; box-shadow:0 8px 25px rgba(0,0,0,0.2); ' +
+                'max-width:380px; font-size:0.9rem; opacity:0; ' +
+                'transform:translateX(20px); transition:opacity .25s, transform .25s;';
+            el.innerHTML = '<i class="fas fa-' +
+                (kind === 'success' ? 'check-circle' :
+                 kind === 'danger' ? 'exclamation-circle' :
+                 kind === 'warning' ? 'exclamation-triangle' : 'info-circle') +
+                '" aria-hidden="true"></i> ' + escapeHtml(message);
+            document.getElementById('toast-container').appendChild(el);
+            requestAnimationFrame(() => {
+                el.style.opacity = '1';
+                el.style.transform = 'translateX(0)';
+            });
+            setTimeout(() => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateX(20px)';
+                setTimeout(() => el.remove(), 300);
+            }, 4000);
+        }
+
+        // ─── Load & render ────────────────────────────────────────────────
+        let myIp = '';
+
+        async function loadBlocklist() {
+            try {
+                const r = await fetch('/api/blocklist', {
+                    credentials: 'same-origin',
+                    headers: { 'X-CSRF-Token': getCsrf() }
+                });
+                if (r.status === 403) {
+                    document.getElementById('blocklist-table').innerHTML =
+                        '<tr><td colspan="5" style="text-align:center; padding:30px; color:#dc2626;">' +
+                        'Your role does not have permission to view the blocklist. ' +
+                        'Only super_admin can manage this.</td></tr>';
+                    return;
+                }
+                if (r.status === 401) {
+                    window.location.href = 'index.html';
+                    return;
+                }
+                if (!r.ok) {
+                    showToast('Failed to load blocklist: HTTP ' + r.status, 'danger');
+                    return;
+                }
+                const data = await r.json();
+                myIp = data.your_ip || '';
+                document.getElementById('your-ip-display').textContent = myIp || '(unknown)';
+                renderTable(data.entries || []);
+                document.getElementById('entry-count').textContent =
+                    (data.total || 0) + ' rule' + ((data.total === 1) ? '' : 's');
+            } catch (e) {
+                showToast('Network error: ' + e.message, 'danger');
+            }
+        }
+
+        function renderTable(entries) {
+            const tbody = document.getElementById('blocklist-table');
+            if (!entries.length) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px; color:var(--admin-gray);">' +
+                    '<i class="fas fa-shield-alt" aria-hidden="true" style="font-size:2rem; opacity:0.3; display:block; margin-bottom:10px;"></i>' +
+                    'No block rules yet. Add one above when you have a specific threat to deal with.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = entries.map(e => {
+                const typeLabel = e.type === 'asn' ? 'ASN' :
+                    (e.value.includes('/') ? 'CIDR' :
+                     e.value.includes(':') ? 'IPv6' : 'IPv4');
+                const statusBadge = e.enabled
+                    ? '<span style="display:inline-block; padding:3px 10px; border-radius:12px; background:#fee2e2; color:#991b1b; font-size:0.8rem; font-weight:600;">BLOCKING</span>'
+                    : '<span style="display:inline-block; padding:3px 10px; border-radius:12px; background:#f3f4f6; color:#6b7280; font-size:0.8rem;">DISABLED</span>';
+                const safeValue = escapeHtml(e.value);
+                const encodedValue = encodeURIComponent(e.value);
+                return '<tr>' +
+                    '<td><code style="background:#f3f4f6; padding:3px 8px; border-radius:4px; font-family:monospace;">' + safeValue + '</code></td>' +
+                    '<td><span style="font-size:0.85rem; color:var(--admin-gray);">' + typeLabel + '</span></td>' +
+                    '<td>' + (e.note ? escapeHtml(e.note) : '<span style="color:var(--admin-gray); font-style:italic;">no note</span>') + '</td>' +
+                    '<td>' + statusBadge + '</td>' +
+                    '<td>' +
+                        '<button class="btn btn-sm btn-secondary" onclick="toggleEntry(\'' + encodedValue + '\', ' + (!e.enabled) + ')" title="' + (e.enabled ? 'Disable (keep but stop blocking)' : 'Re-enable') + '">' +
+                            '<i class="fas fa-' + (e.enabled ? 'pause' : 'play') + '" aria-hidden="true"></i>' +
+                        '</button> ' +
+                        '<button class="btn btn-sm btn-danger" onclick="deleteEntry(\'' + encodedValue + '\', \'' + safeValue.replace(/'/g, "\\'") + '\')" title="Remove permanently">' +
+                            '<i class="fas fa-trash" aria-hidden="true"></i>' +
+                        '</button>' +
+                    '</td>' +
+                '</tr>';
+            }).join('');
+        }
+
+        async function addEntry() {
+            const value = document.getElementById('entry-value').value.trim();
+            const note = document.getElementById('entry-note').value.trim();
+            const status = document.getElementById('add-status');
+
+            if (!value) {
+                status.innerHTML = '<span style="color:#dc2626;">Please enter an IP, CIDR, or ASN.</span>';
+                return;
+            }
+
+            // Client-side sanity check: warn before blocking own IP
+            if (myIp && value === myIp) {
+                if (!confirm('This entry matches YOUR OWN IP (' + myIp + '). ' +
+                             'You will lock yourself out of the website. Continue?')) {
+                    return;
+                }
+            }
+
+            status.innerHTML = '<span style="color:#0369a1;"><i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Adding...</span>';
+
+            try {
+                const r = await fetch('/api/blocklist', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': getCsrf()
+                    },
+                    body: JSON.stringify({ value, note })
+                });
+                const j = await r.json().catch(() => ({}));
+                if (r.ok && j.ok) {
+                    status.innerHTML = '<span style="color:#16a34a;"><i class="fas fa-check" aria-hidden="true"></i> Rule added.</span>';
+                    showToast('Block rule added: ' + value, 'success');
+                    document.getElementById('entry-value').value = '';
+                    document.getElementById('entry-note').value = '';
+                    loadBlocklist();
+                } else {
+                    status.innerHTML = '<span style="color:#dc2626;"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i> ' +
+                        escapeHtml(j.error || ('HTTP ' + r.status)) + '</span>';
+                }
+            } catch (e) {
+                status.innerHTML = '<span style="color:#dc2626;">Network error: ' + escapeHtml(e.message) + '</span>';
+            }
+        }
+
+        async function toggleEntry(encodedValue, newEnabled) {
+            try {
+                const r = await fetch('/api/blocklist/' + encodedValue, {
+                    method: 'PUT',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': getCsrf()
+                    },
+                    body: JSON.stringify({ enabled: newEnabled })
+                });
+                const j = await r.json().catch(() => ({}));
+                if (r.ok && j.ok) {
+                    showToast(newEnabled ? 'Rule re-enabled' : 'Rule disabled (kept in list)', 'success');
+                    loadBlocklist();
+                } else {
+                    showToast(j.error || 'Toggle failed', 'danger');
+                }
+            } catch (e) {
+                showToast('Network error: ' + e.message, 'danger');
+            }
+        }
+
+        async function deleteEntry(encodedValue, displayValue) {
+            if (!confirm('Permanently remove block rule "' + displayValue + '"?\n\n' +
+                         'If you want to keep it but temporarily disable, use the pause button instead.')) {
+                return;
+            }
+            try {
+                const r = await fetch('/api/blocklist/' + encodedValue, {
+                    method: 'DELETE',
+                    credentials: 'same-origin',
+                    headers: { 'X-CSRF-Token': getCsrf() }
+                });
+                const j = await r.json().catch(() => ({}));
+                if (r.ok && j.ok) {
+                    showToast('Rule deleted: ' + displayValue, 'success');
+                    loadBlocklist();
+                } else {
+                    showToast(j.error || 'Delete failed', 'danger');
+                }
+            } catch (e) {
+                showToast('Network error: ' + e.message, 'danger');
+            }
+        }
+
+        // Keyboard: Enter in the value field triggers add
+        document.getElementById('entry-value').addEventListener('keydown', e => {
+            if (e.key === 'Enter') addEntry();
+        });
+        document.getElementById('entry-note').addEventListener('keydown', e => {
+            if (e.key === 'Enter') addEntry();
+        });
+
+        // Initial load
+        loadBlocklist();
+    </script>
+</body>
+</html>
