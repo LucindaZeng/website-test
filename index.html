@@ -509,15 +509,15 @@
         <div class="container">
             <div class="quote-wrapper">
                 <div class="quote-content">
-                    <span class="section-badge">Instant Quoting</span>
-                    <h2>Get Your Custom Quote in Minutes</h2>
-                    <p>Upload your CAD file and receive instant DFM feedback, pricing, and lead times. Our automated quoting system analyzes your design 24/7.</p>
+                    <span class="section-badge">Engineer-Reviewed Quotes</span>
+                    <h2>Get Your Custom Quote Within 24 Hours</h2>
+                    <p>Upload your CAD file for engineer-reviewed pricing, DFM feedback, and lead times. Our team responds within one business day.</p>
                     
                     <div class="quote-features">
                         <div class="quote-feature">
                             <i class="fas fa-clock" aria-hidden="true"></i>
                             <div>
-                                <h4>Instant Analysis</h4>
+                                <h4>24-Hour Response</h4>
                                 <p>Automated DFM feedback within one day</p>
                             </div>
                         </div>
@@ -558,6 +558,21 @@
                 
                 <div class="quote-form-wrapper">
                     <form class="quote-form" id="quote-form">
+                        <!--
+                            Form-field honeypot (replaces the old hidden <a> link).
+                            Real users never see this; tabindex=-1 keeps it out of
+                            tab order; the label says "Leave this field empty" for
+                            the rare bot that respects accessibility.
+                            Bots that blindly fill all fields will populate this,
+                            and server.py will silently reject the submission.
+                            This is Google-spam-policy safe (no hidden link in DOM).
+                        -->
+                        <div aria-hidden="true" style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; pointer-events:none;">
+                            <label for="website_url_field">Leave this field empty:</label>
+                            <input type="text" name="website_url_field" id="website_url_field"
+                                   tabindex="-1" autocomplete="off">
+                        </div>
+
                         <div class="upload-zone" id="upload-zone">
                             <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
                             <h3>Drag & Drop Your CAD File</h3>
@@ -1597,8 +1612,5 @@
     </div>
 
     <script src="copy-protect.js" defer></script>
-
-    <!-- Honeypot: real browsers won't render this; only bots crawling every <a> will follow it -->
-    <a href="/honeypot-do-not-follow.html" style="display:none !important; visibility:hidden !important; position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;" tabindex="-1" aria-hidden="true" rel="nofollow">.</a>
 </body>
 </html>

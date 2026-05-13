@@ -184,7 +184,13 @@ ALLOWED_UPLOAD_EXTS = {
 MAX_MEDIA_BYTES = 200 * 1024 * 1024  # 200MB (for product videos)
 ALLOWED_MEDIA_EXTS = {
     # Images
-    '.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.ico',
+    '.jpg', '.jpeg', '.png', '.gif', '.webp', '.ico',
+    # NOTE: .svg is intentionally EXCLUDED from uploads.
+    # SVG files can contain <script> and on* event handlers that execute when
+    # served as image/svg+xml. Without a full SVG sanitizer (e.g. DOMPurify
+    # server-side), accepting SVG would be a stored XSS vector. CNC product
+    # photos should be raster anyway (JPG/PNG/WebP).
+    # If admins genuinely need SVG (e.g. logo), they upload via SSH instead.
     # Videos
     '.mp4', '.webm', '.mov', '.m4v',
     # Downloads (NDA, datasheets, brochures)
@@ -662,20 +668,39 @@ auth_lock = threading.Lock()
 
 
 def ensure_default_admin():
-    """Create admin_users.json with bootstrap admin if missing."""
+    """
+    Create admin_users.json with bootstrap admin if missing.
+
+    Initial password resolution order:
+      1. WFX_ADMIN_INITIAL_PASSWORD env var (recommended for production)
+      2. Fallback: 'wfx6688' (legacy, prominently warned)
+
+    Either way, must_change_password=True forces a change on first login.
+    Production deployments should ALWAYS set WFX_ADMIN_INITIAL_PASSWORD before
+    first start, then unset it after the change-on-first-login completes.
+    """
     os.makedirs(AUTH_DIR, exist_ok=True)
     with auth_lock:
         if os.path.exists(AUTH_FILE):
             return
-        # First-run bootstrap: hash 'wfx6688' as the initial password
-        # The admin should change it on first login (UI to be added)
+
+        # Resolve initial password from env, or fall back to legacy bootstrap
+        env_initial = os.environ.get('WFX_ADMIN_INITIAL_PASSWORD', '').strip()
+        if env_initial and len(env_initial) >= 8:
+            initial_password = env_initial
+            print(f"  🔐 First-run admin bootstrap using WFX_ADMIN_INITIAL_PASSWORD env var")
+        else:
+            initial_password = 'wfx6688'
+            print(f"  ⚠  First-run admin bootstrap using LEGACY default password 'wfx6688'")
+            print(f"     Production deployments should set WFX_ADMIN_INITIAL_PASSWORD instead.")
+
         users = [{
             'id': 1,
             'username': 'admin',
-            'password_hash': hash_password('wfx6688'),
+            'password_hash': hash_password(initial_password),
             'role': 'super_admin',
             'created_at': datetime.now().isoformat(),
-            'must_change_password': True,
+            'must_change_password': True,  # Forced change-password.html on first login
         }]
         with open(AUTH_FILE, 'w') as f:
             json.dump(users, f, indent=2)
@@ -1438,13 +1463,6 @@ class WFXHandler(SimpleHTTPRequestHandler):
             self._send_json(429, {'ok': False, 'error': 'Too many submissions. Please try again in a minute.'})
             return
 
-        if not (DB_CONFIG and MYSQL_AVAILABLE):
-            self._send_json(503, {
-                'ok': False,
-                'error': 'Database not configured. Submission cannot be saved.'
-            })
-            return
-
         ctype = self.headers.get('Content-Type', '')
         if not ctype.startswith('multipart/form-data'):
             self._send_json(400, {'ok': False, 'error': 'Use multipart/form-data'})
@@ -1456,6 +1474,24 @@ class WFXHandler(SimpleHTTPRequestHandler):
             environ={'REQUEST_METHOD': 'POST', 'CONTENT_TYPE': ctype},
             keep_blank_values=True,
         )
+
+        # Honeypot field: hidden in the form, only bots that blindly fill all
+        # fields will populate it. Fire BEFORE the DB check so we catch bots
+        # even when the DB is offline. Silently return success so the bot
+        # thinks it worked and doesn't retry.
+        honeypot_value = form.getvalue('website_url_field', '') if 'website_url_field' in form else ''
+        if honeypot_value:
+            ts = datetime.now().strftime('%H:%M:%S')
+            print(f"  🍯  [{ts}] BOT-DETECTED: quote form honeypot triggered from {self._client_ip()}")
+            self._send_json(200, {'ok': True, 'id': 0, 'message': 'Submission received'})
+            return
+
+        if not (DB_CONFIG and MYSQL_AVAILABLE):
+            self._send_json(503, {
+                'ok': False,
+                'error': 'Database not configured. Submission cannot be saved.'
+            })
+            return
 
         data = {}
         for key in ('name', 'email', 'phone', 'company', 'material',
@@ -1621,6 +1657,13 @@ class WFXHandler(SimpleHTTPRequestHandler):
         self._serve_static()
 
     def _handle_admin_list(self, table):
+        # Refuse the legacy token-only endpoint when the deployment hasn't set
+        # a real admin token. The default 'change-me' or any 'replace-with-*'
+        # placeholder indicates an unconfigured environment — better to 503
+        # than to silently accept whatever the attacker sends.
+        if not ADMIN_API_TOKEN or ADMIN_API_TOKEN == 'change-me' or 'replace' in str(ADMIN_API_TOKEN).lower():
+            self._send_json(503, {'ok': False, 'error': 'Legacy token API disabled: WFX_ADMIN_TOKEN must be set to a real value in production. Use session-based admin auth instead.'})
+            return
         token = self.headers.get('X-Admin-Token', '')
         if token != ADMIN_API_TOKEN:
             self._send_json(401, {'ok': False, 'error': 'Unauthorized'})
@@ -2609,17 +2652,24 @@ def main():
     # Production safety checks
     if args.production:
         prod_warnings = []
+        prod_fatal = []
         if not (DB_CONFIG and MYSQL_AVAILABLE):
             prod_warnings.append("MySQL not configured — quote/contact submissions will fail")
         # Check SESSION_SECRET: from config.py, env var, or auto-generated
         secret = (getattr(config, 'SESSION_SECRET', None) if config else None) or os.environ.get('WFX_SESSION_SECRET', '')
         if not secret or 'replace' in str(secret).lower():
-            prod_warnings.append("SESSION_SECRET is not set or is the default placeholder — sessions will reset on each restart")
+            prod_fatal.append("SESSION_SECRET is not set or is the default placeholder — sessions would be forgeable. Set WFX_SESSION_SECRET to a 32+ char random string.")
         token = (getattr(config, 'ADMIN_API_TOKEN', None) if config else None) or os.environ.get('WFX_ADMIN_TOKEN', '')
         if not token or 'replace' in str(token).lower() or token == 'change-me':
-            prod_warnings.append("ADMIN_API_TOKEN is not set or is the default placeholder")
+            prod_warnings.append("ADMIN_API_TOKEN is not set or is the default placeholder — legacy /api/admin/* endpoints will return 503 (this is safe but means those endpoints are disabled)")
         if args.host == '0.0.0.0':
             prod_warnings.append("Binding to 0.0.0.0 — make sure you're behind a reverse proxy (Nginx) with HTTPS")
+        if prod_fatal:
+            print("\n🛑  PRODUCTION FATAL ERRORS — refusing to start:")
+            for w in prod_fatal:
+                print(f"   - {w}")
+            print("\nFix these by setting environment variables (see .env.example) or editing config.py, then retry.")
+            sys.exit(1)
         if prod_warnings:
             print("\n⚠  PRODUCTION WARNINGS:")
             for w in prod_warnings:

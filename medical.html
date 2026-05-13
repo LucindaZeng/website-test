@@ -267,26 +267,8 @@
     </section>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Prefer server-injected CMS data (visible to Google), fall back to localStorage
-            const products = (window.__WFX_CMS__ && window.__WFX_CMS__.industry_products)
-                ? window.__WFX_CMS__.industry_products
-                : JSON.parse(localStorage.getItem('wfx_industry_products') || '[]');
-            const industryProducts = products.filter(p => p.industry === 'medical');
-            const gallery = document.getElementById('products-gallery');
-            if (industryProducts.length === 0) {
-                // Keep static crawlable fallback HTML
-                return;
-            }
-            // Admin-managed products take precedence — replace static fallback
-            gallery.innerHTML = '';
-            industryProducts.forEach(product => {
-                const card = document.createElement('div');
-                card.style.cssText = 'background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: transform 0.3s ease;';
-                card.innerHTML = `<img src="${product.image || 'https://via.placeholder.com/400x250?text=Product'}" alt="${product.name}" style="width: 100%; height: 220px; object-fit: cover;"><div style="padding: 25px;"><h3 style="margin: 0 0 10px; font-size: 1.25rem;">${product.name}</h3><p style="color: var(--gray); margin: 0 0 15px; font-size: 0.95rem; line-height: 1.6;">${product.description || ''}</p><div style="display: flex; flex-wrap: wrap; gap: 8px;">${product.material ? `<span style="background: #e0f2fe; color: #0369a1; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem;">${product.material}</span>` : ''}${product.tolerance ? `<span style="background: #dcfce7; color: #166534; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem;">${product.tolerance}</span>` : ''}${product.process ? `<span style="background: #fef3c7; color: #92400e; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem;">${product.process}</span>` : ''}</div></div>`;
-                card.onmouseover = function() { this.style.transform = 'translateY(-5px)'; };
-                card.onmouseout = function() { this.style.transform = 'translateY(0)'; };
-                gallery.appendChild(card);
-            });
+            // Render admin-managed products safely (XSS-protected via textContent)
+            window.WFX_renderIndustryProducts("products-gallery", "medical");
         });
     </script>
 
@@ -405,8 +387,5 @@
     </div>
 
     <script src="copy-protect.js" defer></script>
-
-    <!-- Honeypot: real browsers won't render this; only bots crawling every <a> will follow it -->
-    <a href="/honeypot-do-not-follow.html" style="display:none !important; visibility:hidden !important; position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;" tabindex="-1" aria-hidden="true" rel="nofollow">.</a>
 </body>
 </html>

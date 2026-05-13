@@ -427,10 +427,19 @@ const ContentLoader = {
             if (descEl && process.description) descEl.textContent = process.description;
             if (imgEl && process.image) imgEl.src = process.image;
             
-            if (featuresEl && process.features) {
-                featuresEl.innerHTML = process.features.map(f => 
-                    `<li><i class="fas fa-check"></i> ${f}</li>`
-                ).join('');
+            if (featuresEl && process.features && Array.isArray(process.features)) {
+                // Use DOM construction (not innerHTML) — admin-supplied strings
+                // could contain HTML/JS otherwise. textContent is XSS-safe.
+                featuresEl.textContent = '';
+                process.features.forEach(f => {
+                    const li = document.createElement('li');
+                    const icon = document.createElement('i');
+                    icon.className = 'fas fa-check';
+                    icon.setAttribute('aria-hidden', 'true');
+                    li.appendChild(icon);
+                    li.appendChild(document.createTextNode(' ' + String(f)));
+                    featuresEl.appendChild(li);
+                });
             }
         });
     },

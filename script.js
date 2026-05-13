@@ -297,8 +297,7 @@ function handleFileUpload(file) {
 
     showNotification('File uploaded successfully!', 'success');
 
-    // Progressive disclosure: auto-reveal the project specs section once the
-    // user has committed to uploading. Sunk-cost effect — they're now invested.
+    // Reveal optional specs after file upload to reduce initial form complexity.
     if (typeof showSpecsSection === 'function') {
         showSpecsSection();
     }
@@ -498,28 +497,25 @@ function initQuoteForm() {
         const formData = new FormData(quoteForm);
         const fileInput = document.getElementById('cad-file');
 
-        // Validate required fields
-        if (!fileInput.files.length) {
-            showNotification('Please upload a CAD file', 'error');
-            return;
-        }
-        if (!formData.get('material')) {
-            showNotification('Please select a material', 'error');
-            return;
-        }
-        const qty = parseInt(formData.get('quantity'), 10);
-        if (!qty || qty < 1) {
-            showNotification('Please enter a valid quantity', 'error');
-            return;
-        }
+        // Validate fields. UI promises material / quantity / file are optional;
+        // we honor that here. Only email is strictly required because the engineer
+        // needs a way to reply with the quote.
         if (!formData.get('email')) {
-            // If no email field exists yet, prompt
             const email = prompt('Please enter your email so we can reply to your quote:');
             if (!email) {
-                showNotification('Email is required', 'error');
+                showNotification('Email is required so we can send you a quote', 'error');
                 return;
             }
-            formData.append('email', email);
+            formData.set('email', email);
+        }
+        // Basic sanity check on quantity if provided
+        const qtyRaw = formData.get('quantity');
+        if (qtyRaw) {
+            const qty = parseInt(qtyRaw, 10);
+            if (!qty || qty < 1) {
+                showNotification('If you specify a quantity, it must be a positive number', 'error');
+                return;
+            }
         }
 
         const submitBtn = quoteForm.querySelector('button[type="submit"]');
@@ -1060,3 +1056,91 @@ window.hideSpecsSection = hideSpecsSection;
         });
     }
 })();
+
+
+/* ==========================================
+   Safe Industry Product Card Rendering
+   ==========================================
+   Replaces the legacy innerHTML pattern across all 6 industry pages.
+   All product-supplied strings (name/description/material/tolerance/process)
+   are inserted via textContent — guaranteed XSS-safe even if a malicious
+   admin uploads a product named '<script>alert(1)</script>'.
+
+   Usage on each industry page:
+     WFX_renderIndustryProducts('products-gallery', 'robotics');
+*/
+window.WFX_renderIndustryProducts = function(galleryId, industryKey) {
+    const gallery = document.getElementById(galleryId);
+    if (!gallery) return;
+
+    // Prefer server-injected CMS data (visible to Google) over localStorage
+    const all = (window.__WFX_CMS__ && window.__WFX_CMS__.industry_products)
+        ? window.__WFX_CMS__.industry_products
+        : JSON.parse(localStorage.getItem('wfx_industry_products') || '[]');
+    const products = all.filter(p => p.industry === industryKey);
+    if (products.length === 0) {
+        return;  // keep static crawlable fallback HTML
+    }
+
+    // Validate image URLs — only allow http(s) and our own paths.
+    // Rejects javascript:, data:, vbscript: etc.
+    function safeImageUrl(raw) {
+        if (!raw || typeof raw !== 'string') return 'https://via.placeholder.com/400x250?text=Product';
+        const trimmed = raw.trim();
+        if (/^https?:\/\//i.test(trimmed) || /^\//.test(trimmed)) return trimmed;
+        return 'https://via.placeholder.com/400x250?text=Product';
+    }
+
+    // Replace static fallback with admin-managed products
+    gallery.textContent = '';
+
+    products.forEach(product => {
+        const card = document.createElement('div');
+        card.style.cssText = 'background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: transform 0.3s ease;';
+        card.onmouseover = function() { this.style.transform = 'translateY(-5px)'; };
+        card.onmouseout = function() { this.style.transform = 'translateY(0)'; };
+
+        // Image — setAttribute is safe (browser ignores JS-protocol URLs in src
+        // when the URL has already been validated above, but we also blanket-block).
+        const img = document.createElement('img');
+        img.setAttribute('src', safeImageUrl(product.image));
+        img.setAttribute('alt', product.name || 'Product');  // setAttribute escapes attrs
+        img.setAttribute('loading', 'lazy');
+        img.style.cssText = 'width: 100%; height: 220px; object-fit: cover;';
+        card.appendChild(img);
+
+        // Body
+        const body = document.createElement('div');
+        body.style.cssText = 'padding: 25px;';
+
+        const heading = document.createElement('h3');
+        heading.style.cssText = 'margin: 0 0 10px; font-size: 1.25rem;';
+        heading.textContent = product.name || '';  // textContent escapes HTML
+        body.appendChild(heading);
+
+        if (product.description) {
+            const p = document.createElement('p');
+            p.style.cssText = 'color: var(--gray); margin: 0 0 15px; font-size: 0.95rem; line-height: 1.6;';
+            p.textContent = product.description;
+            body.appendChild(p);
+        }
+
+        // Badge row
+        const badgeRow = document.createElement('div');
+        badgeRow.style.cssText = 'display: flex; flex-wrap: wrap; gap: 8px;';
+        function addBadge(text, bg, color) {
+            if (!text) return;
+            const span = document.createElement('span');
+            span.style.cssText = `background: ${bg}; color: ${color}; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem;`;
+            span.textContent = text;
+            badgeRow.appendChild(span);
+        }
+        addBadge(product.material,  '#e0f2fe', '#0369a1');
+        addBadge(product.tolerance, '#dcfce7', '#166534');
+        addBadge(product.process,   '#fef3c7', '#92400e');
+        body.appendChild(badgeRow);
+
+        card.appendChild(body);
+        gallery.appendChild(card);
+    });
+};
