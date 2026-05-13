@@ -2959,6 +2959,7 @@ html[lang="zh-CN"] .hero-title {
     }
     .mobile-quick-contact .qc-call    { background: var(--primary); }
     .mobile-quick-contact .qc-mail    { background: #16a34a; }
+    .mobile-quick-contact .qc-upload  { background: #d97706; }
     .mobile-quick-contact a i {
         font-size: 1.4rem;
     }
@@ -3059,4 +3060,20 @@ body.copy-protected video {
 .copy-protect-toast.visible {
     transform: translateX(-50%) translateY(0);
     opacity: 1;
+}
+
+/* ============================================================================
+   720yun VR Facade hover state
+   ============================================================================ */
+.vr-facade {
+    transition: transform 0.2s ease;
+}
+.vr-facade:hover > div:nth-child(2) > div:first-child,
+.vr-facade:focus-visible > div:nth-child(2) > div:first-child {
+    transform: scale(1.08);
+    background: rgba(255, 255, 255, 0.25);
+}
+.vr-facade:focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 4px;
 }

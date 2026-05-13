@@ -36,6 +36,21 @@
     <link rel="alternate" hreflang="en" href="https://wanfuxin.com/about.html">
     <link rel="alternate" hreflang="x-default" href="https://wanfuxin.com/about.html">
     <!-- TODO: when /de/ /ja/ /fr/ subpaths exist, add additional hreflang tags here -->
+    <!-- Open Graph / social sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="WFX Wanfuxin">
+    <meta property="og:title" content="About Us | WFX - Precision Manufacturing Excellence">
+    <meta property="og:description" content="Learn about WFX - 19+ years of precision manufacturing excellence. ISO9001 &amp; IATF16949 certified CNC machining for aerospace, medical, and automotive industries.">
+    <meta property="og:image" content="https://wanfuxin.com/company-video-poster.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="https://wanfuxin.com/about.html">
+    <meta property="og:locale" content="en_US">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="About Us | WFX - Precision Manufacturing Excellence">
+    <meta name="twitter:description" content="Learn about WFX - 19+ years of precision manufacturing excellence. ISO9001 &amp; IATF16949 certified CNC machining for aerospace, medical, and automotive industries.">
+    <meta name="twitter:image" content="https://wanfuxin.com/company-video-poster.jpg">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -739,14 +754,19 @@
             </div>
 
             <div class="ar-tour-container" style="position: relative; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-xl); background: #000;">
-                <iframe 
-                    src="https://www.720yun.com/vr/d15jt5yOun2" 
-                    frameborder="0" 
-                    width="100%" 
-                    height="600" 
-                    allowfullscreen
-                    style="display: block;"
-                ></iframe>
+                <!-- 720yun VR facade — iframe injected on click. Saves ~3 MB first paint. -->
+                <div class="vr-facade" data-vr-src="https://www.720yun.com/vr/d15jt5yOun2"
+                     role="button" tabindex="0" aria-label="Launch interactive 360° factory tour"
+                     style="position:relative; width:100%; height:600px; background:#0a1628 url('hero-video-poster.jpg') center/cover; cursor:pointer; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+                    <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(10,22,40,0.4) 0%, rgba(10,22,40,0.75) 100%);"></div>
+                    <div style="position:relative; text-align:center; color:white; padding:0 20px;">
+                        <div style="width:96px; height:96px; border-radius:50%; background:rgba(255,255,255,0.15); backdrop-filter:blur(8px); border:2px solid rgba(255,255,255,0.5); display:inline-flex; align-items:center; justify-content:center; margin-bottom:20px; transition:transform 0.2s;">
+                            <i class="fas fa-play" aria-hidden="true" style="font-size:2.2rem; color:white; margin-left:6px;"></i>
+                        </div>
+                        <h3 style="color:white; margin:0 0 8px; font-size:1.6rem;">Launch Interactive 360° Factory Tour</h3>
+                        <p style="color:rgba(255,255,255,0.75); margin:0; font-size:0.95rem;">Click to load &mdash; powered by 720yun</p>
+                    </div>
+                </div>
             </div>
 
             <div class="ar-tour-features" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; margin-top: 50px;">
@@ -1305,11 +1325,14 @@
 
     <!-- Mobile quick-contact float (visible <769px viewport) -->
     <div class="mobile-quick-contact" aria-label="Quick contact">
-        <a href="tel:+8615876543210" class="copyable qc-call" aria-label="Call us">
+        <a href="tel:+8613431451998" class="copyable qc-call" aria-label="Call us">
             <i class="fas fa-phone" aria-hidden="true"></i>
         </a>
         <a href="mailto:lucindaz@wanfuxin.com" class="copyable qc-mail" aria-label="Email us">
             <i class="fas fa-envelope" aria-hidden="true"></i>
+        </a>
+        <a href="index.html#quote" class="qc-upload" aria-label="Upload CAD">
+            <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
         </a>
     </div>
 

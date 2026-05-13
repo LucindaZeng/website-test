@@ -33,6 +33,21 @@
     <link rel="alternate" hreflang="x-default" href="https://wanfuxin.com/">
     <!-- TODO: when /de/ /ja/ /fr/ subpaths exist, add additional hreflang tags here -->
     <!-- Favicon -->
+    <!-- Open Graph / social sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="WFX Wanfuxin">
+    <meta property="og:title" content="WFX | Custom CNC Machining Services &amp; Rapid Prototyping">
+    <meta property="og:description" content="WFX - Leading CNC machining services provider offering rapid prototyping, precision manufacturing, and production solutions for aerospace, automotive, and medical industries.">
+    <meta property="og:image" content="https://wanfuxin.com/company-video-poster.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="https://wanfuxin.com/">
+    <meta property="og:locale" content="en_US">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="WFX | Custom CNC Machining Services &amp; Rapid Prototyping">
+    <meta name="twitter:description" content="WFX - Leading CNC machining services provider offering rapid prototyping, precision manufacturing, and production solutions for aerospace, automotive, and medical industries.">
+    <meta name="twitter:image" content="https://wanfuxin.com/company-video-poster.jpg">
+
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -59,14 +74,13 @@
           "@type": "Organization",
           "@id": "https://wanfuxin.com/#organization",
           "name": "WFX (Dongguan Wanfuxin Hardware Products Co., Ltd.)",
-          "alternateName": "WFX Wanfuxin",
+          "alternateName": ["WFX Wanfuxin", "东莞万富鑫五金制品有限公司"],
           "url": "https://wanfuxin.com/",
           "logo": "https://wanfuxin.com/logo.png",
           "description": "Precision CNC machining services for aerospace, medical, electronics, robotics, and liquid cooling industries. ISO9001 and IATF16949 certified manufacturer based in Dongguan, China.",
           "foundingDate": "2007",
           "email": "lucindaz@wanfuxin.com",
           "sameAs": [],
-          "alternateName": "东莞万富鑫五金制品有限公司",
           "address": {
             "@type": "PostalAddress",
             "streetAddress": "3 Fuxin West Road, Qingxi Town",
@@ -261,8 +275,13 @@
     <section class="hero">
         <div class="hero-background">
             <div class="hero-overlay"></div>
-            <video autoplay muted loop playsinline preload="metadata" poster="hero-video-poster.jpg" class="hero-video">
-                <source src="hero-video.mp4" type="video/mp4">
+            <!-- hero video: NOT autoplayed by default — JS enables play() on desktop only.
+                 Mobile users see the poster image, saving 1.4MB on cellular networks.
+                 The data-src defers <source> setup until JS decides it's safe to load. -->
+            <video muted loop playsinline preload="none" poster="hero-video-poster.jpg"
+                   class="hero-video" id="hero-video"
+                   data-src="hero-video.mp4" data-src-type="video/mp4">
+                <!-- Source intentionally empty until JS injects it on desktop -->
             </video>
         </div>
         <div class="container">
@@ -276,7 +295,7 @@
                 </h1>
                 <p class="hero-description">
                     Industry-leading CNC machining services with tolerances down to ±0.005mm. 
-                    Request a quotes, rapid turnaround, and expert engineering support for your most demanding projects.
+                    Request a quote, rapid turnaround, and expert engineering support for your most demanding projects.
                 </p>
                 <div class="hero-stats">
                     <div class="stat-item">
@@ -467,7 +486,19 @@
                         <h3>360° AR Factory Tour</h3>
                     </div>
                     <div class="ar-container">
-                        <iframe src="https://www.720yun.com/vr/d15jt5yOun2" frameborder="no" width="100%" height="400" allowfullscreen></iframe>
+                        <!-- 720yun VR facade — iframe injected only on click, saving ~3 MB on first paint -->
+                        <div class="vr-facade" data-vr-src="https://www.720yun.com/vr/d15jt5yOun2"
+                             role="button" tabindex="0" aria-label="Launch interactive 360° factory tour"
+                             style="position:relative; width:100%; height:400px; background:#0a1628 url('hero-video-poster.jpg') center/cover; border-radius:8px; cursor:pointer; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+                            <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(10,22,40,0.4) 0%, rgba(10,22,40,0.75) 100%);"></div>
+                            <div style="position:relative; text-align:center; color:white;">
+                                <div style="width:80px; height:80px; border-radius:50%; background:rgba(255,255,255,0.15); backdrop-filter:blur(8px); border:2px solid rgba(255,255,255,0.5); display:inline-flex; align-items:center; justify-content:center; margin-bottom:16px; transition:transform 0.2s;">
+                                    <i class="fas fa-play" aria-hidden="true" style="font-size:1.8rem; color:white; margin-left:4px;"></i>
+                                </div>
+                                <h3 style="color:white; margin:0 0 6px; font-size:1.25rem;">Launch Interactive 360° Factory Tour</h3>
+                                <p style="color:rgba(255,255,255,0.75); margin:0; font-size:0.85rem;">Click to load (powered by 720yun)</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1554,11 +1585,14 @@
 
     <!-- Mobile quick-contact float (visible <769px viewport) -->
     <div class="mobile-quick-contact" aria-label="Quick contact">
-        <a href="tel:+8615876543210" class="copyable qc-call" aria-label="Call us">
+        <a href="tel:+8613431451998" class="copyable qc-call" aria-label="Call us">
             <i class="fas fa-phone" aria-hidden="true"></i>
         </a>
         <a href="mailto:lucindaz@wanfuxin.com" class="copyable qc-mail" aria-label="Email us">
             <i class="fas fa-envelope" aria-hidden="true"></i>
+        </a>
+        <a href="#quote" class="qc-upload" aria-label="Upload CAD">
+            <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
         </a>
     </div>
 

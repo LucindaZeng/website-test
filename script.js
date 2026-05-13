@@ -4,6 +4,7 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize all components
+    initHeroVideo();        // must run early — affects LCP
     initCustomLogos();
     initHeader();
     initMobileMenu();
@@ -17,6 +18,61 @@ document.addEventListener('DOMContentLoaded', function() {
     initContactForm();
     initLazyLoading();
 });
+
+/* ==========================================
+   Hero Video — Mobile-aware conditional loading
+   ==========================================
+   On desktop (width > 768px): inject <source> and autoplay.
+   On mobile: leave the <video> empty so only the poster image displays.
+   Saves ~1.4 MB of cellular data per first visit.
+*/
+function initHeroVideo() {
+    const video = document.getElementById('hero-video');
+    if (!video) return;
+
+    function shouldPlayVideo() {
+        // 1. Viewport width — mobile breakpoint
+        if (window.innerWidth <= 768) return false;
+        // 2. Save-Data hint (set by some Chrome/Edge users explicitly)
+        if (navigator.connection && navigator.connection.saveData) return false;
+        // 3. Slow connection (effectiveType is 'slow-2g'|'2g'|'3g'|'4g')
+        if (navigator.connection && ['slow-2g', '2g'].includes(navigator.connection.effectiveType)) return false;
+        return true;
+    }
+
+    function activateVideo() {
+        // Idempotent — don't add source twice
+        if (video.querySelector('source')) return;
+        const src = video.getAttribute('data-src');
+        const type = video.getAttribute('data-src-type') || 'video/mp4';
+        if (!src) return;
+        const source = document.createElement('source');
+        source.src = src;
+        source.type = type;
+        video.appendChild(source);
+        video.load();
+        video.play().catch(() => {
+            // Autoplay blocked (some browsers without user gesture) — poster stays
+        });
+    }
+
+    if (shouldPlayVideo()) {
+        // Defer slightly so the LCP element (hero text/image) paints first
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(activateVideo, { timeout: 800 });
+        } else {
+            setTimeout(activateVideo, 200);
+        }
+    }
+    // On mobile or save-data: do nothing. Poster image is the visual.
+
+    // If user resizes from mobile → desktop later, activate then
+    window.addEventListener('resize', () => {
+        if (shouldPlayVideo() && !video.querySelector('source')) {
+            activateVideo();
+        }
+    });
+}
 
 /* ==========================================
    Custom Logo Loading from Admin
@@ -947,3 +1003,60 @@ function toggleSpecsSection() {
 window.toggleSpecsSection = toggleSpecsSection;
 window.showSpecsSection = showSpecsSection;
 window.hideSpecsSection = hideSpecsSection;
+
+
+/* ==========================================
+   720yun VR Facade — click-to-load iframe
+   ==========================================
+   Heavy third-party iframes (3-5 MB of JS/textures) are deferred until the
+   user actually clicks the placeholder. This saves first-paint bandwidth on
+   pages where most visitors never engage with the VR tour.
+*/
+(function initVrFacades() {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', activateFacades);
+    } else {
+        activateFacades();
+    }
+
+    function activateFacades() {
+        const facades = document.querySelectorAll('.vr-facade');
+        facades.forEach(facade => {
+            const src = facade.getAttribute('data-vr-src');
+            if (!src) return;
+
+            const handler = () => {
+                // Idempotent — if already replaced, no-op
+                if (facade.dataset.activated === '1') return;
+                facade.dataset.activated = '1';
+
+                const iframe = document.createElement('iframe');
+                iframe.src = src;
+                iframe.width = '100%';
+                iframe.height = facade.style.height || '400';
+                iframe.frameBorder = '0';
+                iframe.allowFullscreen = true;
+                iframe.setAttribute('allow', 'fullscreen; accelerometer; gyroscope');
+                iframe.setAttribute('loading', 'eager');
+                iframe.style.cssText = 'display:block; width:100%; height:100%; border:0;';
+
+                // Replace facade content with iframe
+                facade.innerHTML = '';
+                facade.style.cursor = 'default';
+                facade.style.padding = '0';
+                facade.style.background = '#000';
+                facade.removeAttribute('role');
+                facade.removeAttribute('tabindex');
+                facade.appendChild(iframe);
+            };
+
+            facade.addEventListener('click', handler);
+            facade.addEventListener('keydown', e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handler();
+                }
+            });
+        });
+    }
+})();
