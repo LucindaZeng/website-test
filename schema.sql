@@ -89,18 +89,21 @@ CREATE TABLE IF NOT EXISTS categories (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Default category seed data
+-- News categories are organized as technical content pillars (not generic
+-- "Company News" categories). Each pillar represents a discrete SEO topic
+-- for the WFX manufacturing knowledge base.
 INSERT IGNORE INTO categories (type, name, slug, description, sort_order) VALUES
-    ('news',    'Company News',         'company-news',       'WFX company announcements and updates', 1),
-    ('news',    'Industry Insights',    'industry-insights',  'Manufacturing trends and analysis',     2),
-    ('news',    'Technical Articles',   'technical-articles', 'Engineering deep-dives and tutorials',  3),
-    ('news',    'Case Studies',         'case-studies',       'Customer success stories',              4),
-    ('news',    'Events & Exhibitions', 'events',             'Trade shows and company events',        5),
-    ('product', 'Aerospace',            'aerospace',          'Aerospace components',                  1),
-    ('product', 'Medical',              'medical',            'Medical device parts',                  2),
-    ('product', 'Electronics',          'electronics',        'Electronics enclosures and parts',      3),
-    ('product', 'Robotics',             'robotics',           'Robotics components',                   4),
-    ('product', 'Industrial',           'industrial',         'Industrial machinery parts',            5),
-    ('product', 'Liquid Cooling',       'liquid-cooling',     'Cold plates, heat sinks, manifolds',    6);
+    ('news',    'CNC Processes & Machines',     'cnc-processes',       'Milling, turning, 5-axis, EDM techniques and machine capabilities',     1),
+    ('news',    'Materials Knowledge Hub',      'materials',           'Aluminum, steel, titanium, plastics — properties and machinability',    2),
+    ('news',    'Engineering Drawings & DFM',   'drawings-dfm',        'Design for manufacturability, tolerances, GD&T, drawing standards',     3),
+    ('news',    'Surface Finishing',            'surface-finishing',   'Anodizing, plating, coating, polishing, passivation — post-processing',  4),
+    ('news',    'Related Processes & Quality',  'related-processes',   'Casting, forging, sheet metal, inspection, QA, certifications',         5),
+    ('product', 'Aerospace',                    'aerospace',           'Aerospace components',                                                  1),
+    ('product', 'Medical',                      'medical',             'Medical device parts',                                                  2),
+    ('product', 'Electronics',                  'electronics',         'Electronics enclosures and parts',                                      3),
+    ('product', 'Robotics',                     'robotics',            'Robotics components',                                                   4),
+    ('product', 'Industrial',                   'industrial',          'Industrial machinery parts',                                            5),
+    ('product', 'Liquid Cooling',               'liquid-cooling',      'Cold plates, heat sinks, manifolds',                                    6);
 
 -- ----------------------------------------------------------------------------
 -- Notes:

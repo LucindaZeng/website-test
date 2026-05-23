@@ -109,13 +109,18 @@
     }, false);
 
     // ─── Block native copy event (defense in depth) ──────────────────────
+    // When the user (or a low-level scraper) copies text, replace the clipboard
+    // content with an attribution notice that includes the SOURCE URL of the
+    // page they copied from. This makes any stolen content carry its own
+    // provenance — useful for DMCA takedowns when content reappears elsewhere.
     document.addEventListener('copy', function(e) {
         if (isInteractiveTarget(e.target)) return;
         e.preventDefault();
-        // Replace clipboard content with attribution notice
         if (e.clipboardData) {
+            const sourceUrl = window.location.href.split('#')[0];  // strip fragment
             e.clipboardData.setData('text/plain',
-                '© WFX Wanfuxin — https://wanfuxin.com — Content protected. ' +
+                '© WFX Wanfuxin — Content protected.\n' +
+                'Source: ' + sourceUrl + '\n' +
                 'For licensing, contact lucindaz@wanfuxin.com');
         }
         showToast('Content protected. © WFX Wanfuxin');
