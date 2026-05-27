@@ -838,3 +838,215 @@ AdminCore.applyRoleBasedNav = function() {
         userNameEl.appendChild(badge);
     }
 };
+
+
+/* ============================================================================
+   i18n — bilingual UI for admin panel
+   ============================================================================
+   Public API:
+     AdminI18n.t('key')         — translate a key in the active language
+     AdminI18n.setLang('en'|'zh') — switch language and persist
+     AdminI18n.getLang()         — current language
+     AdminI18n.applyAll(root?)   — translate all data-i18n elements in DOM
+     AdminI18n.attachToggle(el)  — wire up a language toggle button
+
+   To make text translatable:
+     <span data-i18n="nav.dashboard">Dashboard</span>
+     <button data-i18n="action.save">Save</button>
+     <input placeholder="..." data-i18n-attr="placeholder" data-i18n="form.search_placeholder">
+
+   Scope: navigation + page titles + common action verbs only. Page-specific
+   detail content (form labels in deep editors, error toasts) stays English.
+   ============================================================================ */
+const AdminI18n = {
+    // Languages: 'en' (English) and 'zh' (中文)
+    DICTIONARY: {
+        // ── Sidebar nav sections ─────────────────────────────────────
+        'nav.section.main':       { en: 'Main',                   zh: '主要' },
+        'nav.section.content':    { en: 'Content Management',     zh: '内容管理' },
+        'nav.section.system':     { en: 'System',                 zh: '系统' },
+        // ── Sidebar nav items ────────────────────────────────────────
+        'nav.dashboard':          { en: 'Dashboard',              zh: '控制台' },
+        'nav.content_editor':     { en: 'Content Editor',         zh: '内容编辑器' },
+        'nav.video_manager':      { en: 'Video Manager',          zh: '视频管理' },
+        'nav.pages':              { en: 'Pages & Text',           zh: '页面与文字' },
+        'nav.page_images':        { en: 'Page Images',            zh: '页面图片' },
+        'nav.products':           { en: 'Industry Products',      zh: '行业产品' },
+        'nav.categories':         { en: 'Categories',             zh: '分类' },
+        'nav.media':              { en: 'Media Library',          zh: '媒体库' },
+        'nav.blog':               { en: 'Blog Posts',             zh: '博客文章' },
+        'nav.news':               { en: 'News',                   zh: '新闻' },
+        'nav.users':              { en: 'User Management',        zh: '用户管理' },
+        'nav.blocklist':          { en: 'IP Blocklist',           zh: 'IP 黑名单' },
+        'nav.activity_log':       { en: 'Activity Log',           zh: '操作日志' },
+        'nav.settings':           { en: 'Settings',               zh: '设置' },
+        'nav.change_password':    { en: 'Change Password',        zh: '修改密码' },
+        'nav.view_website':       { en: 'View Website',           zh: '查看网站' },
+        'nav.logout':             { en: 'Logout',                 zh: '退出登录' },
+        'nav.panel_title':        { en: 'Admin Panel',            zh: '管理后台' },
+
+        // ── Page titles (header h1) ──────────────────────────────────
+        'page.dashboard':         { en: 'Dashboard',                  zh: '控制台' },
+        'page.content_editor':    { en: 'Content Editor',             zh: '内容编辑器' },
+        'page.video_manager':     { en: 'Video Manager',              zh: '视频管理' },
+        'page.pages':             { en: 'Bilingual Content Editor',   zh: '双语内容编辑器' },
+        'page.page_images':       { en: 'Page Images',                zh: '页面图片' },
+        'page.products':          { en: 'Industry Products',          zh: '行业产品' },
+        'page.categories':        { en: 'Categories',                 zh: '分类管理' },
+        'page.media':             { en: 'Media Library',              zh: '媒体库' },
+        'page.blog':              { en: 'Blog Posts',                 zh: '博客文章' },
+        'page.news':              { en: 'News Management',            zh: '新闻管理' },
+        'page.users':             { en: 'User Management',            zh: '用户管理' },
+        'page.blocklist':         { en: 'IP Blocklist',               zh: 'IP 黑名单' },
+        'page.activity_log':      { en: 'Activity Log',               zh: '操作日志' },
+        'page.settings':          { en: 'Settings',                   zh: '系统设置' },
+        'page.change_password':   { en: 'Change Password',            zh: '修改密码' },
+
+        // ── Common action buttons ────────────────────────────────────
+        'action.save':            { en: 'Save',          zh: '保存' },
+        'action.cancel':          { en: 'Cancel',        zh: '取消' },
+        'action.delete':          { en: 'Delete',        zh: '删除' },
+        'action.edit':            { en: 'Edit',          zh: '编辑' },
+        'action.add':             { en: 'Add',           zh: '添加' },
+        'action.search':          { en: 'Search',        zh: '搜索' },
+        'action.upload':          { en: 'Upload',        zh: '上传' },
+        'action.download':        { en: 'Download',      zh: '下载' },
+        'action.export':          { en: 'Export',        zh: '导出' },
+        'action.import':          { en: 'Import',        zh: '导入' },
+        'action.refresh':         { en: 'Refresh',       zh: '刷新' },
+        'action.back':            { en: 'Back',          zh: '返回' },
+        'action.confirm':         { en: 'Confirm',       zh: '确认' },
+        'action.close':           { en: 'Close',         zh: '关闭' },
+
+        // ── Role labels ──────────────────────────────────────────────
+        'role.super_admin':       { en: 'Super Admin',           zh: '超级管理员' },
+        'role.chief_editor':      { en: 'Chief Editor',          zh: '主编' },
+        'role.editor':            { en: 'Editor',                zh: '编辑' },
+        'role.seo_specialist':    { en: 'SEO Specialist',        zh: 'SEO 专员' },
+        'role.sales':             { en: 'Sales',                 zh: '销售' },
+        'role.viewer':            { en: 'Viewer (read-only)',    zh: '只读用户' },
+
+        // ── Language switcher ────────────────────────────────────────
+        'lang.toggle_label':      { en: 'Language',     zh: '语言' },
+    },
+
+    getLang() {
+        try {
+            return localStorage.getItem('wfx_admin_lang') || 'en';
+        } catch (e) { return 'en'; }
+    },
+
+    setLang(lang) {
+        if (lang !== 'en' && lang !== 'zh') return;
+        try { localStorage.setItem('wfx_admin_lang', lang); } catch (e) {}
+        document.documentElement.setAttribute('data-admin-lang', lang);
+        this.applyAll();
+        // Notify any listeners (pages with their own translations)
+        try {
+            document.dispatchEvent(new CustomEvent('admin-lang-changed', { detail: { lang } }));
+        } catch (e) {}
+    },
+
+    t(key) {
+        const entry = this.DICTIONARY[key];
+        if (!entry) return key;  // missing key — show the key itself so it's visible
+        return entry[this.getLang()] || entry.en || key;
+    },
+
+    /**
+     * Apply translations to all elements in `root` (or whole document) that
+     * carry data-i18n attributes.
+     *   <span data-i18n="nav.dashboard">…</span>          → sets textContent
+     *   <input data-i18n="form.x" data-i18n-attr="placeholder"> → sets placeholder
+     */
+    applyAll(root) {
+        root = root || document;
+        const els = root.querySelectorAll('[data-i18n]');
+        els.forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            const attr = el.getAttribute('data-i18n-attr');
+            const translated = this.t(key);
+            if (attr) {
+                el.setAttribute(attr, translated);
+            } else {
+                // Find or create a dedicated text node so we don't blow away
+                // any child elements (e.g. an icon inside the link)
+                const textNode = Array.from(el.childNodes)
+                    .find(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim().length > 0);
+                if (textNode) {
+                    // Preserve any leading whitespace (e.g. " Dashboard")
+                    const leading = textNode.textContent.match(/^\s*/)[0];
+                    textNode.textContent = leading + translated;
+                } else {
+                    el.appendChild(document.createTextNode(' ' + translated));
+                }
+            }
+        });
+    },
+
+    /**
+     * Inject a language toggle button into the page header (right side).
+     * Auto-called by AdminCore on page load.
+     */
+    injectToggle() {
+        if (document.querySelector('.admin-lang-toggle')) return;  // idempotent
+        const headerRight = document.querySelector('.admin-header .header-right');
+        if (!headerRight) return;
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'admin-lang-toggle';
+        wrapper.style.cssText = 'display:inline-flex; align-items:center; gap:4px; margin-right:14px; background:#f1f5f9; border-radius:6px; padding:3px; font-size:0.85rem;';
+
+        const langs = [
+            { code: 'en', label: 'EN' },
+            { code: 'zh', label: '中文' },
+        ];
+        const current = this.getLang();
+
+        langs.forEach(({ code, label }) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.textContent = label;
+            btn.dataset.lang = code;
+            btn.style.cssText = 'border:0; padding:4px 12px; border-radius:4px; cursor:pointer; font-size:0.85rem; transition:all 0.15s;';
+            if (code === current) {
+                btn.style.background = '#fff';
+                btn.style.color = '#0369a1';
+                btn.style.fontWeight = '600';
+                btn.style.boxShadow = '0 1px 2px rgba(0,0,0,0.05)';
+            } else {
+                btn.style.background = 'transparent';
+                btn.style.color = '#64748b';
+            }
+            btn.addEventListener('click', () => {
+                AdminI18n.setLang(code);
+                // Re-render toggle to update active state
+                wrapper.remove();
+                AdminI18n.injectToggle();
+            });
+            wrapper.appendChild(btn);
+        });
+
+        headerRight.insertBefore(wrapper, headerRight.firstChild);
+    },
+
+    /**
+     * Bootstrap on page load. Runs after AdminCore.checkAuth.
+     */
+    init() {
+        document.documentElement.setAttribute('data-admin-lang', this.getLang());
+        this.applyAll();
+        this.injectToggle();
+        // Also localize role badge (rendered by AdminCore.renderUserBadge)
+        // Re-render after a tick to overlap with role rendering
+        setTimeout(() => this.applyAll(), 50);
+    },
+};
+
+// Expose globally and bootstrap when DOM is ready
+window.AdminI18n = AdminI18n;
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => AdminI18n.init());
+} else {
+    AdminI18n.init();
+}

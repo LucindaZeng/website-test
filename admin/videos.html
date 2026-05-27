@@ -261,49 +261,94 @@
     </style>
 </head>
 <body>
-    <div class="admin-layout">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <img src="../logo.png" alt="WFX Admin">
-                <span>Admin Panel</span>
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../logo.png" alt="WFX">
+            <h2 data-i18n="nav.panel_title">Admin Panel</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.main">Main</div>
+                <a href="dashboard.html" class="nav-item" data-i18n="nav.dashboard">
+                    <i class="fas fa-home" aria-hidden="true"></i> Dashboard
+                </a>
             </div>
-            <nav class="sidebar-nav">
-                <a href="dashboard.html"><i class="fas fa-tachometer-alt" aria-hidden="true"></i> Dashboard</a>
-                <a href="content-editor.html" class="nav-item">
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.content">Content Management</div>
+                <a href="content-editor.html" class="nav-item" data-i18n="nav.content_editor">
                     <i class="fas fa-edit" aria-hidden="true"></i> Content Editor
                 </a>
-                <a href="videos.html" class="active"><i class="fas fa-video" aria-hidden="true"></i> Video Manager</a>
-                <a href="pages.html"><i class="fas fa-file-alt" aria-hidden="true"></i> Pages</a>
-                <a href="page-images.html"><i class="fas fa-images" aria-hidden="true"></i> Page Images</a>
-                <a href="media.html"><i class="fas fa-photo-video" aria-hidden="true"></i> Media Library</a>
-                <a href="blog.html"><i class="fas fa-blog" aria-hidden="true"></i> Blog Posts</a>
-                <a href="news.html"><i class="fas fa-newspaper" aria-hidden="true"></i> News</a>
-                <a href="products.html"><i class="fas fa-box" aria-hidden="true"></i> Products</a>
-                <a href="users.html"><i class="fas fa-users" aria-hidden="true"></i> Users</a>
-                <a href="activity-log.html"><i class="fas fa-history" aria-hidden="true"></i> Activity Log</a>
-                <a href="settings.html"><i class="fas fa-cog" aria-hidden="true"></i> Settings</a>
-            </nav>
-            <div class="sidebar-footer">
-                <button onclick="AdminCore.logout()" class="logout-btn">
-                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
-                </button>
+                <a href="videos.html" class="nav-item active" data-i18n="nav.video_manager">
+                    <i class="fas fa-video" aria-hidden="true"></i> Video Manager
+                </a>
+                <a href="pages.html" class="nav-item" data-i18n="nav.pages">
+                    <i class="fas fa-file-alt" aria-hidden="true"></i> Pages & Text
+                </a>
+                <a href="page-images.html" class="nav-item" data-i18n="nav.page_images">
+                    <i class="fas fa-image" aria-hidden="true"></i> Page Images
+                </a>
+                <a href="products.html" class="nav-item" data-i18n="nav.products">
+                    <i class="fas fa-boxes" aria-hidden="true"></i> Industry Products
+                </a>
+                <a href="categories.html" class="nav-item" data-i18n="nav.categories">
+                    <i class="fas fa-folder-open" aria-hidden="true"></i> Categories
+                </a>
+                <a href="media.html" class="nav-item" data-i18n="nav.media">
+                    <i class="fas fa-images" aria-hidden="true"></i> Media Library
+                </a>
+                <a href="blog.html" class="nav-item" data-i18n="nav.blog">
+                    <i class="fas fa-blog" aria-hidden="true"></i> Blog Posts
+                </a>
+                <a href="news.html" class="nav-item" data-i18n="nav.news">
+                    <i class="fas fa-newspaper" aria-hidden="true"></i> News
+                </a>
             </div>
-        </aside>
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.system">System</div>
+                <a href="users.html" class="nav-item" data-i18n="nav.users">
+                    <i class="fas fa-users" aria-hidden="true"></i> User Management
+                </a>
+                <a href="blocklist.html" class="nav-item" data-i18n="nav.blocklist">
+                    <i class="fas fa-ban" aria-hidden="true"></i> IP Blocklist
+                </a>
+                <a href="activity-log.html" class="nav-item" data-i18n="nav.activity_log">
+                    <i class="fas fa-history" aria-hidden="true"></i> Activity Log
+                </a>
+                <a href="settings.html" class="nav-item" data-i18n="nav.settings">
+                    <i class="fas fa-cog" aria-hidden="true"></i> Settings
+                </a>
+                <a href="change-password.html" class="nav-item" data-i18n="nav.change_password">
+                    <i class="fas fa-key" aria-hidden="true"></i> Change Password
+                </a>
+            </div>
+            <div class="nav-section">
+                <a href="../index.html" class="nav-item" target="_blank" data-i18n="nav.view_website">
+                    <i class="fas fa-external-link-alt" aria-hidden="true"></i> View Website
+                </a>
+                <a href="#" class="nav-item" onclick="AdminCore.logout()" data-i18n="nav.logout">
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
+                </a>
+            </div>
+        </nav>
+    </aside>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <header class="content-header">
-                <div class="header-left">
-                    <h1><i class="fas fa-video" aria-hidden="true"></i> Video Manager</h1>
-                    <p>Manage all videos displayed on the website</p>
-                </div>
-                <div class="header-right">
-                    <button class="btn btn-primary" onclick="saveAllVideos()">
+    <!-- Main Content -->
+    <main class="admin-main">
+        <header class="admin-header">
+            <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('active')">
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+            <div class="header-left">
+                <h1><i class="fas fa-video" aria-hidden="true"></i> <span data-i18n="page.video_manager">Video Manager</span></h1>
+                <p>Manage hero and company video files</p>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-primary" onclick="saveAllVideos()">
                         <i class="fas fa-save" aria-hidden="true"></i> Save All Changes
                     </button>
-                </div>
-            </header>
+            </div>
+        </header>
 
             <div class="content-body">
                 <!-- Hero Videos Section -->
@@ -480,8 +525,7 @@
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
+    </main>
 
     <script src="js/cms-sync.js"></script>
     <script src="js/admin-core.js"></script>

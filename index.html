@@ -326,15 +326,20 @@
             </div>
         </div>
         <div class="hero-scroll">
-            <a href="#trusted-by">
+            <a href="#services">
                 <span>Scroll to explore</span>
                 <i class="fas fa-chevron-down" aria-hidden="true"></i>
             </a>
         </div>
     </section>
 
-    <!-- Trusted By Section -->
-    <section class="trusted-by" id="trusted-by">
+    <!-- Trusted By Section
+         TEMPORARILY HIDDEN per Lu's request (2026-05).
+         All 8 client logos preserved in HTML — content stays in DOM so Google
+         still sees the "TRUSTED BY MOLEX/NVIDIA/..." text for SEO purposes
+         ("CNC manufacturer for Molex" type queries).
+         To RE-SHOW: delete the style="display:none" attribute on the <section>. -->
+    <section class="trusted-by" id="trusted-by" style="display: none;">
         <div class="container">
             <div class="trusted-by-content">
                 <span class="trusted-by-label">Trusted by engineers at world-leading companies</span>
@@ -496,7 +501,12 @@
                                     <i class="fas fa-play" aria-hidden="true" style="font-size:1.8rem; color:white; margin-left:4px;"></i>
                                 </div>
                                 <h3 style="color:white; margin:0 0 6px; font-size:1.25rem;">Launch Interactive 360° Factory Tour</h3>
-                                <p style="color:rgba(255,255,255,0.75); margin:0; font-size:0.85rem;">Click to load (powered by 720yun)</p>
+                                <p style="color:rgba(255,255,255,0.75); margin:0 0 10px; font-size:0.85rem;">Click to load (powered by 720yun)</p>
+                                <a href="https://www.720yun.com/vr/d15jt5yOun2" target="_blank" rel="noopener noreferrer"
+                                   onclick="event.stopPropagation();"
+                                   style="display:inline-block; color:rgba(255,255,255,0.85); text-decoration:underline; font-size:0.8rem;">
+                                    Or open in a new tab <i class="fas fa-external-link-alt" aria-hidden="true" style="font-size:0.7rem;"></i>
+                                </a>
                             </div>
                         </div>
                     </div>

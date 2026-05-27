@@ -20,68 +20,68 @@
     <aside class="admin-sidebar" id="sidebar">
         <div class="sidebar-header">
             <img src="../logo.png" alt="WFX">
-            <h2>Admin Panel</h2>
+            <h2 data-i18n="nav.panel_title">Admin Panel</h2>
         </div>
         <nav class="sidebar-nav">
             <div class="nav-section">
-                <div class="nav-section-title">Main</div>
-                <a href="dashboard.html" class="nav-item active">
+                <div class="nav-section-title" data-i18n="nav.section.main">Main</div>
+                <a href="dashboard.html" class="nav-item active" data-i18n="nav.dashboard">
                     <i class="fas fa-home" aria-hidden="true"></i> Dashboard
                 </a>
             </div>
             <div class="nav-section">
-                <div class="nav-section-title">Content Management</div>
-                <a href="content-editor.html" class="nav-item">
+                <div class="nav-section-title" data-i18n="nav.section.content">Content Management</div>
+                <a href="content-editor.html" class="nav-item" data-i18n="nav.content_editor">
                     <i class="fas fa-edit" aria-hidden="true"></i> Content Editor
                 </a>
-                <a href="videos.html" class="nav-item">
+                <a href="videos.html" class="nav-item" data-i18n="nav.video_manager">
                     <i class="fas fa-video" aria-hidden="true"></i> Video Manager
                 </a>
-                <a href="pages.html" class="nav-item">
+                <a href="pages.html" class="nav-item" data-i18n="nav.pages">
                     <i class="fas fa-file-alt" aria-hidden="true"></i> Pages & Text
                 </a>
-                <a href="page-images.html" class="nav-item">
+                <a href="page-images.html" class="nav-item" data-i18n="nav.page_images">
                     <i class="fas fa-image" aria-hidden="true"></i> Page Images
                 </a>
-                <a href="products.html" class="nav-item">
+                <a href="products.html" class="nav-item" data-i18n="nav.products">
                     <i class="fas fa-boxes" aria-hidden="true"></i> Industry Products
                 </a>
-                <a href="categories.html" class="nav-item">
+                <a href="categories.html" class="nav-item" data-i18n="nav.categories">
                     <i class="fas fa-folder-open" aria-hidden="true"></i> Categories
                 </a>
-                <a href="media.html" class="nav-item">
+                <a href="media.html" class="nav-item" data-i18n="nav.media">
                     <i class="fas fa-images" aria-hidden="true"></i> Media Library
                 </a>
-                <a href="blog.html" class="nav-item">
+                <a href="blog.html" class="nav-item" data-i18n="nav.blog">
                     <i class="fas fa-blog" aria-hidden="true"></i> Blog Posts
                 </a>
-                <a href="news.html" class="nav-item">
+                <a href="news.html" class="nav-item" data-i18n="nav.news">
                     <i class="fas fa-newspaper" aria-hidden="true"></i> News
                 </a>
             </div>
             <div class="nav-section">
-                <div class="nav-section-title">System</div>
-                <a href="users.html" class="nav-item">
+                <div class="nav-section-title" data-i18n="nav.section.system">System</div>
+                <a href="users.html" class="nav-item" data-i18n="nav.users">
                     <i class="fas fa-users" aria-hidden="true"></i> User Management
                 </a>
-                <a href="blocklist.html" class="nav-item">
+                <a href="blocklist.html" class="nav-item" data-i18n="nav.blocklist">
                     <i class="fas fa-ban" aria-hidden="true"></i> IP Blocklist
                 </a>
-                <a href="activity-log.html" class="nav-item">
+                <a href="activity-log.html" class="nav-item" data-i18n="nav.activity_log">
                     <i class="fas fa-history" aria-hidden="true"></i> Activity Log
                 </a>
-                <a href="settings.html" class="nav-item">
+                <a href="settings.html" class="nav-item" data-i18n="nav.settings">
                     <i class="fas fa-cog" aria-hidden="true"></i> Settings
                 </a>
-                <a href="change-password.html" class="nav-item">
+                <a href="change-password.html" class="nav-item" data-i18n="nav.change_password">
                     <i class="fas fa-key" aria-hidden="true"></i> Change Password
                 </a>
             </div>
             <div class="nav-section">
-                <a href="../index.html" class="nav-item" target="_blank">
+                <a href="../index.html" class="nav-item" target="_blank" data-i18n="nav.view_website">
                     <i class="fas fa-external-link-alt" aria-hidden="true"></i> View Website
                 </a>
-                <a href="#" class="nav-item" onclick="AdminCore.logout()">
+                <a href="#" class="nav-item" onclick="AdminCore.logout()" data-i18n="nav.logout">
                     <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
                 </a>
             </div>
@@ -95,7 +95,7 @@
                 <button class="btn btn-icon btn-secondary" id="sidebar-toggle" style="display: none;">
                     <i class="fas fa-bars" aria-hidden="true"></i>
                 </button>
-                <h1>Dashboard</h1>
+                <h1><span data-i18n="page.dashboard">Dashboard</span></h1>
             </div>
             <div class="header-right">
                 <div class="user-menu" id="user-menu">
@@ -173,10 +173,10 @@
                             <a href="users.html?action=new" class="btn btn-secondary" style="justify-content: flex-start;">
                                 <i class="fas fa-user-plus" aria-hidden="true"></i> Add New User
                             </a>
-                            <a href="content-editor.html" class="nav-item">
+                            <a href="content-editor.html" class="nav-item" data-i18n="nav.content_editor">
                     <i class="fas fa-edit" aria-hidden="true"></i> Content Editor
                 </a>
-                <a href="videos.html" class="nav-item">
+                <a href="videos.html" class="nav-item" data-i18n="nav.video_manager">
                     <i class="fas fa-video" aria-hidden="true"></i> Video Manager
                 </a>
                 <a href="pages.html" class="btn btn-secondary" style="justify-content: flex-start;">

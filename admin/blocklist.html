@@ -19,24 +19,24 @@
     <aside class="admin-sidebar" id="sidebar">
         <div class="sidebar-header">
             <img src="../logo.png" alt="WFX">
-            <h2>Admin Panel</h2>
+            <h2 data-i18n="nav.panel_title">Admin Panel</h2>
         </div>
         <nav class="sidebar-nav">
             <div class="nav-section">
-                <div class="nav-section-title">Main</div>
-                <a href="dashboard.html" class="nav-item">
+                <div class="nav-section-title" data-i18n="nav.section.main">Main</div>
+                <a href="dashboard.html" class="nav-item" data-i18n="nav.dashboard">
                     <i class="fas fa-home" aria-hidden="true"></i> Dashboard
                 </a>
             </div>
             <div class="nav-section">
-                <div class="nav-section-title">Content Management</div>
-                <a href="content-editor.html" class="nav-item">
+                <div class="nav-section-title" data-i18n="nav.section.content">Content Management</div>
+                <a href="content-editor.html" class="nav-item" data-i18n="nav.content_editor">
                     <i class="fas fa-edit" aria-hidden="true"></i> Content Editor
                 </a>
                 <a href="pages.html" class="nav-item">
                     <i class="fas fa-file-alt" aria-hidden="true"></i> Pages
                 </a>
-                <a href="news.html" class="nav-item">
+                <a href="news.html" class="nav-item" data-i18n="nav.news">
                     <i class="fas fa-newspaper" aria-hidden="true"></i> News
                 </a>
                 <a href="blog.html" class="nav-item">
@@ -47,28 +47,28 @@
                 </a>
             </div>
             <div class="nav-section">
-                <div class="nav-section-title">System</div>
-                <a href="users.html" class="nav-item">
+                <div class="nav-section-title" data-i18n="nav.section.system">System</div>
+                <a href="users.html" class="nav-item" data-i18n="nav.users">
                     <i class="fas fa-users" aria-hidden="true"></i> User Management
                 </a>
-                <a href="blocklist.html" class="nav-item active">
+                <a href="blocklist.html" class="nav-item active" data-i18n="nav.blocklist">
                     <i class="fas fa-ban" aria-hidden="true"></i> IP Blocklist
                 </a>
-                <a href="activity-log.html" class="nav-item">
+                <a href="activity-log.html" class="nav-item" data-i18n="nav.activity_log">
                     <i class="fas fa-history" aria-hidden="true"></i> Activity Log
                 </a>
-                <a href="settings.html" class="nav-item">
+                <a href="settings.html" class="nav-item" data-i18n="nav.settings">
                     <i class="fas fa-cog" aria-hidden="true"></i> Settings
                 </a>
-                <a href="change-password.html" class="nav-item">
+                <a href="change-password.html" class="nav-item" data-i18n="nav.change_password">
                     <i class="fas fa-key" aria-hidden="true"></i> Change Password
                 </a>
             </div>
             <div class="nav-section">
-                <a href="../index.html" class="nav-item" target="_blank">
+                <a href="../index.html" class="nav-item" target="_blank" data-i18n="nav.view_website">
                     <i class="fas fa-external-link-alt" aria-hidden="true"></i> View Website
                 </a>
-                <a href="#" class="nav-item" onclick="AdminCore.logout()">
+                <a href="#" class="nav-item" onclick="AdminCore.logout()" data-i18n="nav.logout">
                     <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
                 </a>
             </div>
@@ -82,7 +82,7 @@
                 <i class="fas fa-bars" aria-hidden="true"></i>
             </button>
             <div class="header-title">
-                <h1><i class="fas fa-ban" aria-hidden="true"></i> IP Blocklist</h1>
+                <h1><i class="fas fa-ban" aria-hidden="true"></i> <span data-i18n="page.blocklist">IP Blocklist</span></h1>
                 <p>Block specific IPs, networks, or ASNs from accessing the site</p>
             </div>
             <div class="header-user">

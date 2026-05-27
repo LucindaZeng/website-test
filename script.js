@@ -1009,6 +1009,51 @@ window.hideSpecsSection = hideSpecsSection;
    pages where most visitors never engage with the VR tour.
 */
 (function initVrFacades() {
+    // ─── Fallback for blocked iframe embeds ─────────────────────────────
+    // If 720yun (or any embedded service) refuses to load via X-Frame-Options
+    // or returns an error, show a clear "Open in new tab" link instead of
+    // leaving the user staring at a broken black box.
+    window.showEmbedFallback = function(facade, src) {
+        facade.dataset.loaded = 'failed';
+        facade.innerHTML = '';
+        facade.style.background = '#0a1628';
+        facade.style.display = 'flex';
+        facade.style.alignItems = 'center';
+        facade.style.justifyContent = 'center';
+        facade.style.flexDirection = 'column';
+        facade.style.color = 'white';
+        facade.style.padding = '40px 20px';
+        facade.style.textAlign = 'center';
+
+        const icon = document.createElement('i');
+        icon.className = 'fas fa-external-link-alt';
+        icon.setAttribute('aria-hidden', 'true');
+        icon.style.cssText = 'font-size:2.2rem; margin-bottom:14px; opacity:0.8;';
+        facade.appendChild(icon);
+
+        const heading = document.createElement('h3');
+        heading.textContent = 'The factory tour opens in a new tab';
+        heading.style.cssText = 'color:white; margin:0 0 8px; font-size:1.25rem;';
+        facade.appendChild(heading);
+
+        const note = document.createElement('p');
+        note.textContent = 'The 360° viewer cannot be embedded here. Click below to open it on 720yun.com.';
+        note.style.cssText = 'color:rgba(255,255,255,0.75); margin:0 0 16px; font-size:0.9rem; max-width:500px;';
+        facade.appendChild(note);
+
+        const btn = document.createElement('a');
+        btn.href = src;
+        btn.target = '_blank';
+        btn.rel = 'noopener noreferrer';
+        btn.textContent = 'Open Factory Tour';
+        btn.style.cssText = 'background:white; color:#0a1628; padding:12px 28px; border-radius:6px; text-decoration:none; font-weight:600; font-size:0.95rem; display:inline-flex; align-items:center; gap:8px;';
+        const btnIcon = document.createElement('i');
+        btnIcon.className = 'fas fa-external-link-alt';
+        btnIcon.setAttribute('aria-hidden', 'true');
+        btn.appendChild(btnIcon);
+        facade.appendChild(btn);
+    };
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', activateFacades);
     } else {
@@ -1026,15 +1071,41 @@ window.hideSpecsSection = hideSpecsSection;
                 if (facade.dataset.activated === '1') return;
                 facade.dataset.activated = '1';
 
+                // Extract numeric height from facade's inline style.
+                // facade.style.height returns "400px" (or similar) — the iframe
+                // HTML `height` attribute needs a number-only string, so strip
+                // the "px" suffix. Default to 400 if no height set.
+                const heightStyle = facade.style.height || '400';
+                const heightNum = parseInt(heightStyle, 10) || 400;
+
                 const iframe = document.createElement('iframe');
                 iframe.src = src;
                 iframe.width = '100%';
-                iframe.height = facade.style.height || '400';
+                iframe.height = String(heightNum);
                 iframe.frameBorder = '0';
                 iframe.allowFullscreen = true;
-                iframe.setAttribute('allow', 'fullscreen; accelerometer; gyroscope');
+                iframe.setAttribute('allow', 'fullscreen; accelerometer; gyroscope; vr; xr-spatial-tracking');
                 iframe.setAttribute('loading', 'eager');
+                iframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
                 iframe.style.cssText = 'display:block; width:100%; height:100%; border:0;';
+
+                // Error handler: if iframe fails to load (e.g. 720yun blocks
+                // embedding via X-Frame-Options), show a fallback link instead
+                // of a blank black box.
+                let loadTimeout = setTimeout(() => {
+                    if (facade.dataset.loaded !== '1') {
+                        showEmbedFallback(facade, src);
+                    }
+                }, 8000);  // 8s grace period
+
+                iframe.addEventListener('load', () => {
+                    clearTimeout(loadTimeout);
+                    facade.dataset.loaded = '1';
+                });
+                iframe.addEventListener('error', () => {
+                    clearTimeout(loadTimeout);
+                    showEmbedFallback(facade, src);
+                });
 
                 // Replace facade content with iframe
                 facade.innerHTML = '';
