@@ -28,12 +28,12 @@
                 <a href="dashboard.html" class="nav-item" data-i18n="nav.dashboard">
                     <i class="fas fa-home" aria-hidden="true"></i> Dashboard
                 </a>
+                <a href="quotes.html" class="nav-item" data-i18n="nav.quotes">
+                    <i class="fas fa-file-invoice-dollar" aria-hidden="true"></i> Quotes
+                </a>
             </div>
             <div class="nav-section">
                 <div class="nav-section-title" data-i18n="nav.section.content">Content Management</div>
-                <a href="content-editor.html" class="nav-item" data-i18n="nav.content_editor">
-                    <i class="fas fa-edit" aria-hidden="true"></i> Content Editor
-                </a>
                 <a href="videos.html" class="nav-item" data-i18n="nav.video_manager">
                     <i class="fas fa-video" aria-hidden="true"></i> Video Manager
                 </a>
@@ -235,6 +235,7 @@
     <script src="js/cms-sync.js"></script>
     <script src="js/admin-core.js"></script>
     <script src="js/markdown-editor.js"></script>
+    <script src="js/markdown-importer.js"></script>
     <script>
         // Check authentication
         if (!AdminCore.checkAuth()) {
@@ -392,6 +393,19 @@
                 mdEditor.clear();
             } else {
                 document.getElementById('post-content').value = '';
+            }
+            // Attach markdown-file importer (idempotent — only injects once)
+            if (window.WFXMarkdownImporter) {
+                const form = document.getElementById('post-form');
+                WFXMarkdownImporter.attachUploadButton(form, {
+                    title:    'post-title',
+                    category: 'post-category',
+                    excerpt:  'post-excerpt',
+                    tags:     'post-tags',
+                    cover:    'post-image',
+                    status:   'post-status',
+                    content:  'post-content'
+                });
             }
             document.getElementById('post-modal').classList.add('active');
         }

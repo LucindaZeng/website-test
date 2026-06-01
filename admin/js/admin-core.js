@@ -773,12 +773,12 @@ document.addEventListener('DOMContentLoaded', function() {
 AdminCore.ROLE_PERMISSIONS = {
     super_admin: ['*'],  // sees everything
     chief_editor: [
-        'dashboard.html', 'content-editor.html', 'videos.html', 'pages.html',
+        'dashboard.html', 'videos.html', 'pages.html',
         'page-images.html', 'products.html', 'categories.html', 'media.html',
         'blog.html', 'news.html', 'change-password.html'
     ],
     seo_specialist: [
-        'dashboard.html', 'content-editor.html', 'pages.html', 'page-images.html',
+        'dashboard.html', 'pages.html', 'page-images.html',
         'media.html', 'blog.html', 'news.html', 'change-password.html'
     ],
     sales: [
@@ -867,6 +867,7 @@ const AdminI18n = {
         'nav.section.system':     { en: 'System',                 zh: '系统' },
         // ── Sidebar nav items ────────────────────────────────────────
         'nav.dashboard':          { en: 'Dashboard',              zh: '控制台' },
+        'nav.quotes':             { en: 'Quotes',                 zh: '询价单' },
         'nav.content_editor':     { en: 'Content Editor',         zh: '内容编辑器' },
         'nav.video_manager':      { en: 'Video Manager',          zh: '视频管理' },
         'nav.pages':              { en: 'Pages & Text',           zh: '页面与文字' },
@@ -887,6 +888,7 @@ const AdminI18n = {
 
         // ── Page titles (header h1) ──────────────────────────────────
         'page.dashboard':         { en: 'Dashboard',                  zh: '控制台' },
+        'page.quotes':            { en: 'Quote Requests',             zh: '询价单管理' },
         'page.content_editor':    { en: 'Content Editor',             zh: '内容编辑器' },
         'page.video_manager':     { en: 'Video Manager',              zh: '视频管理' },
         'page.pages':             { en: 'Bilingual Content Editor',   zh: '双语内容编辑器' },

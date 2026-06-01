@@ -774,7 +774,7 @@ ROLE_PERMISSIONS = {
         'categories:read', 'categories:write', 'categories:delete',
         'media:read', 'media:write', 'media:delete',
         'users:read', 'users:write', 'users:delete',
-        'quotes:read', 'quotes:write',
+        'quotes:read', 'quotes:write', 'quotes:delete',
         'contacts:read', 'contacts:write',
         'settings:read', 'settings:write',
         'audit:read',
@@ -805,7 +805,7 @@ ROLE_PERMISSIONS = {
     },
     'sales': {
         # Sales team — quotes and contacts only
-        'quotes:read', 'quotes:write',
+        'quotes:read', 'quotes:write', 'quotes:delete',
         'contacts:read', 'contacts:write',
         'products:read',                  # Read-only product info to answer customer questions
         'news:read', 'blog:read',
@@ -939,6 +939,141 @@ def audit_log(user, action, resource_type=None, resource_id=None, detail=None, i
         print(f"  ⚠  audit_log DB error: {e}")
     finally:
         conn.close()
+
+
+# ─── Email notification ─────────────────────────────────────────────────────────
+# SMTP config is read from environment variables (or config.py). If not
+# configured, email sending is skipped gracefully — quotes still save to DB
+# and appear in the admin panel, so no data is ever lost.
+#
+# Required env vars (or config.py attributes) to enable email:
+#   WFX_SMTP_HOST      e.g. smtp.exmail.qq.com  (Tencent enterprise mail)
+#   WFX_SMTP_PORT      e.g. 465 (SSL) or 587 (STARTTLS)
+#   WFX_SMTP_USER      e.g. lucindaz@wanfuxin.com
+#   WFX_SMTP_PASSWORD  the mailbox password or app-specific token
+#   WFX_NOTIFY_EMAIL   where to send quote alerts (defaults to lucindaz@wanfuxin.com)
+#   WFX_SMTP_USE_SSL   'true' for port 465, 'false' for 587 STARTTLS
+
+def _smtp_config():
+    """Return SMTP settings dict, or None if not configured."""
+    host = os.environ.get('WFX_SMTP_HOST') or getattr(config, 'SMTP_HOST', None)
+    if not host:
+        return None
+    user = os.environ.get('WFX_SMTP_USER') or getattr(config, 'SMTP_USER', None)
+    pw = os.environ.get('WFX_SMTP_PASSWORD') or getattr(config, 'SMTP_PASSWORD', None)
+    if not (user and pw):
+        return None
+    port = int(os.environ.get('WFX_SMTP_PORT') or getattr(config, 'SMTP_PORT', 465))
+    use_ssl_raw = (os.environ.get('WFX_SMTP_USE_SSL') or
+                   str(getattr(config, 'SMTP_USE_SSL', 'true'))).lower()
+    # Quote notifications go to lucindaz@wanfuxin.com by default. This can be
+    # overridden with the WFX_NOTIFY_EMAIL env var (or config.NOTIFY_EMAIL) if
+    # the recipient ever changes — no code edit needed.
+    notify = (os.environ.get('WFX_NOTIFY_EMAIL') or
+              getattr(config, 'NOTIFY_EMAIL', None) or 'lucindaz@wanfuxin.com')
+    return {
+        'host': host, 'port': port, 'user': user, 'password': pw,
+        'use_ssl': use_ssl_raw in ('1', 'true', 'yes'),
+        'notify': notify,
+    }
+
+
+def send_notification_email(subject, body_text, reply_to=None):
+    """
+    Send a plaintext notification email to the configured WFX_NOTIFY_EMAIL.
+    Runs in a background thread so it never blocks the HTTP response. Failures
+    are logged but never raised — a mail outage must not break quote intake.
+    """
+    cfg = _smtp_config()
+    if not cfg:
+        ts = datetime.now().strftime('%H:%M:%S')
+        print(f"  ✉  [{ts}] Email skipped (SMTP not configured) — subject: {subject}")
+        return
+
+    def _worker():
+        import smtplib
+        from email.mime.text import MIMEText
+        from email.utils import formataddr, formatdate
+        try:
+            msg = MIMEText(body_text, 'plain', 'utf-8')
+            msg['Subject'] = subject
+            msg['From'] = formataddr(('WFX Website', cfg['user']))
+            msg['To'] = cfg['notify']
+            msg['Date'] = formatdate(localtime=True)
+            if reply_to:
+                msg['Reply-To'] = reply_to
+
+            if cfg['use_ssl']:
+                server = smtplib.SMTP_SSL(cfg['host'], cfg['port'], timeout=15)
+            else:
+                server = smtplib.SMTP(cfg['host'], cfg['port'], timeout=15)
+                server.starttls()
+            server.login(cfg['user'], cfg['password'])
+            server.sendmail(cfg['user'], [cfg['notify']], msg.as_string())
+            server.quit()
+            ts = datetime.now().strftime('%H:%M:%S')
+            print(f"  ✉  [{ts}] Notification email sent to {cfg['notify']}")
+        except Exception as e:
+            ts = datetime.now().strftime('%H:%M:%S')
+            print(f"  ⚠  [{ts}] Email send failed: {e}")
+
+    threading.Thread(target=_worker, daemon=True).start()
+
+
+def notify_new_quote(row_id, data, file_info):
+    """Compose and send the 'new quote' notification email."""
+    lines = [
+        f"New quote request #{row_id} received on the WFX website.",
+        "",
+        f"Customer:  {data.get('name') or '(not provided)'}",
+        f"Email:     {data.get('email')}",
+        f"Phone:     {data.get('phone') or '(not provided)'}",
+        f"Company:   {data.get('company') or '(not provided)'}",
+        "",
+        "--- Project details ---",
+        f"Material:  {data.get('material') or '(not specified)'}",
+        f"Quantity:  {data.get('quantity') or '(not specified)'}",
+        f"Finish:    {data.get('finish') or '(not specified)'}",
+        f"Lead time: {data.get('lead-time') or '(not specified)'}",
+        "",
+        "Notes:",
+        (data.get('notes') or '(none)'),
+        "",
+    ]
+    if file_info:
+        size_kb = round((file_info.get('size') or 0) / 1024, 1)
+        lines += [
+            "--- Attachment ---",
+            f"File:  {file_info.get('original')} ({size_kb} KB)",
+            "(View/download it from the admin panel → Quotes)",
+            "",
+        ]
+    else:
+        lines += ["No file attached.", ""]
+
+    # Build a clickable admin link if SITE_URL is configured (e.g.
+    # https://wanfuxin.com). Falls back to a text instruction otherwise.
+    site_url = (os.environ.get('WFX_SITE_URL') or
+                getattr(config, 'SITE_URL', None) or '').rstrip('/')
+    lines += [
+        "------------------------------------------",
+        "Manage this request in the admin panel:",
+    ]
+    if site_url:
+        lines += [
+            f"  {site_url}/admin/quotes.html",
+        ]
+    else:
+        lines += [
+            "  Admin → Quotes",
+        ]
+    lines += [
+        "",
+        "This is an automated message from the WFX website.",
+    ]
+    body = "\n".join(lines)
+    subject = f"[WFX Quote] #{row_id} — {data.get('company') or data.get('name') or data.get('email')}"
+    send_notification_email(subject, body, reply_to=data.get('email'))
 
 
 # ─── Database helpers ───────────────────────────────────────────────────────────
@@ -1425,6 +1560,16 @@ class WFXHandler(SimpleHTTPRequestHandler):
             value = unquote(path[len('/api/blocklist/'):])
             self._handle_blocklist_update(value)
             return
+        # /api/quotes/<id> — update status (new/contacted/quoted/won/lost)
+        if path.startswith('/api/quotes/'):
+            rest = path[len('/api/quotes/'):]
+            try:
+                qid = int(rest)
+                self._handle_quote_update(qid)
+                return
+            except ValueError:
+                self._send_json(400, {'ok': False, 'error': 'Invalid quote id'})
+                return
         # Anything else: treat like POST (CMS supports PUT semantics)
         self.do_POST()
 
@@ -1452,6 +1597,16 @@ class WFXHandler(SimpleHTTPRequestHandler):
                 return
             self._send_json(400, {'ok': False, 'error': 'Format: /api/media/<folder>/<filename>'})
             return
+        elif path.startswith('/api/quotes/') and path.endswith('/attachment'):
+            # /api/quotes/<id>/attachment — delete the CAD file but keep the quote record
+            mid = path[len('/api/quotes/'):-len('/attachment')]
+            try:
+                qid = int(mid)
+                self._handle_quote_attachment_delete(qid)
+                return
+            except ValueError:
+                self._send_json(400, {'ok': False, 'error': 'Invalid quote id'})
+                return
         else:
             self._send_json(404, {'ok': False, 'error': 'Not found'})
 
@@ -1561,6 +1716,15 @@ class WFXHandler(SimpleHTTPRequestHandler):
 
         ts = datetime.now().strftime('%H:%M:%S')
         print(f"  ✓  [{ts}] Quote #{row_id} saved (email: {data.get('email')})")
+
+        # Fire off email notification (non-blocking background thread).
+        # If SMTP isn't configured, this logs and skips — quote is already
+        # safely in the DB and visible in the admin panel.
+        try:
+            notify_new_quote(row_id, data, file_info)
+        except Exception as e:
+            print(f"  ⚠  Quote email notification error (non-fatal): {e}")
+
         self._send_json(200, {'ok': True, 'id': row_id})
 
     def _handle_contact_post(self):
@@ -1632,6 +1796,15 @@ class WFXHandler(SimpleHTTPRequestHandler):
             return
         if path == '/api/admin/contacts':
             self._handle_admin_list('contact_submissions')
+            return
+        if path == '/api/quotes':
+            self._handle_quotes_list()
+            return
+        if path == '/api/contacts':
+            self._handle_contacts_list()
+            return
+        if path.startswith('/api/quotes/') and path.endswith('/attachment'):
+            self._handle_quote_attachment_download(path)
             return
         if path == '/api/auth/me':
             self._handle_whoami()
@@ -1764,6 +1937,10 @@ class WFXHandler(SimpleHTTPRequestHandler):
         # Always do a dummy verify if user not found, to keep response time uniform
         if not user:
             verify_password(password, hash_password('dummy'))  # discard result
+            # Audit failed login (security monitoring — detect brute force)
+            audit_log({'uid': None, 'name': username}, 'login_failed',
+                      resource_type='auth', detail={'reason': 'invalid_credentials'},
+                      ip=self._client_ip())
             self._send_json(401, {'ok': False, 'error': 'Invalid username or password'})
             return
 
@@ -1792,6 +1969,8 @@ class WFXHandler(SimpleHTTPRequestHandler):
 
         ts = datetime.now().strftime('%H:%M:%S')
         print(f"  ✓  [{ts}] LOGIN: {username} from {self._client_ip()}")
+        audit_log({'uid': user['id'], 'name': user['username']}, 'login_success',
+                  resource_type='auth', ip=self._client_ip())
 
     def _handle_logout(self):
         self.send_response(200)
@@ -2452,6 +2631,189 @@ class WFXHandler(SimpleHTTPRequestHandler):
                     if isinstance(v, datetime):
                         row[k] = v.isoformat()
             self._send_json(200, {'ok': True, 'rows': rows})
+        except mysql.connector.Error as e:
+            self._send_json(500, {'ok': False, 'error': str(e)})
+        finally:
+            conn.close()
+
+    def _handle_quotes_list(self):
+        """GET /api/quotes — session-authed list of quote requests."""
+        if not self._check_admin_auth():
+            return
+        user = getattr(self, '_current_user', None)
+        if not has_permission(user, 'quotes:read'):
+            self._send_json(403, {'ok': False, 'error': 'Forbidden: requires quotes:read'})
+            return
+        if not (DB_CONFIG and MYSQL_AVAILABLE):
+            self._send_json(503, {'ok': False, 'error': 'Database not configured'})
+            return
+        self._send_json(200, {'ok': True, 'rows': list_submissions('quote_requests', limit=500)})
+
+    def _handle_contacts_list(self):
+        """GET /api/contacts — session-authed list of contact submissions."""
+        if not self._check_admin_auth():
+            return
+        user = getattr(self, '_current_user', None)
+        if not has_permission(user, 'contacts:read'):
+            self._send_json(403, {'ok': False, 'error': 'Forbidden: requires contacts:read'})
+            return
+        if not (DB_CONFIG and MYSQL_AVAILABLE):
+            self._send_json(503, {'ok': False, 'error': 'Database not configured'})
+            return
+        self._send_json(200, {'ok': True, 'rows': list_submissions('contact_submissions', limit=500)})
+
+    def _handle_quote_update(self, qid):
+        """PUT /api/quotes/<id> — update status. Requires quotes:write."""
+        if not self._check_admin_auth():
+            return
+        user = getattr(self, '_current_user', None)
+        if not has_permission(user, 'quotes:write'):
+            self._send_json(403, {'ok': False, 'error': 'Forbidden: requires quotes:write'})
+            return
+        data = self._read_json_body()
+        if data is None:
+            return
+        new_status = data.get('status')
+        valid_statuses = ('new', 'contacted', 'quoted', 'won', 'lost')
+        if new_status not in valid_statuses:
+            self._send_json(400, {'ok': False, 'error': f'status must be one of {valid_statuses}'})
+            return
+        conn = get_db_connection()
+        if not conn:
+            self._send_json(503, {'ok': False, 'error': 'Database unavailable'})
+            return
+        try:
+            cursor = conn.cursor()
+            cursor.execute("UPDATE quote_requests SET status=%s WHERE id=%s", (new_status, qid))
+            conn.commit()
+            if cursor.rowcount == 0:
+                self._send_json(404, {'ok': False, 'error': 'Quote not found'})
+                return
+            audit_log(user, 'quote_status_update', resource_type='quote',
+                      resource_id=qid, detail={'status': new_status}, ip=self._client_ip())
+            self._send_json(200, {'ok': True, 'id': qid, 'status': new_status})
+        except mysql.connector.Error as e:
+            self._send_json(500, {'ok': False, 'error': str(e)})
+        finally:
+            conn.close()
+
+    def _quote_file_lookup(self, qid):
+        """Return (stored_name, original_name) for a quote, or (None, None)."""
+        conn = get_db_connection()
+        if not conn:
+            return None, None
+        try:
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute(
+                "SELECT file_stored_name, file_original_name FROM quote_requests WHERE id=%s",
+                (qid,)
+            )
+            row = cursor.fetchone()
+            if not row:
+                return None, None
+            return row.get('file_stored_name'), row.get('file_original_name')
+        except mysql.connector.Error:
+            return None, None
+        finally:
+            conn.close()
+
+    def _handle_quote_attachment_download(self, path):
+        """GET /api/quotes/<id>/attachment — stream the CAD file to an authed admin."""
+        if not self._check_admin_auth():
+            return
+        user = getattr(self, '_current_user', None)
+        if not has_permission(user, 'quotes:read'):
+            self._send_json(403, {'ok': False, 'error': 'Forbidden: requires quotes:read'})
+            return
+        mid = path[len('/api/quotes/'):-len('/attachment')]
+        try:
+            qid = int(mid)
+        except ValueError:
+            self._send_json(400, {'ok': False, 'error': 'Invalid quote id'})
+            return
+
+        stored, original = self._quote_file_lookup(qid)
+        if not stored:
+            self._send_json(404, {'ok': False, 'error': 'No attachment for this quote'})
+            return
+
+        safe_name = os.path.basename(stored)
+        file_path = os.path.join(UPLOAD_DIR, safe_name)
+        if not os.path.isfile(file_path):
+            self._send_json(404, {'ok': False, 'error': 'File missing on disk (may have been deleted)'})
+            return
+
+        audit_log(user, 'quote_attachment_download', resource_type='quote',
+                  resource_id=qid, detail={'file': original}, ip=self._client_ip())
+
+        try:
+            file_size = os.path.getsize(file_path)
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/octet-stream')
+            dl_name = original or safe_name
+            self.send_header('Content-Disposition', f'attachment; filename="{dl_name}"')
+            self.send_header('Content-Length', str(file_size))
+            self.send_header('X-Content-Type-Options', 'nosniff')
+            self.end_headers()
+            with open(file_path, 'rb') as f:
+                while True:
+                    chunk = f.read(64 * 1024)
+                    if not chunk:
+                        break
+                    self.wfile.write(chunk)
+        except (OSError, BrokenPipeError) as e:
+            print(f"  ⚠  Attachment download error for quote #{qid}: {e}")
+
+    def _handle_quote_attachment_delete(self, qid):
+        """DELETE /api/quotes/<id>/attachment — remove CAD file, keep the record.
+
+        Deletes the file from disk AND clears the file_* columns. The quote
+        itself (customer info, project details) is preserved. Requires
+        quotes:delete.
+        """
+        if not self._check_admin_auth():
+            return
+        user = getattr(self, '_current_user', None)
+        if not has_permission(user, 'quotes:delete'):
+            self._send_json(403, {'ok': False, 'error': 'Forbidden: requires quotes:delete'})
+            return
+
+        stored, original = self._quote_file_lookup(qid)
+        if stored is None and original is None:
+            self._send_json(404, {'ok': False, 'error': 'Quote not found'})
+            return
+        if not stored:
+            self._send_json(404, {'ok': False, 'error': 'This quote has no attachment'})
+            return
+
+        safe_name = os.path.basename(stored)
+        file_path = os.path.join(UPLOAD_DIR, safe_name)
+        file_deleted = False
+        if os.path.isfile(file_path):
+            try:
+                os.unlink(file_path)
+                file_deleted = True
+            except OSError as e:
+                print(f"  ⚠  Could not delete attachment file for quote #{qid}: {e}")
+
+        conn = get_db_connection()
+        if not conn:
+            self._send_json(503, {'ok': False, 'error': 'Database unavailable'})
+            return
+        try:
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE quote_requests
+                SET file_original_name=NULL, file_stored_name=NULL,
+                    file_size_bytes=NULL, file_mime_type=NULL
+                WHERE id=%s
+            """, (qid,))
+            conn.commit()
+            audit_log(user, 'quote_attachment_delete', resource_type='quote',
+                      resource_id=qid,
+                      detail={'file': original, 'disk_deleted': file_deleted},
+                      ip=self._client_ip())
+            self._send_json(200, {'ok': True, 'id': qid, 'file_deleted': file_deleted})
         except mysql.connector.Error as e:
             self._send_json(500, {'ok': False, 'error': str(e)})
         finally:
