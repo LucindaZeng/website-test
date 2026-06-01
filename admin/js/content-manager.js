@@ -100,7 +100,7 @@ const PageContentManager = {
                 title: 'See Our Capabilities',
                 description: 'Take a virtual tour of our state-of-the-art facility and see how we deliver precision parts at scale.',
                 videoUrl: 'company-video.mp4',
-                posterUrl: 'company-video-poster.jpg'
+                posterUrl: '../images/company-video-poster.jpg'
             }
         },
 

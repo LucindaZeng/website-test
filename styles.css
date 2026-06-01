@@ -620,6 +620,28 @@ input, select, textarea {
     height: 100%;
     object-fit: cover;
     filter: brightness(0.7);
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+}
+
+/* YouTube iframe scaled to cover the hero (16:9 → fill any aspect ratio).
+   pointer-events:none keeps it non-interactive — it's a background, not a player. */
+.hero-video iframe {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* Cover: use the larger of 16:9 width-driven or height-driven sizing.
+       100vw wide → 56.25vw tall; if that's shorter than the hero, the
+       min-height/min-width rules below take over. */
+    width: 100vw;
+    height: 56.25vw;       /* 16:9 based on width */
+    min-height: 100vh;
+    min-width: 177.78vh;   /* 16:9 based on height */
+    pointer-events: none;
+    border: 0;
 }
 
 .hero-overlay {
@@ -1933,8 +1955,9 @@ input, select, textarea {
 
 .news-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 30px;
+    align-items: start;
 }
 
 .news-card {
@@ -1951,7 +1974,10 @@ input, select, textarea {
 }
 
 .news-card.featured {
-    grid-row: span 2;
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
 }
 
 .news-image {
@@ -1961,7 +1987,8 @@ input, select, textarea {
 }
 
 .news-card.featured .news-image {
-    height: 300px;
+    height: 100%;
+    min-height: 280px;
 }
 
 .news-image img {
@@ -2157,6 +2184,31 @@ input, select, textarea {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 30px;
+}
+
+.hours-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.hours-list li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.75);
+    padding: 3px 0;
+}
+.hours-list li span:first-child {
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+}
+.hours-list li.hours-tz {
+    display: block;
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 6px;
+    font-style: italic;
 }
 
 .footer-column h4 {
@@ -2541,6 +2593,12 @@ input, select, textarea {
     
     .news-card.featured {
         grid-row: auto;
+        grid-column: auto;
+        grid-template-columns: 1fr;
+    }
+    .news-card.featured .news-image {
+        min-height: 200px;
+        height: 200px;
     }
     
     .cta-actions {
@@ -2973,13 +3031,15 @@ html[lang="zh-CN"] .hero-title {
 }
 
 /* ============================================================================
-   WhatsApp floating button (all viewports)
+   WhatsApp floating button + QR popup (all viewports)
    ============================================================================ */
-.whatsapp-float {
+.whatsapp-widget {
     position: fixed;
     bottom: 24px;
     left: 24px;
     z-index: 200;
+}
+.whatsapp-float {
     width: 60px;
     height: 60px;
     border-radius: 30px;
@@ -2989,6 +3049,8 @@ html[lang="zh-CN"] .hero-title {
     justify-content: center;
     color: white;
     text-decoration: none;
+    border: none;
+    cursor: pointer;
     box-shadow: 0 4px 16px rgba(37, 211, 102, 0.45);
     transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
@@ -3003,12 +3065,12 @@ html[lang="zh-CN"] .hero-title {
 .whatsapp-float i {
     font-size: 2rem;
 }
-/* Subtle pulse ring to draw attention without being annoying */
+/* Subtle pulse ring */
 .whatsapp-float::before {
     content: '';
     position: absolute;
-    width: 100%;
-    height: 100%;
+    width: 60px;
+    height: 60px;
     border-radius: 30px;
     background: #25D366;
     opacity: 0.5;
@@ -3020,19 +3082,88 @@ html[lang="zh-CN"] .hero-title {
     70%  { transform: scale(1.5); opacity: 0; }
     100% { transform: scale(1.5); opacity: 0; }
 }
-/* On mobile, sit above the quick-contact stack on the opposite side */
+/* QR popup */
+.whatsapp-popup {
+    position: absolute;
+    bottom: 74px;
+    left: 0;
+    width: 240px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    padding: 18px;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px) scale(0.96);
+    transform-origin: bottom left;
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+}
+.whatsapp-popup.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+.whatsapp-popup h4 {
+    margin: 0 0 12px;
+    font-size: 0.95rem;
+    color: #1a1a2e;
+}
+.whatsapp-popup img {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+    border-radius: 8px;
+}
+.whatsapp-popup p {
+    margin: 12px 0 0;
+    font-size: 0.8rem;
+    color: #64748b;
+    line-height: 1.5;
+}
+.whatsapp-popup p a {
+    color: #128C7E;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+}
+.whatsapp-popup p a:hover { text-decoration: underline; }
+.whatsapp-popup-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 26px;
+    height: 26px;
+    border: none;
+    background: #f1f5f9;
+    border-radius: 50%;
+    cursor: pointer;
+    color: #64748b;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.whatsapp-popup-close:hover { background: #e2e8f0; }
+
 @media (max-width: 768px) {
-    .whatsapp-float {
+    .whatsapp-widget {
         bottom: 16px;
         left: 16px;
+    }
+    .whatsapp-float {
         width: 56px;
         height: 56px;
     }
+    .whatsapp-float::before { width: 56px; height: 56px; }
     .whatsapp-float i { font-size: 1.8rem; }
 }
 @media (prefers-reduced-motion: reduce) {
     .whatsapp-float::before { animation: none; }
 }
+
 
 /* ============================================================================
    WhatsApp QR in footer / contact section

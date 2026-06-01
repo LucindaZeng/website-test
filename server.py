@@ -155,14 +155,14 @@ SECURITY_HEADERS = {
     # to remove it, all inline JS would need to be refactored into external files.
     'Content-Security-Policy': (
         "default-src 'self'; "
-        "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; "
-        "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; "
-        "font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; "
-        "img-src 'self' data: https://images.unsplash.com https://randomuser.me; "
-        "frame-src https://www.google.com https://maps.google.com https://www.720yun.com; "
+        "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.tiny.cloud https://cdn.jsdelivr.net; "
+        "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://cdn.tiny.cloud https://cdn.jsdelivr.net; "
+        "font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com https://cdn.tiny.cloud; "
+        "img-src 'self' data: blob: https://images.unsplash.com https://randomuser.me https://cdn.tiny.cloud https://sp.tinymce.com; "
+        "frame-src https://www.google.com https://maps.google.com https://www.720yun.com https://m.amap.com https://uri.amap.com https://www.amap.com https://www.youtube.com https://www.youtube-nocookie.com; "
         "frame-ancestors 'self'; "  # equivalent to X-Frame-Options for modern browsers
         "media-src 'self' blob:; "
-        "connect-src 'self'; "
+        "connect-src 'self' https://cdn.tiny.cloud https://sp.tinymce.com; "
         "form-action 'self' mailto:; "
         "base-uri 'self'; "
         "object-src 'none';"  # Block <object>, <embed>, <applet> entirely
@@ -425,6 +425,7 @@ rate_limiter = RateLimiter()
 RATE_LIMITS = {
     'quote':   (5,  60),     # 5 quote submissions per minute per IP
     'contact': (5,  60),
+    'request': (5,  60),     # 5 resource requests per minute per IP
     'login':   (10, 300),    # 10 login attempts per 5 minutes (brute-force protection)
     'cms':     (60, 60),     # 60 CMS API calls per minute (admin operations)
     'pages':   (60, 60),     # 60 page requests per minute per IP — humans browse < 1/sec; scrapers go 5+/sec
@@ -1148,6 +1149,62 @@ def save_contact_to_db(data, ip, ua):
         conn.close()
 
 
+def save_download_request_to_db(data, ip, ua):
+    """Insert a resource/download request. Returns id, or None."""
+    conn = get_db_connection()
+    if not conn:
+        return None
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO download_requests (
+                resource, customer_name, customer_email, customer_company,
+                customer_industry, customer_phone, notes, ip_address, user_agent
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            data.get('resource'), data.get('name'), data.get('email'),
+            data.get('company'), data.get('industry'), data.get('phone'),
+            data.get('notes'), ip, ua[:500] if ua else None,
+        ))
+        conn.commit()
+        return cursor.lastrowid
+    except mysql.connector.Error as e:
+        print(f"  ✗  DB insert failed: {e}")
+        return None
+    finally:
+        conn.close()
+
+
+def notify_new_request(row_id, data):
+    """Compose and send the 'new resource request' notification email."""
+    lines = [
+        f"New resource request #{row_id} received on the WFX website.",
+        "",
+        f"Resource:  {data.get('resource') or '(not specified)'}",
+        "",
+        f"Name:      {data.get('name') or '(not provided)'}",
+        f"Email:     {data.get('email')}",
+        f"Company:   {data.get('company') or '(not provided)'}",
+        f"Industry:  {data.get('industry') or '(not provided)'}",
+        f"Phone:     {data.get('phone') or '(not provided)'}",
+        "",
+        "Notes:",
+        (data.get('notes') or '(none)'),
+        "",
+    ]
+    site_url = (os.environ.get('WFX_SITE_URL') or
+                getattr(config, 'SITE_URL', None) or '').rstrip('/')
+    lines += [
+        "------------------------------------------",
+        "Manage this request in the admin panel:",
+    ]
+    lines += [f"  {site_url}/admin/requests.html"] if site_url else ["  Admin → Requests"]
+    lines += ["", "This is an automated message from the WFX website."]
+    body = "\n".join(lines)
+    subject = f"[WFX Request] #{row_id} — {data.get('resource')} — {data.get('company') or data.get('email')}"
+    send_notification_email(subject, body, reply_to=data.get('email'))
+
+
 def list_submissions(table, limit=100):
     """Return recent submissions from a given table for the admin panel."""
     conn = get_db_connection()
@@ -1526,6 +1583,8 @@ class WFXHandler(SimpleHTTPRequestHandler):
             self._handle_quote_post()
         elif path == '/api/contact':
             self._handle_contact_post()
+        elif path == '/api/request':
+            self._handle_request_post()
         elif path == '/api/auth/login':
             self._handle_login()
         elif path == '/api/auth/logout':
@@ -1569,6 +1628,16 @@ class WFXHandler(SimpleHTTPRequestHandler):
                 return
             except ValueError:
                 self._send_json(400, {'ok': False, 'error': 'Invalid quote id'})
+                return
+        # /api/requests/<id> — update status (new/contacted/sent/closed)
+        if path.startswith('/api/requests/'):
+            rest = path[len('/api/requests/'):]
+            try:
+                rid = int(rest)
+                self._handle_request_update(rid)
+                return
+            except ValueError:
+                self._send_json(400, {'ok': False, 'error': 'Invalid request id'})
                 return
         # Anything else: treat like POST (CMS supports PUT semantics)
         self.do_POST()
@@ -1656,6 +1725,9 @@ class WFXHandler(SimpleHTTPRequestHandler):
 
         if not data.get('email'):
             self._send_json(400, {'ok': False, 'error': 'Email is required'})
+            return
+        if not data.get('company'):
+            self._send_json(400, {'ok': False, 'error': 'Company is required'})
             return
 
         file_info = None
@@ -1760,6 +1832,9 @@ class WFXHandler(SimpleHTTPRequestHandler):
         if not data.get('email'):
             self._send_json(400, {'ok': False, 'error': 'Email required'})
             return
+        if not data.get('company'):
+            self._send_json(400, {'ok': False, 'error': 'Company required'})
+            return
 
         row_id = save_contact_to_db(data, self._client_ip(), self._ua())
         if row_id is None:
@@ -1768,6 +1843,64 @@ class WFXHandler(SimpleHTTPRequestHandler):
 
         ts = datetime.now().strftime('%H:%M:%S')
         print(f"  ✓  [{ts}] Contact #{row_id} saved (email: {data.get('email')})")
+        self._send_json(200, {'ok': True, 'id': row_id})
+
+    def _handle_request_post(self):
+        """JSON or form POST for resource/download requests (from downloads.html)."""
+        max_req, window = RATE_LIMITS['request']
+        if not rate_limiter.check(f"request:{self._client_ip()}", max_req, window):
+            self._send_json(429, {'ok': False, 'error': 'Too many requests. Please try again in a minute.'})
+            return
+
+        if not (DB_CONFIG and MYSQL_AVAILABLE):
+            self._send_json(503, {'ok': False, 'error': 'Database not configured.'})
+            return
+
+        length = int(self.headers.get('Content-Length', 0))
+        if length > 1024 * 100:
+            self._send_json(413, {'ok': False, 'error': 'Payload too large'})
+            return
+
+        raw = self.rfile.read(length)
+        ctype = self.headers.get('Content-Type', '')
+        try:
+            if 'application/json' in ctype:
+                data = json.loads(raw.decode('utf-8'))
+            else:
+                from urllib.parse import parse_qs
+                parsed = parse_qs(raw.decode('utf-8'))
+                data = {k: v[0] for k, v in parsed.items()}
+        except (ValueError, UnicodeDecodeError):
+            self._send_json(400, {'ok': False, 'error': 'Invalid request body'})
+            return
+
+        # Honeypot check (bots fill the hidden field)
+        if data.get('website_url_field'):
+            print(f"  🍯 BOT-DETECTED on /api/request from {self._client_ip()}")
+            self._send_json(200, {'ok': True, 'id': 0})  # fake success
+            return
+
+        if not data.get('email'):
+            self._send_json(400, {'ok': False, 'error': 'Email is required'})
+            return
+        if not data.get('company'):
+            self._send_json(400, {'ok': False, 'error': 'Company is required'})
+            return
+        if not data.get('resource'):
+            self._send_json(400, {'ok': False, 'error': 'Resource is required'})
+            return
+
+        row_id = save_download_request_to_db(data, self._client_ip(), self._ua())
+        if row_id is None:
+            self._send_json(500, {'ok': False, 'error': 'Could not save'})
+            return
+
+        ts = datetime.now().strftime('%H:%M:%S')
+        print(f"  ✓  [{ts}] Request #{row_id} saved ({data.get('resource')}, {data.get('email')})")
+        try:
+            notify_new_request(row_id, data)
+        except Exception as e:
+            print(f"  ⚠  Request email notification error (non-fatal): {e}")
         self._send_json(200, {'ok': True, 'id': row_id})
 
     def do_GET(self):
@@ -1802,6 +1935,9 @@ class WFXHandler(SimpleHTTPRequestHandler):
             return
         if path == '/api/contacts':
             self._handle_contacts_list()
+            return
+        if path == '/api/requests':
+            self._handle_requests_list()
             return
         if path.startswith('/api/quotes/') and path.endswith('/attachment'):
             self._handle_quote_attachment_download(path)
@@ -2661,6 +2797,55 @@ class WFXHandler(SimpleHTTPRequestHandler):
             self._send_json(503, {'ok': False, 'error': 'Database not configured'})
             return
         self._send_json(200, {'ok': True, 'rows': list_submissions('contact_submissions', limit=500)})
+
+    def _handle_requests_list(self):
+        """GET /api/requests — session-authed list of resource/download requests."""
+        if not self._check_admin_auth():
+            return
+        user = getattr(self, '_current_user', None)
+        # Resource requests are sales-relevant leads — gate behind quotes:read
+        if not has_permission(user, 'quotes:read'):
+            self._send_json(403, {'ok': False, 'error': 'Forbidden: requires quotes:read'})
+            return
+        if not (DB_CONFIG and MYSQL_AVAILABLE):
+            self._send_json(503, {'ok': False, 'error': 'Database not configured'})
+            return
+        self._send_json(200, {'ok': True, 'rows': list_submissions('download_requests', limit=500)})
+
+    def _handle_request_update(self, rid):
+        """PUT /api/requests/<id> — update status. Requires quotes:write."""
+        if not self._check_admin_auth():
+            return
+        user = getattr(self, '_current_user', None)
+        if not has_permission(user, 'quotes:write'):
+            self._send_json(403, {'ok': False, 'error': 'Forbidden: requires quotes:write'})
+            return
+        data = self._read_json_body()
+        if data is None:
+            return
+        new_status = data.get('status')
+        valid = ('new', 'contacted', 'sent', 'closed')
+        if new_status not in valid:
+            self._send_json(400, {'ok': False, 'error': f'status must be one of {valid}'})
+            return
+        conn = get_db_connection()
+        if not conn:
+            self._send_json(503, {'ok': False, 'error': 'Database unavailable'})
+            return
+        try:
+            cursor = conn.cursor()
+            cursor.execute("UPDATE download_requests SET status=%s WHERE id=%s", (new_status, rid))
+            conn.commit()
+            if cursor.rowcount == 0:
+                self._send_json(404, {'ok': False, 'error': 'Request not found'})
+                return
+            audit_log(user, 'request_status_update', resource_type='download_request',
+                      resource_id=rid, detail={'status': new_status}, ip=self._client_ip())
+            self._send_json(200, {'ok': True, 'id': rid, 'status': new_status})
+        except mysql.connector.Error as e:
+            self._send_json(500, {'ok': False, 'error': str(e)})
+        finally:
+            conn.close()
 
     def _handle_quote_update(self, qid):
         """PUT /api/quotes/<id> — update status. Requires quotes:write."""

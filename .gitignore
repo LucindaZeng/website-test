@@ -1,0 +1,27 @@
+# ─── Secrets — NEVER commit these ───────────────────────────────────────────
+.env
+config.py
+*.key
+*.pem
+
+# ─── Python ──────────────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+
+# ─── Runtime data ────────────────────────────────────────────────────────────
+uploads/
+*.log
+*.sqlite
+*.db
+
+# ─── OS / editor cruft ───────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.bak
+*.orig
+.idea/
+.vscode/

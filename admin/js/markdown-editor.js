@@ -30,9 +30,9 @@
 (function() {
     'use strict';
 
-    // Replace 'no-api-key' with your actual TinyMCE Cloud API key.
-    // Get one free at: https://www.tiny.cloud/auth/signup/
-    const TINYMCE_API_KEY = window.TINYMCE_API_KEY || 'no-api-key';
+    // TinyMCE Cloud API key. Override via window.TINYMCE_API_KEY if needed.
+    // Free tier: 5,000 editor loads/month. Manage at https://www.tiny.cloud/
+    const TINYMCE_API_KEY = window.TINYMCE_API_KEY || 'tuqpcmuaanfw1q0ba5nu55jng5sekcoi966sx26ble4gulog';
 
     const TINYMCE_VERSION = '7';
     const MARKED_CDN     = 'https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js';

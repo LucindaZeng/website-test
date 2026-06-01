@@ -8,7 +8,7 @@
     <meta charset="UTF-8">
     <meta name="robots" content="noindex, nofollow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quotes | WFX Admin</title>
+    <title>Requests | WFX Admin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -22,19 +22,9 @@
         .quote-table th, .quote-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; vertical-align: top; }
         .quote-table th { background: #f8fafc; font-weight: 600; color: #475569; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
         .quote-table tr:hover { background: #f8fafc; }
-        .status-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
-        .status-new { background: #dbeafe; color: #1e40af; }
-        .status-contacted { background: #fef3c7; color: #92400e; }
-        .status-quoted { background: #e0e7ff; color: #3730a3; }
-        .status-won { background: #d1fae5; color: #065f46; }
-        .status-lost { background: #fee2e2; color: #991b1b; }
-        .attach-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; font-size: 0.82rem; color: #0369a1; }
-        .no-attach { color: #94a3b8; font-size: 0.82rem; font-style: italic; }
         .row-actions { display: flex; gap: 6px; flex-wrap: wrap; }
         .btn-xs { padding: 4px 10px; font-size: 0.78rem; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; color: #334155; }
         .btn-xs:hover { background: #f1f5f9; }
-        .btn-xs.danger { color: #dc2626; border-color: #fca5a5; }
-        .btn-xs.danger:hover { background: #fef2f2; }
         .quote-detail-row td { background: #f8fafc; padding: 0; }
         .quote-detail-inner { padding: 16px 20px; }
         .quote-detail-inner dl { display: grid; grid-template-columns: 120px 1fr; gap: 6px 12px; margin: 0; }
@@ -44,6 +34,7 @@
         .filter-bar select, .filter-bar input { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; }
         .empty-state { text-align: center; padding: 60px 20px; color: #94a3b8; }
         .empty-state i { font-size: 3rem; margin-bottom: 12px; opacity: 0.4; }
+        .res-chip { display:inline-block; padding:3px 10px; border-radius:6px; background:#eef2ff; color:#3730a3; font-size:0.8rem; font-weight:500; }
     </style>
 </head>
 <body>
@@ -59,10 +50,10 @@
                 <a href="dashboard.html" class="nav-item" data-i18n="nav.dashboard">
                     <i class="fas fa-home" aria-hidden="true"></i> Dashboard
                 </a>
-                <a href="quotes.html" class="nav-item active" data-i18n="nav.quotes">
+                <a href="quotes.html" class="nav-item" data-i18n="nav.quotes">
                     <i class="fas fa-file-invoice-dollar" aria-hidden="true"></i> Quotes
                 </a>
-                <a href="requests.html" class="nav-item" data-i18n="nav.requests">
+                <a href="requests.html" class="nav-item active" data-i18n="nav.requests">
                     <i class="fas fa-inbox" aria-hidden="true"></i> Requests
                 </a>
             </div>
@@ -129,33 +120,32 @@
                 <i class="fas fa-bars" aria-hidden="true"></i>
             </button>
             <div class="header-left">
-                <h1><i class="fas fa-file-invoice-dollar" aria-hidden="true"></i> <span data-i18n="page.quotes">Quote Requests</span></h1>
-                <p>Customer quote submissions from the website</p>
+                <h1><i class="fas fa-inbox" aria-hidden="true"></i> <span data-i18n="page.requests">Resource Requests</span></h1>
+                <p>Download / document requests from the website</p>
             </div>
             <div class="header-right">
-                <button class="btn btn-outline" onclick="loadQuotes()">
+                <button class="btn btn-outline" onclick="loadRequests()">
                     <i class="fas fa-sync" aria-hidden="true"></i> Refresh
                 </button>
             </div>
         </header>
 
         <div class="admin-content">
-            <div class="quote-stats" id="quote-stats"></div>
+            <div class="quote-stats" id="request-stats"></div>
 
             <div class="filter-bar">
-                <select id="filter-status" onchange="renderQuotes()">
+                <select id="filter-status" onchange="renderRequests()">
                     <option value="">All statuses</option>
                     <option value="new">New</option>
                     <option value="contacted">Contacted</option>
-                    <option value="quoted">Quoted</option>
-                    <option value="won">Won</option>
-                    <option value="lost">Lost</option>
+                    <option value="sent">Sent</option>
+                    <option value="closed">Closed</option>
                 </select>
-                <input type="text" id="filter-search" placeholder="Search name, email, company..." oninput="renderQuotes()" style="flex:1; min-width:200px;">
+                <input type="text" id="filter-search" placeholder="Search name, email, company, resource..." oninput="renderRequests()" style="flex:1; min-width:200px;">
             </div>
 
-            <div id="quotes-container">
-                <div class="empty-state"><i class="fas fa-spinner fa-spin" aria-hidden="true"></i><p>Loading quotes...</p></div>
+            <div id="requests-container">
+                <div class="empty-state"><i class="fas fa-spinner fa-spin" aria-hidden="true"></i><p>Loading requests...</p></div>
             </div>
         </div>
     </main>
@@ -167,7 +157,7 @@
             window.location.href = 'index.html';
         }
 
-        let allQuotes = [];
+        let allRequests = [];
         let expandedRows = new Set();
 
         function showToast(msg, kind) {
@@ -180,41 +170,40 @@
             setTimeout(() => t.remove(), 3500);
         }
 
-        async function loadQuotes() {
-            const container = document.getElementById('quotes-container');
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin" aria-hidden="true"></i><p>Loading quotes...</p></div>';
+        async function loadRequests() {
+            const container = document.getElementById('requests-container');
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin" aria-hidden="true"></i><p>Loading requests...</p></div>';
             try {
-                const res = await fetch('/api/quotes', { credentials: 'same-origin' });
+                const res = await fetch('/api/requests', { credentials: 'same-origin' });
                 if (res.status === 401) { window.location.href = 'index.html'; return; }
                 if (res.status === 403) {
-                    container.innerHTML = '<div class="empty-state"><i class="fas fa-lock" aria-hidden="true"></i><p>You don\'t have permission to view quotes.</p></div>';
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-lock" aria-hidden="true"></i><p>You don\'t have permission to view requests.</p></div>';
                     return;
                 }
                 if (res.status === 503) {
-                    container.innerHTML = '<div class="empty-state"><i class="fas fa-database" aria-hidden="true"></i><p>Database not configured. Quotes cannot be loaded.</p></div>';
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-database" aria-hidden="true"></i><p>Database not configured.</p></div>';
                     return;
                 }
                 const data = await res.json();
-                allQuotes = data.rows || [];
+                allRequests = data.rows || [];
                 renderStats();
-                renderQuotes();
+                renderRequests();
             } catch (e) {
-                container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i><p>Error loading quotes: ${e.message}</p></div>`;
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i><p>Error loading requests: ${e.message}</p></div>`;
             }
         }
 
         function renderStats() {
-            const counts = { total: allQuotes.length, new: 0, contacted: 0, quoted: 0, won: 0, lost: 0 };
-            allQuotes.forEach(q => { if (counts[q.status] !== undefined) counts[q.status]++; });
+            const counts = { total: allRequests.length, new: 0, contacted: 0, sent: 0, closed: 0 };
+            allRequests.forEach(r => { if (counts[r.status] !== undefined) counts[r.status]++; });
             const stats = [
                 { label: 'Total', num: counts.total },
                 { label: 'New', num: counts.new },
                 { label: 'Contacted', num: counts.contacted },
-                { label: 'Quoted', num: counts.quoted },
-                { label: 'Won', num: counts.won },
-                { label: 'Lost', num: counts.lost },
+                { label: 'Sent', num: counts.sent },
+                { label: 'Closed', num: counts.closed },
             ];
-            document.getElementById('quote-stats').innerHTML = stats.map(s =>
+            document.getElementById('request-stats').innerHTML = stats.map(s =>
                 `<div class="stat-card"><div class="num">${s.num}</div><div class="label">${s.label}</div></div>`
             ).join('');
         }
@@ -224,68 +213,60 @@
             return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
 
-        function renderQuotes() {
+        function renderRequests() {
             const statusFilter = document.getElementById('filter-status').value;
             const search = document.getElementById('filter-search').value.toLowerCase();
-            const container = document.getElementById('quotes-container');
+            const container = document.getElementById('requests-container');
 
-            let filtered = allQuotes.filter(q => {
-                if (statusFilter && q.status !== statusFilter) return false;
+            let filtered = allRequests.filter(r => {
+                if (statusFilter && r.status !== statusFilter) return false;
                 if (search) {
-                    const hay = `${q.customer_name||''} ${q.customer_email||''} ${q.customer_company||''}`.toLowerCase();
+                    const hay = `${r.customer_name||''} ${r.customer_email||''} ${r.customer_company||''} ${r.resource||''}`.toLowerCase();
                     if (!hay.includes(search)) return false;
                 }
                 return true;
             });
 
             if (filtered.length === 0) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox" aria-hidden="true"></i><p>No quote requests match your filter.</p></div>';
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox" aria-hidden="true"></i><p>No requests match your filter.</p></div>';
                 return;
             }
 
             let html = '<table class="quote-table"><thead><tr>' +
-                '<th>Date</th><th>Customer</th><th>Company</th><th>Material</th><th>Attachment</th><th>Status</th><th>Actions</th>' +
+                '<th>Date</th><th>Resource</th><th>Contact</th><th>Company</th><th>Industry</th><th>Status</th><th>Actions</th>' +
                 '</tr></thead><tbody>';
 
-            filtered.forEach(q => {
-                const date = q.created_at ? new Date(q.created_at).toLocaleDateString() : '';
-                const hasFile = q.file_stored_name;
-                const fileChip = hasFile
-                    ? `<span class="attach-chip"><i class="fas fa-paperclip" aria-hidden="true"></i> ${esc(q.file_original_name || 'file')}</span>`
-                    : '<span class="no-attach">No file</span>';
-                const statusOptions = ['new','contacted','quoted','won','lost'].map(s =>
-                    `<option value="${s}" ${q.status===s?'selected':''}>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`
+            filtered.forEach(r => {
+                const date = r.created_at ? new Date(r.created_at).toLocaleDateString() : '';
+                const statusOptions = ['new','contacted','sent','closed'].map(s =>
+                    `<option value="${s}" ${r.status===s?'selected':''}>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`
                 ).join('');
 
                 html += `<tr>
                     <td>${esc(date)}</td>
-                    <td><strong>${esc(q.customer_name || '(no name)')}</strong><br><span style="color:#64748b; font-size:0.82rem;">${esc(q.customer_email)}</span></td>
-                    <td>${esc(q.customer_company || '—')}</td>
-                    <td>${esc(q.material || '—')}</td>
-                    <td>${fileChip}</td>
+                    <td><span class="res-chip">${esc(r.resource || '—')}</span></td>
+                    <td><strong>${esc(r.customer_name || '(no name)')}</strong><br><span style="color:#64748b; font-size:0.82rem;">${esc(r.customer_email)}</span></td>
+                    <td>${esc(r.customer_company || '—')}</td>
+                    <td>${esc(r.customer_industry || '—')}</td>
                     <td>
-                        <select class="btn-xs" onchange="updateStatus(${q.id}, this.value)" style="padding:4px 8px;">
+                        <select class="btn-xs" onchange="updateStatus(${r.id}, this.value)" style="padding:4px 8px;">
                             ${statusOptions}
                         </select>
                     </td>
                     <td>
                         <div class="row-actions">
-                            <button class="btn-xs" onclick="toggleDetail(${q.id})"><i class="fas fa-eye" aria-hidden="true"></i> Details</button>
-                            ${hasFile ? `<button class="btn-xs" onclick="downloadAttachment(${q.id})"><i class="fas fa-download" aria-hidden="true"></i> File</button>` : ''}
-                            ${hasFile ? `<button class="btn-xs danger" onclick="deleteAttachment(${q.id}, '${esc(q.file_original_name||'')}')"><i class="fas fa-trash" aria-hidden="true"></i> File</button>` : ''}
+                            <button class="btn-xs" onclick="toggleDetail(${r.id})"><i class="fas fa-eye" aria-hidden="true"></i> Details</button>
+                            <a class="btn-xs" href="mailto:${esc(r.customer_email)}?subject=Re: ${esc(r.resource)}"><i class="fas fa-reply" aria-hidden="true"></i> Email</a>
                         </div>
                     </td>
                 </tr>`;
 
-                if (expandedRows.has(q.id)) {
+                if (expandedRows.has(r.id)) {
                     html += `<tr class="quote-detail-row"><td colspan="7"><div class="quote-detail-inner"><dl>
-                        <dt>Phone</dt><dd>${esc(q.customer_phone || '—')}</dd>
-                        <dt>Quantity</dt><dd>${esc(q.quantity || '—')}</dd>
-                        <dt>Finish</dt><dd>${esc(q.finish || '—')}</dd>
-                        <dt>Lead time</dt><dd>${esc(q.lead_time || '—')}</dd>
-                        <dt>Notes</dt><dd>${esc(q.notes || '—')}</dd>
-                        <dt>IP address</dt><dd>${esc(q.ip_address || '—')}</dd>
-                        <dt>Submitted</dt><dd>${esc(q.created_at || '—')}</dd>
+                        <dt>Phone</dt><dd>${esc(r.customer_phone || '—')}</dd>
+                        <dt>Notes</dt><dd>${esc(r.notes || '—')}</dd>
+                        <dt>IP address</dt><dd>${esc(r.ip_address || '—')}</dd>
+                        <dt>Submitted</dt><dd>${esc(r.created_at || '—')}</dd>
                     </dl></div></td></tr>`;
                 }
             });
@@ -297,13 +278,13 @@
         function toggleDetail(id) {
             if (expandedRows.has(id)) expandedRows.delete(id);
             else expandedRows.add(id);
-            renderQuotes();
+            renderRequests();
         }
 
         async function updateStatus(id, status) {
             try {
                 const csrf = window.WFX_CSRF_TOKEN || localStorage.getItem('wfx_csrf_token') || '';
-                const res = await fetch(`/api/quotes/${id}`, {
+                const res = await fetch(`/api/requests/${id}`, {
                     method: 'PUT',
                     credentials: 'same-origin',
                     headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
@@ -311,8 +292,8 @@
                 });
                 const data = await res.json();
                 if (data.ok) {
-                    const q = allQuotes.find(x => x.id === id);
-                    if (q) q.status = status;
+                    const r = allRequests.find(x => x.id === id);
+                    if (r) r.status = status;
                     renderStats();
                     showToast(`Status updated to "${status}"`, 'success');
                 } else {
@@ -323,35 +304,7 @@
             }
         }
 
-        function downloadAttachment(id) {
-            // Open in new tab — server streams with Content-Disposition: attachment
-            window.open(`/api/quotes/${id}/attachment`, '_blank');
-        }
-
-        async function deleteAttachment(id, filename) {
-            if (!confirm(`Delete the attached file "${filename}"?\n\nThe quote record (customer info, project details) will be kept — only the uploaded file is removed. This cannot be undone.`)) return;
-            try {
-                const csrf = window.WFX_CSRF_TOKEN || localStorage.getItem('wfx_csrf_token') || '';
-                const res = await fetch(`/api/quotes/${id}/attachment`, {
-                    method: 'DELETE',
-                    credentials: 'same-origin',
-                    headers: { 'X-CSRF-Token': csrf }
-                });
-                const data = await res.json();
-                if (data.ok) {
-                    const q = allQuotes.find(x => x.id === id);
-                    if (q) { q.file_stored_name = null; q.file_original_name = null; }
-                    renderQuotes();
-                    showToast('Attachment deleted (quote record kept)', 'success');
-                } else {
-                    showToast(data.error || 'Delete failed', 'danger');
-                }
-            } catch (e) {
-                showToast('Delete failed: ' + e.message, 'danger');
-            }
-        }
-
-        loadQuotes();
+        loadRequests();
     </script>
 </body>
 </html>

@@ -10,10 +10,10 @@
     Licensing inquiries: lucindaz@wanfuxin.com
     ════════════════════════════════════════════════════════════════════════
 -->
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Precision Manufacturing Services | WFX Wanfuxin</title>
@@ -27,13 +27,13 @@
     <meta property="og:site_name" content="WFX Wanfuxin">
     <meta property="og:title" content="Precision Manufacturing Services | WFX Wanfuxin">
     <meta property="og:description" content="Full precision manufacturing services: CNC machining, turning, casting, sheet metal, finishing, assembly. ISO 9001 &amp; IATF 16949 certified.">
-    <meta property="og:image" content="https://wanfuxin.com/company-video-poster.jpg">
+    <meta property="og:image" content="https://wanfuxin.com/images/company-video-poster.jpg">
     <meta property="og:url" content="https://wanfuxin.com/services.html">
     <meta property="og:locale" content="en_US">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Precision Manufacturing Services | WFX Wanfuxin">
     <meta name="twitter:description" content="CNC machining, turning, casting, sheet metal, finishing, assembly. ISO 9001 &amp; IATF 16949 certified.">
-    <meta name="twitter:image" content="https://wanfuxin.com/company-video-poster.jpg">
+    <meta name="twitter:image" content="https://wanfuxin.com/images/company-video-poster.jpg">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -81,7 +81,7 @@
     <header class="header" id="header">
         <nav class="nav container">
             <a href="https://wanfuxin.com/index.html" class="logo">
-                <img src="logo.png" alt="WFX Wanfuxin" class="logo-img">
+                <img src="images/logo.png" alt="WFX Wanfuxin" class="logo-img">
             </a>
             <ul class="nav-menu" id="nav-menu">
                 <li class="nav-item"><a href="https://wanfuxin.com/index.html" class="nav-link">Home</a></li>
@@ -285,10 +285,38 @@
             <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
         </a>
     </div>
-    <!-- WhatsApp floating contact button -->
-    <a href="https://wa.me/qr/X5LU67WJBOWDE1" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Chat with us on WhatsApp">
-        <i class="fab fa-whatsapp" aria-hidden="true"></i>
-    </a>
+    <!-- WhatsApp floating button + QR popup -->
+    <div class="whatsapp-widget">
+        <div class="whatsapp-popup" id="whatsapp-popup" role="dialog" aria-label="WhatsApp QR code" aria-hidden="true">
+            <button class="whatsapp-popup-close" aria-label="Close" onclick="toggleWhatsAppPopup(false)">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <h4>Scan to chat on WhatsApp</h4>
+            <img src="images/whatsapp-qr.jpeg" alt="WFX WhatsApp QR code" draggable="false">
+            <p>Scan with your phone camera, or
+                <a href="https://wa.me/qr/X5LU67WJBOWDE1" target="_blank" rel="noopener noreferrer">open chat &rarr;</a>
+            </p>
+        </div>
+        <button class="whatsapp-float" aria-label="Show WhatsApp QR code" onclick="toggleWhatsAppPopup()">
+            <i class="fab fa-whatsapp" aria-hidden="true"></i>
+        </button>
+    </div>
+    <script>
+        function toggleWhatsAppPopup(force) {
+            var p = document.getElementById('whatsapp-popup');
+            if (!p) return;
+            var show = (typeof force === 'boolean') ? force : !p.classList.contains('active');
+            p.classList.toggle('active', show);
+            p.setAttribute('aria-hidden', show ? 'false' : 'true');
+        }
+        document.addEventListener('click', function(e) {
+            var w = document.querySelector('.whatsapp-widget');
+            if (w && !w.contains(e.target)) toggleWhatsAppPopup(false);
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') toggleWhatsAppPopup(false);
+        });
+    </script>
 
     <script src="copy-protect.js" defer></script>
 </body>

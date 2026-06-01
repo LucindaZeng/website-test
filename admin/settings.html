@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="../favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/apple-touch-icon.png">
     <meta charset="UTF-8">
     <meta name="robots" content="noindex, nofollow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,7 +19,7 @@
     <!-- Sidebar -->
     <aside class="admin-sidebar" id="sidebar">
         <div class="sidebar-header">
-            <img src="../logo.png" alt="WFX">
+            <img src="../images/logo.png" alt="WFX">
             <h2 data-i18n="nav.panel_title">Admin Panel</h2>
         </div>
         <nav class="sidebar-nav">
@@ -30,6 +30,9 @@
                 </a>
                 <a href="quotes.html" class="nav-item" data-i18n="nav.quotes">
                     <i class="fas fa-file-invoice-dollar" aria-hidden="true"></i> Quotes
+                </a>
+                <a href="requests.html" class="nav-item" data-i18n="nav.requests">
+                    <i class="fas fa-inbox" aria-hidden="true"></i> Requests
                 </a>
             </div>
             <div class="nav-section">
@@ -209,7 +212,7 @@
                                 Recommended: PNG with transparent background, ~290×50 pixels
                             </p>
                             <div class="logo-preview" id="main-logo-preview" style="background: #f8f9fa; border: 2px dashed #dee2e6; border-radius: 12px; padding: 20px; text-align: center; min-height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
-                                <img src="../logo.png" alt="Main Logo" style="max-width: 100%; max-height: 80px;" id="main-logo-img">
+                                <img src="../images/logo.png" alt="Main Logo" style="max-width: 100%; max-height: 80px;" id="main-logo-img">
                             </div>
                             <div style="display: flex; gap: 10px;">
                                 <label class="btn btn-secondary" style="cursor: pointer; margin: 0;">
@@ -233,11 +236,11 @@
                             </p>
                             <div class="logo-preview" id="favicon-preview" style="background: #f8f9fa; border: 2px dashed #dee2e6; border-radius: 12px; padding: 20px; text-align: center; min-height: 100px; display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 15px;">
                                 <div style="text-align: center;">
-                                    <img src="../favicon-32x32.png" alt="Favicon 32" style="width: 32px; height: 32px; border: 1px solid #dee2e6;" id="favicon-32-img">
+                                    <img src="../images/favicon-32x32.png" alt="Favicon 32" style="width: 32px; height: 32px; border: 1px solid #dee2e6;" id="favicon-32-img">
                                     <div style="font-size: 0.75rem; color: var(--admin-gray); margin-top: 5px;">32×32</div>
                                 </div>
                                 <div style="text-align: center;">
-                                    <img src="../apple-touch-icon.png" alt="Favicon 180" style="width: 64px; height: 64px; border: 1px solid #dee2e6; border-radius: 8px;" id="favicon-180-img">
+                                    <img src="../images/apple-touch-icon.png" alt="Favicon 180" style="width: 64px; height: 64px; border: 1px solid #dee2e6; border-radius: 8px;" id="favicon-180-img">
                                     <div style="font-size: 0.75rem; color: var(--admin-gray); margin-top: 5px;">180×180</div>
                                 </div>
                             </div>
@@ -644,7 +647,7 @@
         function resetMainLogo() {
             if (confirm('Reset main logo to default? This will remove your custom logo.')) {
                 localStorage.removeItem('wfx_custom_logo');
-                document.getElementById('main-logo-img').src = '../logo.png';
+                document.getElementById('main-logo-img').src = '../images/logo.png';
                 document.getElementById('main-logo-preview').style.borderColor = '#dee2e6';
                 AdminCore.logAction('logo_reset', 'Reset main logo to default');
                 showAlert('Main logo reset to default. Refresh pages to see changes.', 'success');
@@ -654,8 +657,8 @@
         function resetFavicon() {
             if (confirm('Reset favicon to default? This will remove your custom icon.')) {
                 localStorage.removeItem('wfx_custom_favicon');
-                document.getElementById('favicon-32-img').src = '../favicon-32x32.png';
-                document.getElementById('favicon-180-img').src = '../apple-touch-icon.png';
+                document.getElementById('favicon-32-img').src = '../images/favicon-32x32.png';
+                document.getElementById('favicon-180-img').src = '../images/apple-touch-icon.png';
                 document.getElementById('favicon-preview').style.borderColor = '#dee2e6';
                 AdminCore.logAction('favicon_reset', 'Reset favicon to default');
                 showAlert('Favicon reset to default. Refresh pages to see changes.', 'success');
@@ -666,9 +669,9 @@
             if (confirm('Reset ALL logos to default? This will remove all custom logos.')) {
                 localStorage.removeItem('wfx_custom_logo');
                 localStorage.removeItem('wfx_custom_favicon');
-                document.getElementById('main-logo-img').src = '../logo.png';
-                document.getElementById('favicon-32-img').src = '../favicon-32x32.png';
-                document.getElementById('favicon-180-img').src = '../apple-touch-icon.png';
+                document.getElementById('main-logo-img').src = '../images/logo.png';
+                document.getElementById('favicon-32-img').src = '../images/favicon-32x32.png';
+                document.getElementById('favicon-180-img').src = '../images/apple-touch-icon.png';
                 document.getElementById('main-logo-preview').style.borderColor = '#dee2e6';
                 document.getElementById('favicon-preview').style.borderColor = '#dee2e6';
                 AdminCore.logAction('all_logos_reset', 'Reset all logos to default');

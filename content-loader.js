@@ -74,7 +74,7 @@ const ContentLoader = {
                     const url = pageContent.index.companyVideo.posterUrl;
                     if (url.includes('1565193566173-7a0ee3dbe261') ||
                         url.includes('1581094271901-8022df4466f9')) {
-                        pageContent.index.companyVideo.posterUrl = 'company-video-poster.jpg';
+                        pageContent.index.companyVideo.posterUrl = 'images/company-video-poster.jpg';
                         localStorage.setItem('wfx_page_content', JSON.stringify(pageContent));
                     }
                 }
@@ -83,7 +83,7 @@ const ContentLoader = {
                 if (homepageMedia && homepageMedia.companyVideoPoster) {
                     if (homepageMedia.companyVideoPoster.includes('1565193566173-7a0ee3dbe261') ||
                         homepageMedia.companyVideoPoster.includes('1581094271901-8022df4466f9')) {
-                        homepageMedia.companyVideoPoster = 'company-video-poster.jpg';
+                        homepageMedia.companyVideoPoster = 'images/company-video-poster.jpg';
                         localStorage.setItem('wfx_homepage_media', JSON.stringify(homepageMedia));
                     }
                 }

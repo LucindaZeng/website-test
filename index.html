@@ -38,7 +38,7 @@
     <meta property="og:site_name" content="WFX Wanfuxin">
     <meta property="og:title" content="WFX | Custom CNC Machining Services &amp; Rapid Prototyping">
     <meta property="og:description" content="WFX - Leading CNC machining services provider offering rapid prototyping, precision manufacturing, and production solutions for aerospace, automotive, and medical industries.">
-    <meta property="og:image" content="https://wanfuxin.com/company-video-poster.jpg">
+    <meta property="og:image" content="https://wanfuxin.com/images/company-video-poster.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:url" content="https://wanfuxin.com/">
@@ -46,18 +46,18 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="WFX | Custom CNC Machining Services &amp; Rapid Prototyping">
     <meta name="twitter:description" content="WFX - Leading CNC machining services provider offering rapid prototyping, precision manufacturing, and production solutions for aerospace, automotive, and medical industries.">
-    <meta name="twitter:image" content="https://wanfuxin.com/company-video-poster.jpg">
+    <meta name="twitter:image" content="https://wanfuxin.com/images/company-video-poster.jpg">
 
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
     <link rel="dns-prefetch" href="https://www.720yun.com">
-    <link rel="preload" as="image" href="hero-video-poster.jpg" fetchpriority="high">
+    <link rel="preload" as="image" href="images/hero-video-poster.jpg" fetchpriority="high">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
@@ -76,7 +76,7 @@
           "name": "WFX (Dongguan Wanfuxin Hardware Products Co., Ltd.)",
           "alternateName": ["WFX Wanfuxin", "东莞万富鑫五金制品有限公司"],
           "url": "https://wanfuxin.com/",
-          "logo": "https://wanfuxin.com/logo.png",
+          "logo": "https://wanfuxin.com/images/logo.png",
           "description": "Precision CNC machining services for aerospace, medical, electronics, robotics, and liquid cooling industries. ISO9001 and IATF16949 certified manufacturer based in Dongguan, China.",
           "foundingDate": "2007",
           "email": "lucindaz@wanfuxin.com",
@@ -101,7 +101,7 @@
           "name": "WFX Wanfuxin Precision Manufacturing",
           "alternateName": "东莞万富鑫五金制品有限公司",
           "description": "Precision CNC machining manufacturer in Dongguan, China. 精密五金CNC加工制造商, 位于广东省东莞市清溪镇福鑫西路3号。",
-          "image": "https://wanfuxin.com/company-video-poster.jpg",
+          "image": "https://wanfuxin.com/images/company-video-poster.jpg",
           "url": "https://wanfuxin.com/",
           "email": "lucindaz@wanfuxin.com",
           "address": {
@@ -166,7 +166,7 @@
         <div class="container">
             <nav class="navbar">
                 <a href="https://wanfuxin.com/index.html" class="logo">
-                    <img src="logo.png" alt="WFX - Wanfuxin" class="logo-img">
+                    <img src="images/logo.png" alt="WFX - Wanfuxin" class="logo-img">
                 </a>
                 
                 <ul class="nav-menu" id="nav-menu">
@@ -275,14 +275,14 @@
     <section class="hero">
         <div class="hero-background">
             <div class="hero-overlay"></div>
-            <!-- hero video: NOT autoplayed by default — JS enables play() on desktop only.
-                 Mobile users see the poster image, saving 1.4MB on cellular networks.
-                 The data-src defers <source> setup until JS decides it's safe to load. -->
-            <video muted loop playsinline preload="none" poster="hero-video-poster.jpg"
-                   class="hero-video" id="hero-video"
-                   data-src="hero-video.mp4" data-src-type="video/mp4">
-                <!-- Source intentionally empty until JS injects it on desktop -->
-            </video>
+            <!-- hero background video: YouTube embed (jrpMWDeBmIg).
+                 Autoplay + muted + loop, controls hidden, non-interactive.
+                 The poster image is shown first; the iframe is injected by JS
+                 on desktop only (mobile sees the poster to save bandwidth and
+                 avoid autoplay restrictions). -->
+            <div class="hero-video" id="hero-video"
+                 data-yt-id="jrpMWDeBmIg"
+                 style="background: #0a1628 url('images/hero-video-poster.jpg') center/cover no-repeat;"></div>
         </div>
         <div class="container">
             <div class="hero-content">
@@ -477,7 +477,7 @@
                     </div>
                     <div class="video-container">
                         <video id="company-video" controls width="100%" height="400" preload="metadata"
-                               poster="company-video-poster.jpg"
+                               poster="images/company-video-poster.jpg"
                                onerror="this.poster='https://images.unsplash.com/photo-1581094271901-8022df4466f9?w=600&h=400&fit=crop';">
                             <source src="company-video.mp4" type="video/mp4">
                             Your browser does not support the video tag.
@@ -494,7 +494,7 @@
                         <!-- 720yun VR facade — iframe injected only on click, saving ~3 MB on first paint -->
                         <div class="vr-facade" data-vr-src="https://www.720yun.com/vr/d15jt5yOun2"
                              role="button" tabindex="0" aria-label="Launch interactive 360° factory tour"
-                             style="position:relative; width:100%; height:400px; background:#0a1628 url('hero-video-poster.jpg') center/cover; border-radius:8px; cursor:pointer; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+                             style="position:relative; width:100%; height:400px; background:#0a1628 url('images/hero-video-poster.jpg') center/cover; border-radius:8px; cursor:pointer; overflow:hidden; display:flex; align-items:center; justify-content:center;">
                             <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(10,22,40,0.4) 0%, rgba(10,22,40,0.75) 100%);"></div>
                             <div style="position:relative; text-align:center; color:white;">
                                 <div style="width:80px; height:80px; border-radius:50%; background:rgba(255,255,255,0.15); backdrop-filter:blur(8px); border:2px solid rgba(255,255,255,0.5); display:inline-flex; align-items:center; justify-content:center; margin-bottom:16px; transition:transform 0.2s;">
@@ -595,7 +595,6 @@
                             <div>
                                 <strong>100% Secure & Confidential.</strong>
                                 Your CAD files are protected by NDA and transmitted over encrypted HTTPS. We respect your IP and never share, resell, or use your designs for any purpose other than your quote.
-                                <a href="https://wanfuxin.com/downloads.html#nda" style="color:#0284c7; text-decoration:underline; font-weight:500;">Download our standard NDA &rarr;</a>
                             </div>
                         </div>
 
@@ -769,8 +768,8 @@
                                 <input type="tel" id="contact-phone" name="phone" placeholder="Optional">
                             </div>
                             <div class="form-group">
-                                <label for="contact-company">Company</label>
-                                <input type="text" id="contact-company" name="company" placeholder="Optional">
+                                <label for="contact-company">Company <span style="color:var(--primary);">*</span></label>
+                                <input type="text" id="contact-company" name="company" required placeholder="Your company name">
                             </div>
                         </div>
 
@@ -1352,14 +1351,27 @@
             <div class="footer-main">
                 <div class="footer-brand">
                     <a href="https://wanfuxin.com/index.html" class="footer-logo">
-                        <img src="logo.png" alt="WFX - Wanfuxin" class="logo-img footer-logo-visible">
+                        <img src="images/logo.png" alt="WFX - Wanfuxin" class="logo-img footer-logo-visible">
                     </a>
                     <p>Industry-leading CNC machining services delivering precision parts from prototype to production. Trusted by engineers worldwide.</p>
                     <div class="footer-social">
-                        <!-- Social links: Add real URLs when available -->
-                        
-                        
-                        
+                        <a href="https://www.linkedin.com/company/29932516/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin-in" aria-hidden="true"></i>
+                        </a>
+                        <a href="https://www.youtube.com/@dongguanwanfuxinintelligen9042" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+                            <i class="fab fa-youtube" aria-hidden="true"></i>
+                        </a>
+                        <a href="https://wa.me/qr/X5LU67WJBOWDE1" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+                            <i class="fab fa-whatsapp" aria-hidden="true"></i>
+                        </a>
+                        <!-- TODO: replace href="#" with real Instagram URL when available -->
+                        <a href="#" rel="noopener noreferrer" aria-label="Instagram" onclick="return false;" style="opacity:0.6;">
+                            <i class="fab fa-instagram" aria-hidden="true"></i>
+                        </a>
+                        <!-- TODO: replace href="#" with real TikTok URL when available -->
+                        <a href="#" rel="noopener noreferrer" aria-label="TikTok" onclick="return false;" style="opacity:0.6;">
+                            <i class="fab fa-tiktok" aria-hidden="true"></i>
+                        </a>
                     </div>
                 </div>
 
@@ -1420,15 +1432,12 @@
                     </address>
                     <div class="footer-hours">
                         <h5>Business Hours</h5>
-                        <p>Mon - Sat: 8:00 AM - 12:00 PM, 1:30 PM - 5:30 PM (China Time)</p>
-                        <p></p>
-                    </div>
-                    <div class="whatsapp-qr-block">
-                        <h5><i class="fab fa-whatsapp" aria-hidden="true"></i> WhatsApp</h5>
-                        <a href="https://wa.me/qr/X5LU67WJBOWDE1" target="_blank" rel="noopener noreferrer">
-                            <img src="images/whatsapp-qr.jpeg" alt="Scan to chat with WFX on WhatsApp" loading="lazy" draggable="false">
-                        </a>
-                        <p>Scan to chat, or tap to open WhatsApp.</p>
+                        <ul class="hours-list">
+                            <li><span>Mon – Sat</span> <span>8:00 AM – 12:00 PM</span></li>
+                            <li><span></span> <span>1:30 PM – 5:30 PM</span></li>
+                            <li><span>Sunday</span> <span>Closed</span></li>
+                            <li class="hours-tz">China Standard Time (GMT+8)</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -1627,10 +1636,38 @@
             <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
         </a>
     </div>
-    <!-- WhatsApp floating contact button -->
-    <a href="https://wa.me/qr/X5LU67WJBOWDE1" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Chat with us on WhatsApp">
-        <i class="fab fa-whatsapp" aria-hidden="true"></i>
-    </a>
+    <!-- WhatsApp floating button + QR popup -->
+    <div class="whatsapp-widget">
+        <div class="whatsapp-popup" id="whatsapp-popup" role="dialog" aria-label="WhatsApp QR code" aria-hidden="true">
+            <button class="whatsapp-popup-close" aria-label="Close" onclick="toggleWhatsAppPopup(false)">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <h4>Scan to chat on WhatsApp</h4>
+            <img src="images/whatsapp-qr.jpeg" alt="WFX WhatsApp QR code" draggable="false">
+            <p>Scan with your phone camera, or
+                <a href="https://wa.me/qr/X5LU67WJBOWDE1" target="_blank" rel="noopener noreferrer">open chat &rarr;</a>
+            </p>
+        </div>
+        <button class="whatsapp-float" aria-label="Show WhatsApp QR code" onclick="toggleWhatsAppPopup()">
+            <i class="fab fa-whatsapp" aria-hidden="true"></i>
+        </button>
+    </div>
+    <script>
+        function toggleWhatsAppPopup(force) {
+            var p = document.getElementById('whatsapp-popup');
+            if (!p) return;
+            var show = (typeof force === 'boolean') ? force : !p.classList.contains('active');
+            p.classList.toggle('active', show);
+            p.setAttribute('aria-hidden', show ? 'false' : 'true');
+        }
+        document.addEventListener('click', function(e) {
+            var w = document.querySelector('.whatsapp-widget');
+            if (w && !w.contains(e.target)) toggleWhatsAppPopup(false);
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') toggleWhatsAppPopup(false);
+        });
+    </script>
 
 
     <script src="copy-protect.js" defer></script>

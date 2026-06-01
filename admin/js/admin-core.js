@@ -78,7 +78,7 @@ const AdminCore = {
     DEFAULT_HOMEPAGE_MEDIA: {
         heroVideo: 'hero-video.mp4',
         companyVideo: 'company-video.mp4',
-        companyVideoPoster: 'company-video-poster.jpg',
+        companyVideoPoster: '../images/company-video-poster.jpg',
         services: {
             cncMilling: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&h=300&fit=crop',
             cncTurning: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=400&h=300&fit=crop',
@@ -868,6 +868,7 @@ const AdminI18n = {
         // ── Sidebar nav items ────────────────────────────────────────
         'nav.dashboard':          { en: 'Dashboard',              zh: '控制台' },
         'nav.quotes':             { en: 'Quotes',                 zh: '询价单' },
+        'nav.requests':           { en: 'Requests',               zh: '资料申请' },
         'nav.content_editor':     { en: 'Content Editor',         zh: '内容编辑器' },
         'nav.video_manager':      { en: 'Video Manager',          zh: '视频管理' },
         'nav.pages':              { en: 'Pages & Text',           zh: '页面与文字' },
@@ -889,6 +890,7 @@ const AdminI18n = {
         // ── Page titles (header h1) ──────────────────────────────────
         'page.dashboard':         { en: 'Dashboard',                  zh: '控制台' },
         'page.quotes':            { en: 'Quote Requests',             zh: '询价单管理' },
+        'page.requests':          { en: 'Resource Requests',          zh: '资料申请管理' },
         'page.content_editor':    { en: 'Content Editor',             zh: '内容编辑器' },
         'page.video_manager':     { en: 'Video Manager',              zh: '视频管理' },
         'page.pages':             { en: 'Bilingual Content Editor',   zh: '双语内容编辑器' },
