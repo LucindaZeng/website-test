@@ -302,7 +302,7 @@ copying content programmatically.
 
 ### Layer 5: Image Watermarking (`watermark.py`)
 - Standalone Python tool admins run before uploading product photos
-- Diagonal repeating "© WFX wanfuxin.com" pattern at 35% opacity
+- Diagonal repeating "© WFX wanfuxin-dg.com" pattern at 35% opacity
 - Plus clear corner watermark with shadow box
 - Even scraped/screenshotted images carry attribution
 - `python watermark.py photo.jpg` (single) or `python watermark.py --batch ./photos/`

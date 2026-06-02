@@ -110,9 +110,9 @@ The service should be listening on `127.0.0.1:8000` — not exposed to the inter
 ## 8. Nginx reverse proxy
 
 ```bash
-# Copy the config (edit the server_name first if different from wanfuxin.com)
-cp deploy/nginx-wanfuxin.conf /etc/nginx/sites-available/wanfuxin.com
-ln -s /etc/nginx/sites-available/wanfuxin.com /etc/nginx/sites-enabled/
+# Copy the config (edit the server_name first if different from wanfuxin-dg.com)
+cp deploy/nginx-wanfuxin.conf /etc/nginx/sites-available/wanfuxin-dg.com
+ln -s /etc/nginx/sites-available/wanfuxin-dg.com /etc/nginx/sites-enabled/
 
 # Remove the default site
 rm /etc/nginx/sites-enabled/default
@@ -127,20 +127,20 @@ systemctl reload nginx
 ## 9. HTTPS via Let's Encrypt
 
 ```bash
-certbot --nginx -d wanfuxin.com -d www.wanfuxin.com
+certbot --nginx -d wanfuxin-dg.com -d www.wanfuxin-dg.com
 
-# Certbot edits /etc/nginx/sites-enabled/wanfuxin.com to include SSL.
+# Certbot edits /etc/nginx/sites-enabled/wanfuxin-dg.com to include SSL.
 # It also installs a cron job for automatic renewal.
 
 # Verify:
 certbot renew --dry-run
 ```
 
-After this, https://wanfuxin.com should serve the site over a valid TLS cert.
+After this, https://wanfuxin-dg.com should serve the site over a valid TLS cert.
 
 ## 10. First admin login
 
-1. Browse to `https://wanfuxin.com/admin/`
+1. Browse to `https://wanfuxin-dg.com/admin/`
 2. Username: `admin`, Password: `wfx6688`
 3. **System forces password change immediately** (`must_change_password: true`)
 4. Set a strong new password (8+ chars, mix of cases/numbers/symbols)
@@ -195,7 +195,7 @@ When traffic grows beyond ~1k visits/day, consider:
 
 - [ ] Default admin password changed
 - [ ] `.env` or `config.py` permissions set to `600`
-- [ ] `uploads/.auth/` directory not web-accessible (test: `curl https://wanfuxin.com/uploads/.auth/admin_users.json` → 404)
+- [ ] `uploads/.auth/` directory not web-accessible (test: `curl https://wanfuxin-dg.com/uploads/.auth/admin_users.json` → 404)
 - [ ] HSTS preload submitted at [hstspreload.org](https://hstspreload.org)
 - [ ] SSL grade A or A+ at [ssllabs.com](https://www.ssllabs.com/ssltest/)
 - [ ] Restrict `/admin/` by IP allowlist in nginx (uncomment `allow ...; deny all;`)

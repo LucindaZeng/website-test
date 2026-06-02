@@ -399,6 +399,286 @@ Write your **markdown** content here.
         }
     }
 
+    // ─── Downloadable template ──────────────────────────────────────────────
+    // Generates the standard article template as a .md file the user can
+    // download, edit, and re-upload. Single source of truth for the format.
+    const TEMPLATE_MD = [
+        '---',
+        'title: How Design for Manufacturability Reduces CNC Machining Cost',
+        'category: drawings-dfm',
+        'excerpt: A practical checklist that helps engineers cut machining cost without sacrificing part quality.',
+        'tags: DFM, design, cost reduction, CNC',
+        'cover: https://wanfuxin-dg.com/images/company-video-poster.jpg',
+        'status: draft',
+        'date: 2026-06-01',
+        'author: Lu Zeng',
+        '---',
+        '',
+        '# How Design for Manufacturability Reduces CNC Machining Cost',
+        '',
+        'Write your opening paragraph here. The text above the first heading is',
+        'optional — the title comes from the `title:` field in the frontmatter.',
+        '',
+        '## Why DFM Matters',
+        '',
+        'Use `##` for section headings. Keep paragraphs short and scannable.',
+        'You can use all standard Markdown:',
+        '',
+        '- **Bold** for emphasis',
+        '- *Italic* for terms',
+        '- `inline code` for tolerances like `±0.01mm`',
+        '- [Links](https://wanfuxin-dg.com) to other pages',
+        '',
+        '## A Simple Example',
+        '',
+        '1. Numbered lists work too',
+        '2. Use them for step-by-step instructions',
+        '3. Or process sequences',
+        '',
+        '> Blockquotes are good for key takeaways or customer quotes.',
+        '',
+        '## Tables',
+        '',
+        '| Material | Machinability | Typical Use |',
+        '|----------|---------------|-------------|',
+        '| Aluminum 6061 | Excellent | Brackets, housings |',
+        '| Stainless 304 | Moderate | Medical, food-grade |',
+        '| Titanium Ti-6Al-4V | Difficult | Aerospace, implants |',
+        '',
+        '## Images',
+        '',
+        '![Alt text describing the image](https://wanfuxin-dg.com/images/company-video-poster.jpg)',
+        '',
+        '## Conclusion',
+        '',
+        'Wrap up with a clear call to action — invite the reader to request a',
+        'quote or download a resource.',
+        '',
+        '<!--',
+        '====================================================================',
+        'FRONTMATTER FIELD REFERENCE (the block between the --- lines at top)',
+        '====================================================================',
+        '',
+        '  title     (required)  The article headline.',
+        '  category  (required)  One of the 5 category slugs below.',
+        '  excerpt   (optional)  1-2 sentence summary shown in listings.',
+        '  tags      (optional)  Comma-separated keywords.',
+        '  cover     (optional)  Full URL to the cover image.',
+        '  status    (optional)  "draft" or "published". Defaults to draft.',
+        '  date      (optional)  YYYY-MM-DD. Defaults to today.',
+        '  author    (optional)  Author name.',
+        '',
+        'VALID CATEGORY SLUGS (use the slug on the left in the category: field):',
+        '  cnc-processes       -> CNC Processes & Machines',
+        '  materials           -> Materials Knowledge Hub',
+        '  drawings-dfm        -> Engineering Drawings & DFM',
+        '  surface-finishing   -> Surface Finishing',
+        '  related-processes   -> Related Processes & Quality',
+        '',
+        'NOTES:',
+        '  - The frontmatter block MUST be the very first thing in the file,',
+        '    wrapped in three dashes (---) above and below.',
+        '  - If you omit the frontmatter entirely, the importer treats the whole',
+        '    file as body content and pulls the title from the first "# Heading".',
+        '  - When batch-uploading, you can override the category for each file in',
+        '    the upload dialog.',
+        '-->',
+        ''
+    ].join('\n');
+
+    function downloadTemplate() {
+        const blob = new Blob([TEMPLATE_MD], { type: 'text/markdown;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'wfx-article-template.md';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        showToast('Template downloaded: wfx-article-template.md', 'success');
+    }
+
+    // ─── Category options (kept in sync with the 5 news pillars) ────────────
+    // Reads live categories from localStorage if present, else falls back to
+    // the canonical 5. Returns [{name, slug}].
+    function getCategoryOptions() {
+        try {
+            const stored = JSON.parse(localStorage.getItem('wfx_categories') || '{}');
+            if (stored.news && stored.news.length) {
+                return stored.news.map(c => ({ name: c.name, slug: c.slug }));
+            }
+        } catch (e) {}
+        return [
+            { name: 'CNC Processes & Machines',    slug: 'cnc-processes' },
+            { name: 'Materials Knowledge Hub',     slug: 'materials' },
+            { name: 'Engineering Drawings & DFM',  slug: 'drawings-dfm' },
+            { name: 'Surface Finishing',           slug: 'surface-finishing' },
+            { name: 'Related Processes & Quality', slug: 'related-processes' }
+        ];
+    }
+
+    // ─── Batch upload ───────────────────────────────────────────────────────
+    // Accepts multiple .md files, parses each, shows a review table where the
+    // user can set/override the category per file, then creates all posts at
+    // once via the provided saveFn(parsedPost) callback.
+    function openBatchUpload(saveFn, opts) {
+        opts = opts || {};
+        const kind = opts.kind || 'post';  // 'post' or 'news'
+
+        // Build modal overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'md-batch-overlay';
+        overlay.style.cssText = 'position:fixed; inset:0; z-index:2000; background:rgba(10,22,40,0.6); display:flex; align-items:center; justify-content:center; padding:20px;';
+
+        const modal = document.createElement('div');
+        modal.style.cssText = 'background:#fff; border-radius:14px; max-width:760px; width:100%; max-height:90vh; overflow-y:auto; padding:26px; position:relative;';
+        overlay.appendChild(modal);
+
+        const cats = getCategoryOptions();
+
+        modal.innerHTML =
+            '<button class="md-batch-close" aria-label="Close" style="position:absolute; top:14px; right:14px; width:30px; height:30px; border:none; background:#f1f5f9; border-radius:50%; cursor:pointer; font-size:1rem; color:#64748b;">&times;</button>' +
+            '<h2 style="margin:0 0 6px; font-size:1.3rem; color:#0f172a;"><i class="fas fa-layer-group" aria-hidden="true"></i> Batch upload Markdown</h2>' +
+            '<p style="color:#64748b; font-size:0.9rem; margin:0 0 18px;">Select multiple .md files. Review each below, set the category, then import all at once.</p>' +
+            '<div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:18px;">' +
+              '<button type="button" class="btn btn-primary btn-sm md-batch-choose"><i class="fas fa-upload" aria-hidden="true"></i> Choose .md files</button>' +
+              '<button type="button" class="btn btn-outline btn-sm md-batch-template"><i class="fas fa-download" aria-hidden="true"></i> Download template</button>' +
+              '<input type="file" class="md-batch-input" accept="' + (SUPPORTED_EXTENSIONS.join(',')) + ',text/markdown" multiple style="display:none;">' +
+            '</div>' +
+            '<div class="md-batch-list"></div>' +
+            '<div class="md-batch-actions" style="display:none; margin-top:18px; gap:10px; display:flex; justify-content:flex-end;">' +
+              '<button type="button" class="btn btn-outline md-batch-cancel">Cancel</button>' +
+              '<button type="button" class="btn btn-primary md-batch-import"><i class="fas fa-check" aria-hidden="true"></i> Import all</button>' +
+            '</div>';
+
+        document.body.appendChild(overlay);
+
+        const fileInput = modal.querySelector('.md-batch-input');
+        const listEl = modal.querySelector('.md-batch-list');
+        const actionsEl = modal.querySelector('.md-batch-actions');
+        let parsedFiles = [];  // [{ name, parsed, category }]
+
+        function close() {
+            document.body.removeChild(overlay);
+        }
+        modal.querySelector('.md-batch-close').addEventListener('click', close);
+        modal.querySelector('.md-batch-cancel').addEventListener('click', close);
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+        modal.querySelector('.md-batch-template').addEventListener('click', downloadTemplate);
+        modal.querySelector('.md-batch-choose').addEventListener('click', () => fileInput.click());
+
+        function catSelectHTML(selectedSlug) {
+            let html = '<select class="form-control md-batch-cat" style="padding:6px 10px; font-size:0.85rem; min-width:200px;">';
+            cats.forEach(c => {
+                const sel = c.slug === selectedSlug ? ' selected' : '';
+                html += '<option value="' + c.slug + '"' + sel + '>' + escapeHtml(c.name) + '</option>';
+            });
+            html += '</select>';
+            return html;
+        }
+
+        function escapeHtml(s) {
+            if (s == null) return '';
+            return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        function renderList() {
+            if (parsedFiles.length === 0) {
+                listEl.innerHTML = '';
+                actionsEl.style.display = 'none';
+                return;
+            }
+            let html = '<table style="width:100%; border-collapse:collapse; font-size:0.88rem;">' +
+                '<thead><tr style="text-align:left; color:#475569; border-bottom:1px solid #e2e8f0;">' +
+                '<th style="padding:8px 6px;">File</th><th style="padding:8px 6px;">Title</th>' +
+                '<th style="padding:8px 6px;">Category</th><th style="padding:8px 6px;">Status</th>' +
+                '<th style="padding:8px 6px;"></th></tr></thead><tbody>';
+            parsedFiles.forEach((pf, i) => {
+                const fm = pf.parsed.frontmatter || {};
+                const title = fm.title || pf.parsed.derivedTitle || '(no title)';
+                const status = (fm.status || 'draft');
+                html += '<tr data-idx="' + i + '" style="border-bottom:1px solid #f1f5f9;">' +
+                    '<td style="padding:8px 6px; color:#64748b;"><i class="fas fa-file-alt" aria-hidden="true"></i> ' + escapeHtml(pf.name) + '</td>' +
+                    '<td style="padding:8px 6px; font-weight:500;">' + escapeHtml(title) + '</td>' +
+                    '<td style="padding:8px 6px;">' + catSelectHTML(pf.category) + '</td>' +
+                    '<td style="padding:8px 6px;"><span style="padding:2px 8px; border-radius:10px; font-size:0.75rem; background:' + (status === 'published' ? '#d1fae5;color:#065f46' : '#fef3c7;color:#92400e') + ';">' + escapeHtml(status) + '</span></td>' +
+                    '<td style="padding:8px 6px;"><button type="button" class="md-batch-remove" data-idx="' + i + '" style="border:none;background:none;color:#dc2626;cursor:pointer;" aria-label="Remove"><i class="fas fa-times" aria-hidden="true"></i></button></td>' +
+                    '</tr>';
+            });
+            html += '</tbody></table>';
+            listEl.innerHTML = html;
+            actionsEl.style.display = 'flex';
+
+            // Wire per-row category selects
+            listEl.querySelectorAll('tr[data-idx]').forEach(row => {
+                const idx = parseInt(row.getAttribute('data-idx'));
+                const sel = row.querySelector('.md-batch-cat');
+                if (sel) sel.addEventListener('change', () => { parsedFiles[idx].category = sel.value; });
+            });
+            // Wire remove buttons
+            listEl.querySelectorAll('.md-batch-remove').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const idx = parseInt(btn.getAttribute('data-idx'));
+                    parsedFiles.splice(idx, 1);
+                    renderList();
+                });
+            });
+        }
+
+        fileInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files || []);
+            for (const file of files) {
+                const lname = file.name.toLowerCase();
+                if (!SUPPORTED_EXTENSIONS.some(ext => lname.endsWith(ext))) {
+                    showToast('Skipped non-Markdown file: ' + file.name, 'warning');
+                    continue;
+                }
+                if (file.size > MAX_FILE_SIZE) {
+                    showToast('Skipped (too large): ' + file.name, 'warning');
+                    continue;
+                }
+                const text = await file.text();
+                const parsed = parseMarkdown(text);
+                if (!parsed.frontmatter.title) {
+                    const h1 = extractH1Title(parsed.body);
+                    parsed.derivedTitle = (h1 && h1.title) || file.name.replace(/\.[^.]+$/, '');
+                }
+                const defaultCat = parsed.frontmatter.category || (cats[0] && cats[0].slug);
+                parsedFiles.push({ name: file.name, parsed: parsed, category: defaultCat });
+            }
+            fileInput.value = '';
+            renderList();
+        });
+
+        modal.querySelector('.md-batch-import').addEventListener('click', () => {
+            if (parsedFiles.length === 0) { showToast('No files to import.', 'warning'); return; }
+            let ok = 0, fail = 0;
+            parsedFiles.forEach(pf => {
+                const fm = pf.parsed.frontmatter || {};
+                const postData = {
+                    title: fm.title || pf.parsed.derivedTitle || '(untitled)',
+                    category: pf.category,
+                    status: fm.status || 'draft',
+                    excerpt: fm.excerpt || '',
+                    content: pf.parsed.body || '',
+                    content_format: 'markdown',
+                    featuredImage: fm.cover || '',
+                    tags: (fm.tags || '').split(',').map(t => t.trim()).filter(Boolean)
+                };
+                try {
+                    const res = saveFn(postData);
+                    if (res && res.success !== false) ok++; else fail++;
+                } catch (err) {
+                    fail++;
+                }
+            });
+            showToast('Imported ' + ok + ' article(s)' + (fail ? ', ' + fail + ' failed' : ''), fail ? 'warning' : 'success');
+            close();
+            if (typeof opts.onComplete === 'function') opts.onComplete();
+        });
+    }
+
     // Minimal toast helper (uses global showToast if available, else simple alert)
     function showToast(msg, kind) {
         if (typeof window.showToast === 'function') {
@@ -414,5 +694,7 @@ Write your **markdown** content here.
         parse: parseMarkdown,
         fillForm: fillForm,
         attachUploadButton: attachUploadButton,
+        downloadTemplate: downloadTemplate,
+        openBatchUpload: openBatchUpload,
     };
 })();

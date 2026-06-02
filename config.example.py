@@ -43,7 +43,7 @@ ADMIN_API_TOKEN = 'replace-with-long-random-string'
 # Leave SMTP_HOST as None (or delete this whole block) to disable email — quotes
 # still save to the database and show in the admin panel, so nothing is lost.
 #
-# Tencent Enterprise Mail (腾讯企业邮箱) — recommended for wanfuxin.com:
+# Tencent Enterprise Mail (腾讯企业邮箱) — recommended for wanfuxin-dg.com:
 #   SMTP_HOST = 'smtp.exmail.qq.com'
 #   SMTP_PORT = 465 (SSL)
 #   SMTP_USER = full mailbox address
@@ -61,4 +61,4 @@ NOTIFY_EMAIL = 'lucindaz@wanfuxin.com'
 # ─── Site URL (for links inside notification emails) ───────────────────────────
 # Your public site URL, no trailing slash. Used to build clickable admin links
 # in quote-notification emails.
-SITE_URL = 'https://wanfuxin.com'
+SITE_URL = 'https://wanfuxin-dg.com'

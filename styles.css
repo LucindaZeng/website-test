@@ -620,28 +620,6 @@ input, select, textarea {
     height: 100%;
     object-fit: cover;
     filter: brightness(0.7);
-    position: absolute;
-    top: 0;
-    left: 0;
-    overflow: hidden;
-}
-
-/* YouTube iframe scaled to cover the hero (16:9 → fill any aspect ratio).
-   pointer-events:none keeps it non-interactive — it's a background, not a player. */
-.hero-video iframe {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    /* Cover: use the larger of 16:9 width-driven or height-driven sizing.
-       100vw wide → 56.25vw tall; if that's shorter than the hero, the
-       min-height/min-width rules below take over. */
-    width: 100vw;
-    height: 56.25vw;       /* 16:9 based on width */
-    min-height: 100vh;
-    min-width: 177.78vh;   /* 16:9 based on height */
-    pointer-events: none;
-    border: 0;
 }
 
 .hero-overlay {

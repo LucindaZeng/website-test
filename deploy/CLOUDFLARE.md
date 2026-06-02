@@ -15,7 +15,7 @@
 
 ## 前置条件
 
-1. 域名 `wanfuxin.com` 已经注册（任何注册商都可以）
+1. 域名 `wanfuxin-dg.com` 已经注册（任何注册商都可以）
 2. 云服务器已经部署完毕，可以通过 IP 直接访问
 3. 你能登录域名注册商的 DNS 管理界面（用来改 NS 记录）
 
@@ -27,7 +27,7 @@
 2. 用 `lucindaz@wanfuxin.com` 注册（建议用公司邮箱便于团队成员后续共管）
 3. 验证邮箱
 4. 进入 Dashboard → **Add a site**
-5. 输入 `wanfuxin.com`（不要带 `www`）
+5. 输入 `wanfuxin-dg.com`（不要带 `www`）
 6. 选择 **Free $0/month** 方案
 7. Cloudflare 会自动扫描你现有的 DNS 记录
 
@@ -39,10 +39,10 @@ Cloudflare 扫描后会列出 DNS 记录。确认以下记录存在且正确：
 
 | Type | Name | Content | Proxy status |
 |---|---|---|---|
-| A | `wanfuxin.com` (或 `@`) | 你的云服务器 IPv4 | 🟠 Proxied |
+| A | `wanfuxin-dg.com` (或 `@`) | 你的云服务器 IPv4 | 🟠 Proxied |
 | A | `www` | 你的云服务器 IPv4 | 🟠 Proxied |
-| MX | `wanfuxin.com` | 邮件服务器 | ☁ DNS only |
-| TXT | `wanfuxin.com` | SPF/DMARC 记录 | ☁ DNS only |
+| MX | `wanfuxin-dg.com` | 邮件服务器 | ☁ DNS only |
+| TXT | `wanfuxin-dg.com` | SPF/DMARC 记录 | ☁ DNS only |
 
 **关键**：
 - 网站记录的 Proxy status 必须是 **橙色云朵**（🟠 Proxied），不是灰色（☁ DNS only）。橙色才会经过 Cloudflare 流量
@@ -60,7 +60,7 @@ keith.ns.cloudflare.com
 zora.ns.cloudflare.com
 ```
 
-去你的域名注册商（阿里云万网、Namecheap、GoDaddy 等），找到 `wanfuxin.com` 的 **Nameservers** 设置，把两个 NS 改为 Cloudflare 给你的。
+去你的域名注册商（阿里云万网、Namecheap、GoDaddy 等），找到 `wanfuxin-dg.com` 的 **Nameservers** 设置，把两个 NS 改为 Cloudflare 给你的。
 
 ⚠ 这一步生效需要 0-24 小时（取决于全球 DNS 传播）。期间网站访问可能短暂中断。**建议在低峰时段（深夜）操作**。
 
@@ -177,7 +177,7 @@ real_ip_header CF-Connecting-IP;
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-**验证**：访问 `https://wanfuxin.com/` 几次后查日志：
+**验证**：访问 `https://wanfuxin-dg.com/` 几次后查日志：
 ```bash
 sudo tail -f /var/log/nginx/access.log
 ```
@@ -194,7 +194,7 @@ sudo tail -f /var/log/nginx/access.log
 **Rule 2 — Admin 页面禁用缓存**
 
 ```
-URL pattern: wanfuxin.com/admin/*
+URL pattern: wanfuxin-dg.com/admin/*
 Settings:
   - Cache Level: Bypass
   - Disable Apps
@@ -204,7 +204,7 @@ Settings:
 **Rule 3 — API 请求禁用缓存**
 
 ```
-URL pattern: wanfuxin.com/api/*
+URL pattern: wanfuxin-dg.com/api/*
 Settings:
   - Cache Level: Bypass
   - Disable Apps

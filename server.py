@@ -1053,7 +1053,7 @@ def notify_new_quote(row_id, data, file_info):
         lines += ["No file attached.", ""]
 
     # Build a clickable admin link if SITE_URL is configured (e.g.
-    # https://wanfuxin.com). Falls back to a text instruction otherwise.
+    # https://wanfuxin-dg.com). Falls back to a text instruction otherwise.
     site_url = (os.environ.get('WFX_SITE_URL') or
                 getattr(config, 'SITE_URL', None) or '').rstrip('/')
     lines += [
@@ -1962,6 +1962,9 @@ class WFXHandler(SimpleHTTPRequestHandler):
             return
         if path.startswith('/api/cms/'):
             self._handle_cms_read(path)
+            return
+        if path == '/sitemap.xml':
+            self._handle_sitemap()
             return
         self._serve_static()
 
@@ -3003,6 +3006,90 @@ class WFXHandler(SimpleHTTPRequestHandler):
             self._send_json(500, {'ok': False, 'error': str(e)})
         finally:
             conn.close()
+
+    def _handle_sitemap(self):
+        """Generate sitemap.xml dynamically: static pages + published articles.
+
+        Static pages come from the bundled sitemap.xml (so the curated priority
+        values are preserved). Published blog/news articles are appended live
+        from the cms_news table, so new articles appear in the sitemap the
+        moment they're published — no manual sitemap edits needed.
+        """
+        base = (os.environ.get('WFX_SITE_URL') or
+                getattr(config, 'SITE_URL', None) or 'https://wanfuxin-dg.com').rstrip('/')
+
+        urls = []  # list of (loc, priority, changefreq, lastmod)
+
+        # 1. Static pages — read the curated entries from the bundled file
+        static_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sitemap.xml')
+        if os.path.isfile(static_path):
+            try:
+                with open(static_path, encoding='utf-8') as f:
+                    raw = f.read()
+                for m in re.finditer(r'<loc>(.*?)</loc>', raw):
+                    loc = m.group(1).strip()
+                    # Pull priority/changefreq from the same <url> block if present
+                    block_match = re.search(
+                        re.escape(m.group(0)) + r'.*?(?=<url>|</urlset>)', raw, re.DOTALL)
+                    block = block_match.group(0) if block_match else ''
+                    pr = re.search(r'<priority>(.*?)</priority>', block)
+                    cf = re.search(r'<changefreq>(.*?)</changefreq>', block)
+                    urls.append((loc, pr.group(1) if pr else '0.5',
+                                 cf.group(1) if cf else 'monthly', None))
+            except OSError:
+                pass
+
+        # 2. Published articles from the database (blog + news)
+        seen = {u[0] for u in urls}
+        if DB_CONFIG and MYSQL_AVAILABLE:
+            conn = get_db_connection()
+            if conn:
+                try:
+                    cursor = conn.cursor(dictionary=True)
+                    cursor.execute("""
+                        SELECT type, slug, updated_at
+                        FROM cms_news
+                        WHERE is_published = 1 AND slug IS NOT NULL AND slug <> ''
+                        ORDER BY published_at DESC
+                        LIMIT 5000
+                    """)
+                    for row in cursor.fetchall():
+                        # blog → /blog/<slug>, news → /news/<slug>
+                        prefix = 'blog' if row['type'] == 'blog' else 'news'
+                        loc = f"{base}/{prefix}/{row['slug']}"
+                        if loc in seen:
+                            continue
+                        seen.add(loc)
+                        lastmod = None
+                        if row.get('updated_at'):
+                            try:
+                                lastmod = row['updated_at'].strftime('%Y-%m-%d')
+                            except Exception:
+                                lastmod = None
+                        urls.append((loc, '0.6', 'weekly', lastmod))
+                except mysql.connector.Error as e:
+                    print(f"  ⚠  Sitemap DB query failed (serving static only): {e}")
+                finally:
+                    conn.close()
+
+        # 3. Build XML
+        lines = ['<?xml version="1.0" encoding="UTF-8"?>',
+                 '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+        for loc, pr, cf, lastmod in urls:
+            entry = f'  <url><loc>{loc}</loc>'
+            if lastmod:
+                entry += f'<lastmod>{lastmod}</lastmod>'
+            entry += f'<priority>{pr}</priority><changefreq>{cf}</changefreq></url>'
+            lines.append(entry)
+        lines.append('</urlset>')
+        body = '\n'.join(lines).encode('utf-8')
+
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/xml; charset=utf-8')
+        self.send_header('Content-Length', str(len(body)))
+        self.send_header('Cache-Control', 'public, max-age=3600')
+        self.end_headers()
+        self.wfile.write(body)
 
     def _serve_static(self):
         decoded_path = unquote(self.path)

@@ -3,7 +3,7 @@
 WFX Image Watermarking Tool
 ============================
 
-Adds a subtle "© WFX wanfuxin.com" watermark to product photos before they're
+Adds a subtle "© WFX wanfuxin-dg.com" watermark to product photos before they're
 uploaded to the website. Even if a competitor screenshots or scrapes the
 images, the watermark survives and provides attribution + DMCA evidence.
 
@@ -52,7 +52,7 @@ def get_font(size):
     return ImageFont.load_default()
 
 
-def watermark_image(input_path, output_path, opacity=0.35, text='© WFX wanfuxin.com'):
+def watermark_image(input_path, output_path, opacity=0.35, text='© WFX wanfuxin-dg.com'):
     """
     Add a diagonal repeating watermark across the image.
     The diagonal pattern is harder to crop out than corner watermarks.
@@ -104,7 +104,7 @@ def watermark_image(input_path, output_path, opacity=0.35, text='© WFX wanfuxin
 
     # Also add a clear corner watermark (always visible)
     corner_font = get_font(max(16, int(width * 0.03)))
-    corner_text = '© WFX wanfuxin.com'
+    corner_text = '© WFX wanfuxin-dg.com'
     try:
         bbox = draw.textbbox((0, 0), corner_text, font=corner_font)
         ctw, cth = bbox[2] - bbox[0], bbox[3] - bbox[1]
@@ -153,8 +153,8 @@ def main():
                         help='Output path (default: append _wm to filename, or ./watermarked/ for batch)')
     parser.add_argument('--opacity', type=float, default=0.35,
                         help='Watermark opacity 0.0–1.0 (default: 0.35, subtle but visible)')
-    parser.add_argument('--text', default='© WFX wanfuxin.com',
-                        help='Watermark text (default: "© WFX wanfuxin.com")')
+    parser.add_argument('--text', default='© WFX wanfuxin-dg.com',
+                        help='Watermark text (default: "© WFX wanfuxin-dg.com")')
     args = parser.parse_args()
 
     if args.batch:

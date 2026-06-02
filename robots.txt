@@ -11,4 +11,4 @@ Disallow: /uploads/
 Disallow: /*.json$
 Disallow: /honeypot-do-not-follow.html
 
-Sitemap: https://wanfuxin.com/sitemap.xml
+Sitemap: https://wanfuxin-dg.com/sitemap.xml

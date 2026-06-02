@@ -201,7 +201,7 @@ Follow `DEPLOYMENT.md` to:
 - Install systemd service + Nginx reverse proxy
 - Get HTTPS via Let's Encrypt
 
-After this, https://wanfuxin.com is live but with **empty content** (just the 6 hardcoded fallback products per industry, plus the static service/industry pages).
+After this, https://wanfuxin-dg.com is live but with **empty content** (just the 6 hardcoded fallback products per industry, plus the static service/industry pages).
 
 ### 2. Transfer the content archive
 
@@ -237,11 +237,11 @@ sudo systemctl restart wfx-website
 
 ### 4. Verify
 
-- Browse https://wanfuxin.com — homepage should look identical to local
+- Browse https://wanfuxin-dg.com — homepage should look identical to local
 - Check `liquid-cooling.html` etc. — your custom products show
 - Check News and Blog pages — your articles are there
 - Check `/admin/` — log in with the admin password (the production one, not your local dev one)
-- Spot-check a few media URLs (e.g. https://wanfuxin.com/uploads/media/images/your-photo_abc.jpg) — should serve directly
+- Spot-check a few media URLs (e.g. https://wanfuxin-dg.com/uploads/media/images/your-photo_abc.jpg) — should serve directly
 
 ---
 

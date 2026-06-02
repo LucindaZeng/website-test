@@ -116,6 +116,12 @@
                     <i class="fas fa-search" aria-hidden="true"></i>
                     <input type="text" id="search-news" placeholder="Search news...">
                 </div>
+                <button class="btn btn-outline" onclick="WFXMarkdownImporter.downloadTemplate()" title="Download the standard Markdown article template">
+                    <i class="fas fa-download" aria-hidden="true"></i> Template
+                </button>
+                <button class="btn btn-outline" onclick="openBatchUpload()" title="Upload multiple Markdown files at once">
+                    <i class="fas fa-layer-group" aria-hidden="true"></i> Batch Upload
+                </button>
                 <button class="btn btn-primary" onclick="openNewsModal()">
                     <i class="fas fa-plus" aria-hidden="true"></i> Add News Article
                 </button>
@@ -367,6 +373,20 @@
                 if (!value) return;
             }
             document.execCommand(command, false, value);
+        }
+
+        // Batch upload Markdown files → create multiple news articles at once
+        function openBatchUpload() {
+            if (!window.WFXMarkdownImporter) {
+                showAlert('Markdown importer not loaded', 'danger');
+                return;
+            }
+            WFXMarkdownImporter.openBatchUpload(
+                function(newsData) {
+                    return AdminCore.addNews(newsData);
+                },
+                { kind: 'news', onComplete: loadNews }
+            );
         }
 
         function openNewsModal() {

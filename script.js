@@ -27,11 +27,11 @@ document.addEventListener('DOMContentLoaded', function() {
    Saves ~1.4 MB of cellular data per first visit.
 */
 function initHeroVideo() {
-    const container = document.getElementById('hero-video');
-    if (!container) return;
+    const video = document.getElementById('hero-video');
+    if (!video) return;
 
     function shouldPlayVideo() {
-        // 1. Viewport width — mobile breakpoint (mobile sees poster only)
+        // 1. Viewport width — mobile breakpoint
         if (window.innerWidth <= 768) return false;
         // 2. Save-Data hint (set by some Chrome/Edge users explicitly)
         if (navigator.connection && navigator.connection.saveData) return false;
@@ -41,40 +41,34 @@ function initHeroVideo() {
     }
 
     function activateVideo() {
-        // Idempotent — don't inject the iframe twice
-        if (container.querySelector('iframe')) return;
-        const ytId = container.getAttribute('data-yt-id');
-        if (!ytId) return;
-        // Background-video params: autoplay, muted, looping, no controls/UI,
-        // non-interactive. loop requires playlist=<id>. Use nocookie domain.
-        const params = [
-            'autoplay=1', 'mute=1', 'loop=1', 'playlist=' + ytId,
-            'controls=0', 'showinfo=0', 'modestbranding=1', 'rel=0',
-            'disablekb=1', 'playsinline=1', 'iv_load_policy=3', 'fs=0'
-        ].join('&');
-        const iframe = document.createElement('iframe');
-        iframe.src = 'https://www.youtube-nocookie.com/embed/' + ytId + '?' + params;
-        iframe.title = 'WFX background video';
-        iframe.setAttribute('frameborder', '0');
-        iframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
-        iframe.setAttribute('aria-hidden', 'true');
-        iframe.setAttribute('tabindex', '-1');
-        container.appendChild(iframe);
+        // Idempotent — don't add source twice
+        if (video.querySelector('source')) return;
+        const src = video.getAttribute('data-src');
+        const type = video.getAttribute('data-src-type') || 'video/mp4';
+        if (!src) return;
+        const source = document.createElement('source');
+        source.src = src;
+        source.type = type;
+        video.appendChild(source);
+        video.load();
+        video.play().catch(() => {
+            // Autoplay blocked (some browsers without user gesture) — poster stays
+        });
     }
 
     if (shouldPlayVideo()) {
-        // Defer slightly so the LCP element (hero text) paints first
+        // Defer slightly so the LCP element (hero text/image) paints first
         if ('requestIdleCallback' in window) {
             requestIdleCallback(activateVideo, { timeout: 800 });
         } else {
             setTimeout(activateVideo, 200);
         }
     }
-    // On mobile or save-data: do nothing. Poster image (CSS background) is the visual.
+    // On mobile or save-data: do nothing. Poster image is the visual.
 
     // If user resizes from mobile → desktop later, activate then
     window.addEventListener('resize', () => {
-        if (shouldPlayVideo() && !container.querySelector('iframe')) {
+        if (shouldPlayVideo() && !video.querySelector('source')) {
             activateVideo();
         }
     });
@@ -837,12 +831,17 @@ function loadHomepageMedia() {
         console.log('Using default media configuration');
     }
 
-    // Hero background is now a YouTube embed (see initHeroVideo). The CMS no
-    // longer overrides the hero video source here. To change the hero video,
-    // update the data-yt-id attribute on #hero-video in index.html.
+    // Update Hero Video
+    const heroVideo = document.querySelector('.hero-video source');
+    if (heroVideo && media.heroVideo) {
+        heroVideo.src = media.heroVideo;
+        heroVideo.parentElement.load();
+    }
 
-    // Update Company Video
-    const companyVideo = document.querySelector('#company-video, .video-container video');
+    // Company video is now a YouTube embed (xOvLkmzvKwc). The CMS no longer
+    // swaps a local <source>; to change it, update the iframe src in index.html.
+    // The querySelector below is kept defensive — it simply finds nothing now.
+    const companyVideo = document.querySelector('.video-container video');
     if (companyVideo) {
         const companySource = companyVideo.querySelector('source');
         if (companySource && media.companyVideo) {
