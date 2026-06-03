@@ -1,0 +1,37 @@
+# ─── WFX Python backend — docker-compose ────────────────────────────────────
+# This runs server.py as a container that joins DNMP's existing Docker network,
+# so it can reach DNMP's MySQL container by name. DNMP's nginx then
+# reverse-proxies public traffic to this service.
+#
+# PREREQUISITE: DNMP must already be running (docker compose up -d in the dnmp
+# folder). Find DNMP's network name with:  docker network ls
+# It's usually "dnmp_default". If different, change the network name below.
+
+services:
+  wfx-backend:
+    build: .
+    container_name: wfx-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Point at DNMP's MySQL container. "mysql" is DNMP's default service name
+      # — confirm with `docker ps` (look at the MySQL container's name).
+      WFX_DB_HOST: mysql
+      WFX_DB_PORT: "3306"
+      WFX_DB_NAME: wfx_website
+      WFX_HOST: 0.0.0.0
+      WFX_PORT: "8000"
+      # WFX_DB_USER / WFX_DB_PASSWORD / WFX_SESSION_SECRET / WFX_SMTP_* etc.
+      # all come from the .env file above.
+    volumes:
+      # Persist uploaded CAD files + the admin account file across restarts
+      - ./uploads:/app/uploads
+    networks:
+      - dnmp-network
+
+# Join DNMP's existing network so we can talk to its mysql/redis by name.
+networks:
+  dnmp-network:
+    external: true
+    name: dnmp_default   # ← change if `docker network ls` shows a different name

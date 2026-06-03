@@ -48,15 +48,17 @@ body {
 }
 
 .sidebar-header img {
-    height: 36px;
+    height: 40px;
     width: auto;
     max-width: 100%;
     margin-bottom: 10px;
-    /* Logo artwork is dark navy, designed for the white public site. The admin
-       sidebar is near-black, so we invert the logo to a clean white silhouette
-       to keep it legible. */
-    filter: brightness(0) invert(1);
-    opacity: 0.95;
+    /* Logo artwork is dark navy, designed for a light background. The admin
+       sidebar is near-black, so we put the logo on a white rounded chip to
+       keep its original colors legible (same approach as the public footer). */
+    background: #ffffff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    box-sizing: content-box;
 }
 
 .sidebar-header h2 {

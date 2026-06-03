@@ -134,9 +134,48 @@
                 <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Sign In
             </button>
         </form>
+
+        <div style="text-align:center; margin-top:16px;">
+            <a href="#" id="forgot-link" style="color:#0284c7; font-size:0.9rem; text-decoration:none;">Forgot password?</a>
+        </div>
         
         <div class="back-link">
             <a href="../index.html"><i class="fas fa-arrow-left" aria-hidden="true"></i> Back to Website</a>
+        </div>
+    </div>
+
+    <!-- Password reset modal -->
+    <div id="reset-modal" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(10,22,40,0.7); align-items:center; justify-content:center; padding:20px;">
+        <div style="background:#fff; border-radius:14px; max-width:420px; width:100%; padding:30px; position:relative;">
+            <button id="reset-close" aria-label="Close" style="position:absolute; top:14px; right:14px; width:30px; height:30px; border:none; background:#f1f5f9; border-radius:50%; cursor:pointer; font-size:1rem; color:#64748b;">&times;</button>
+
+            <!-- Step 1: request code -->
+            <div id="reset-step1">
+                <h2 style="margin:0 0 6px; font-size:1.3rem; color:#0f172a;">Reset Password</h2>
+                <p style="color:#64748b; font-size:0.9rem; margin:0 0 18px;">Enter your username. A verification code will be sent to the registered admin email.</p>
+                <div style="margin-bottom:14px;">
+                    <label style="display:block; font-size:0.85rem; font-weight:500; margin-bottom:6px;">Username</label>
+                    <input type="text" id="reset-username" style="width:100%; padding:11px 14px; border:1px solid #d1d5db; border-radius:8px; font-size:0.95rem;">
+                </div>
+                <button id="reset-send-code" style="width:100%; background:#0284c7; color:#fff; border:none; padding:12px; border-radius:8px; font-size:0.95rem; font-weight:500; cursor:pointer;">Send verification code</button>
+            </div>
+
+            <!-- Step 2: enter code + new password -->
+            <div id="reset-step2" style="display:none;">
+                <h2 style="margin:0 0 6px; font-size:1.3rem; color:#0f172a;">Enter Code</h2>
+                <p style="color:#64748b; font-size:0.9rem; margin:0 0 18px;">Check the admin email for a 6-digit code (valid 15 min), then set a new password.</p>
+                <div style="margin-bottom:14px;">
+                    <label style="display:block; font-size:0.85rem; font-weight:500; margin-bottom:6px;">Verification code</label>
+                    <input type="text" id="reset-code" maxlength="6" inputmode="numeric" placeholder="6-digit code" style="width:100%; padding:11px 14px; border:1px solid #d1d5db; border-radius:8px; font-size:1.1rem; letter-spacing:3px; text-align:center;">
+                </div>
+                <div style="margin-bottom:18px;">
+                    <label style="display:block; font-size:0.85rem; font-weight:500; margin-bottom:6px;">New password (min 8 chars)</label>
+                    <input type="password" id="reset-newpass" style="width:100%; padding:11px 14px; border:1px solid #d1d5db; border-radius:8px; font-size:0.95rem;">
+                </div>
+                <button id="reset-submit" style="width:100%; background:#16a34a; color:#fff; border:none; padding:12px; border-radius:8px; font-size:0.95rem; font-weight:500; cursor:pointer;">Reset password</button>
+            </div>
+
+            <p id="reset-message" style="margin:14px 0 0; font-size:0.88rem; text-align:center;"></p>
         </div>
     </div>
 
@@ -195,13 +234,8 @@
                         name: j.user.username,
                     }));
 
-                    // If server reports password is still default, force change
-                    if (j.user.must_change_password) {
-                        sessionStorage.setItem('wfx_must_change_password', '1');
-                        AdminCore.logAction('login', 'User logged in (password change required)', { username });
-                        window.location.href = 'change-password.html';
-                        return;
-                    }
+                    // (Forced first-login password change has been removed —
+                    // admin logs straight into the dashboard.)
                     AdminCore.logAction('login', 'User logged in', { username });
                     window.location.href = 'dashboard.html';
                     return;
@@ -218,6 +252,90 @@
                 errorMsg.style.display = 'block';
             }
         });
+
+        // ─── Password reset flow ────────────────────────────────────────────
+        (function() {
+            const modal = document.getElementById('reset-modal');
+            const msg = document.getElementById('reset-message');
+            const step1 = document.getElementById('reset-step1');
+            const step2 = document.getElementById('reset-step2');
+
+            function openModal() {
+                step1.style.display = 'block';
+                step2.style.display = 'none';
+                msg.textContent = '';
+                document.getElementById('reset-username').value = '';
+                document.getElementById('reset-code').value = '';
+                document.getElementById('reset-newpass').value = '';
+                modal.style.display = 'flex';
+            }
+            function closeModal() { modal.style.display = 'none'; }
+
+            document.getElementById('forgot-link').addEventListener('click', function(e) {
+                e.preventDefault(); openModal();
+            });
+            document.getElementById('reset-close').addEventListener('click', closeModal);
+            modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
+
+            // Step 1: request code
+            document.getElementById('reset-send-code').addEventListener('click', async function() {
+                const username = document.getElementById('reset-username').value.trim();
+                if (!username) { msg.style.color = '#dc2626'; msg.textContent = 'Please enter your username.'; return; }
+                this.disabled = true; this.textContent = 'Sending...';
+                msg.textContent = '';
+                try {
+                    const r = await fetch('/api/auth/forgot-password', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username })
+                    });
+                    const j = await r.json().catch(() => ({}));
+                    if (r.ok && j.ok) {
+                        // Move to step 2; remember username
+                        step1.style.display = 'none';
+                        step2.style.display = 'block';
+                        msg.style.color = '#16a34a';
+                        msg.textContent = 'Code sent to the admin email. Check the inbox.';
+                        window._resetUsername = username;
+                    } else {
+                        msg.style.color = '#dc2626';
+                        msg.textContent = j.error || 'Could not send code.';
+                    }
+                } catch (e) {
+                    msg.style.color = '#dc2626';
+                    msg.textContent = 'Server unreachable.';
+                }
+                this.disabled = false; this.textContent = 'Send verification code';
+            });
+
+            // Step 2: submit code + new password
+            document.getElementById('reset-submit').addEventListener('click', async function() {
+                const code = document.getElementById('reset-code').value.trim();
+                const newpass = document.getElementById('reset-newpass').value;
+                if (!code || !newpass) { msg.style.color = '#dc2626'; msg.textContent = 'Enter the code and a new password.'; return; }
+                if (newpass.length < 8) { msg.style.color = '#dc2626'; msg.textContent = 'Password must be at least 8 characters.'; return; }
+                this.disabled = true; this.textContent = 'Resetting...';
+                msg.textContent = '';
+                try {
+                    const r = await fetch('/api/auth/reset-password', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username: window._resetUsername, code: code, new_password: newpass })
+                    });
+                    const j = await r.json().catch(() => ({}));
+                    if (r.ok && j.ok) {
+                        msg.style.color = '#16a34a';
+                        msg.textContent = 'Password reset! You can now log in with the new password.';
+                        setTimeout(closeModal, 2500);
+                    } else {
+                        msg.style.color = '#dc2626';
+                        msg.textContent = j.error || 'Reset failed.';
+                    }
+                } catch (e) {
+                    msg.style.color = '#dc2626';
+                    msg.textContent = 'Server unreachable.';
+                }
+                this.disabled = false; this.textContent = 'Reset password';
+            });
+        })();
     </script>
 </body>
 </html>

@@ -187,6 +187,13 @@
                             </select>
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        <label class="form-label" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                            <input type="checkbox" id="news-pinned" style="width:auto; margin:0;">
+                            <span><i class="fas fa-thumbtack" aria-hidden="true"></i> Pin to top (置顶) — show this article first in listings</span>
+                        </label>
+                    </div>
                     
                     <div class="form-group">
                         <label class="form-label">Excerpt</label>
@@ -252,6 +259,11 @@
 
         function loadNews() {
             const news = AdminCore.getNews();
+            // Pinned articles first, then newest
+            news.sort((a, b) => {
+                if (!!b.is_pinned !== !!a.is_pinned) return (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0);
+                return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+            });
             const tbody = document.getElementById('news-table');
             document.getElementById('news-count').textContent = `${news.length} articles`;
             
@@ -263,7 +275,7 @@
             tbody.innerHTML = news.map(item => `
                 <tr>
                     <td>
-                        <strong>${item.title}</strong>
+                        ${item.is_pinned ? '<i class="fas fa-thumbtack" style="color:#0284c7; margin-right:6px;" title="Pinned"></i>' : ''}<strong>${item.title}</strong>
                         ${item.excerpt ? `<div style="font-size: 0.85rem; color: var(--admin-gray); margin-top: 5px;">${item.excerpt.substring(0, 60)}...</div>` : ''}
                     </td>
                     <td>${item.category || '-'}</td>
@@ -423,6 +435,7 @@
                 document.getElementById('news-title').value = item.title;
                 document.getElementById('news-category').value = item.category || '';
                 document.getElementById('news-status').value = item.status;
+                document.getElementById('news-pinned').checked = !!(item.is_pinned);
                 document.getElementById('news-excerpt').value = item.excerpt || '';
                 // Content is now stored as Markdown — load it into the editor
                 if (mdEditor) {
@@ -452,7 +465,8 @@
                 excerpt: document.getElementById('news-excerpt').value,
                 content: contentMd,
                 content_format: 'markdown',  // Hint for renderers
-                featuredImage: document.getElementById('news-image').value
+                featuredImage: document.getElementById('news-image').value,
+                is_pinned: document.getElementById('news-pinned').checked
             };
             
             if (!newsData.title) {

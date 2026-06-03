@@ -363,9 +363,14 @@
                             <span class="video-badge hero">Homepage Hero</span>
                         </div>
                         <div class="video-preview">
-                            <video id="heroVideoPreview" muted loop>
-                                <source src="../hero-video.mp4" type="video/mp4">
-                            </video>
+                            <div style="position:relative; width:100%; padding-bottom:56.25%; height:0; overflow:hidden;">
+                                <iframe id="heroVideoPreview"
+                                    src="https://www.youtube-nocookie.com/embed/jrpMWDeBmIg?rel=0&modestbranding=1&mute=1"
+                                    title="WFX Hero Background Video"
+                                    style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"
+                                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                                    allowfullscreen loading="lazy"></iframe>
+                            </div>
                         </div>
                         <div class="video-card-body">
                             <div class="video-info">
@@ -382,12 +387,12 @@
                             <div class="form-group">
                                 <label>Video URL / File Path</label>
                                 <div class="input-group">
-                                    <input type="text" id="heroVideoUrl" placeholder="hero-video.mp4 or https://...">
+                                    <input type="text" id="heroVideoUrl" placeholder="https://youtu.be/jrpMWDeBmIg" value="https://youtu.be/jrpMWDeBmIg">
                                     <button class="btn btn-outline" onclick="previewVideo('hero')">
                                         <i class="fas fa-play" aria-hidden="true"></i> Preview
                                     </button>
                                 </div>
-                                <small>Enter local filename (e.g., hero-video.mp4) or external URL</small>
+                                <small>Currently a YouTube embed. Enter a YouTube URL or local filename.</small>
                             </div>
 
                             <div class="upload-area" onclick="document.getElementById('heroVideoUpload').click()">

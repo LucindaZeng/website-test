@@ -190,11 +190,13 @@ CREATE TABLE IF NOT EXISTS cms_news (
     author          VARCHAR(100),
     published_at    DATETIME,
     is_published    TINYINT(1)      NOT NULL DEFAULT 1,
+    is_pinned       TINYINT(1)      NOT NULL DEFAULT 0,
     created_at      DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP
                                     ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE KEY uk_type_slug (type, slug),
-    INDEX idx_type_published (type, is_published, published_at)
+    INDEX idx_type_published (type, is_published, published_at),
+    INDEX idx_pinned (type, is_pinned)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 

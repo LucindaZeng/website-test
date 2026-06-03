@@ -290,11 +290,13 @@
             <!-- hero video: NOT autoplayed by default — JS enables play() on desktop only.
                  Mobile users see the poster image, saving 1.4MB on cellular networks.
                  The data-src defers <source> setup until JS decides it's safe to load. -->
-            <video muted loop playsinline preload="none" poster="images/hero-video-poster.jpg"
-                   class="hero-video" id="hero-video"
-                   data-src="hero-video.mp4" data-src-type="video/mp4">
-                <!-- Source intentionally empty until JS injects it on desktop -->
-            </video>
+            <!-- hero background video: YouTube embed (jrpMWDeBmIg).
+                 Autoplay + muted + loop, controls hidden, non-interactive.
+                 Poster shows first; JS injects the iframe on desktop only
+                 (mobile sees the poster — saves bandwidth, avoids autoplay limits). -->
+            <div class="hero-video" id="hero-video"
+                 data-yt-id="jrpMWDeBmIg"
+                 style="background: #0a1628 url('images/hero-video-poster.jpg') center/cover no-repeat;"></div>
         </div>
         <div class="container">
             <div class="hero-content">

@@ -49,11 +49,15 @@ from urllib.parse import unquote, urlparse, parse_qs
 
 # ─── Load .env file (if present) for cloud deployments ──────────────────────────
 def _load_env_file(path='.env'):
-    """Minimal .env parser. Lines: KEY=value or KEY="value"."""
+    """Minimal .env parser. Lines: KEY=value or KEY="value".
+
+    Always read as UTF-8 (with BOM tolerance). Without this, Chinese Windows
+    defaults to GBK and crashes on any non-ASCII byte (e.g. UTF-8 comments).
+    """
     env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), path)
     if not os.path.isfile(env_path):
         return
-    with open(env_path) as f:
+    with open(env_path, encoding='utf-8-sig', errors='replace') as f:
         for line in f:
             line = line.strip()
             if not line or line.startswith('#') or '=' not in line:
@@ -426,6 +430,7 @@ RATE_LIMITS = {
     'quote':   (5,  60),     # 5 quote submissions per minute per IP
     'contact': (5,  60),
     'request': (5,  60),     # 5 resource requests per minute per IP
+    'reset':   (3, 300),     # 3 password-reset code requests per 5 min per IP
     'login':   (10, 300),    # 10 login attempts per 5 minutes (brute-force protection)
     'cms':     (60, 60),     # 60 CMS API calls per minute (admin operations)
     'pages':   (60, 60),     # 60 page requests per minute per IP — humans browse < 1/sec; scrapers go 5+/sec
@@ -667,6 +672,17 @@ AUTH_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads', '
 AUTH_FILE = os.path.join(AUTH_DIR, 'admin_users.json')
 auth_lock = threading.Lock()
 
+# ─── Password reset codes (in-memory, short-lived) ──────────────────────────
+# Maps username -> {'code': '123456', 'expires': <ts>, 'attempts': N}
+# Codes are 6 digits, valid 15 minutes, max 5 verify attempts. Always emailed
+# to the fixed admin address (lucindaz@wanfuxin.com), never to a user-supplied
+# address, so an attacker can't redirect the code to themselves.
+_reset_codes = {}
+_reset_lock = threading.Lock()
+RESET_CODE_TTL = 15 * 60       # 15 minutes
+RESET_MAX_ATTEMPTS = 5
+RESET_NOTIFY_EMAIL = 'lucindaz@wanfuxin.com'
+
 
 def ensure_default_admin():
     """
@@ -701,10 +717,10 @@ def ensure_default_admin():
             'password_hash': hash_password(initial_password),
             'role': 'super_admin',
             'created_at': datetime.now().isoformat(),
-            'must_change_password': True,  # Forced change-password.html on first login
+            'must_change_password': False,  # No forced change — admin/wfx6688 works directly
         }]
-        with open(AUTH_FILE, 'w') as f:
-            json.dump(users, f, indent=2)
+        with open(AUTH_FILE, 'w', encoding='utf-8') as f:
+            json.dump(users, f, indent=2, ensure_ascii=False)
         try:
             os.chmod(AUTH_FILE, 0o600)  # Owner read/write only
         except (OSError, NotImplementedError):
@@ -715,7 +731,7 @@ def load_admin_users():
     ensure_default_admin()
     with auth_lock:
         try:
-            with open(AUTH_FILE, 'r') as f:
+            with open(AUTH_FILE, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except (IOError, json.JSONDecodeError):
             return []
@@ -723,8 +739,8 @@ def load_admin_users():
 
 def save_admin_users(users):
     with auth_lock:
-        with open(AUTH_FILE, 'w') as f:
-            json.dump(users, f, indent=2)
+        with open(AUTH_FILE, 'w', encoding='utf-8') as f:
+            json.dump(users, f, indent=2, ensure_ascii=False)
         try:
             os.chmod(AUTH_FILE, 0o600)
         except (OSError, NotImplementedError):
@@ -859,7 +875,7 @@ def create_admin_user(username, password, role, email='', full_name='', actor_id
         'password_hash': hash_password(password),
         'role': role if role in ROLE_PERMISSIONS else 'viewer',
         'is_active': True,
-        'must_change_password': True,  # Force change on first login
+        'must_change_password': False,
         'created_at': datetime.now().isoformat(),
         'created_by': actor_id,
     }
@@ -904,7 +920,7 @@ def reset_admin_password(user_id, new_password, actor_id=None):
     for u in users:
         if u['id'] == user_id:
             u['password_hash'] = hash_password(new_password)
-            u['must_change_password'] = True
+            u['must_change_password'] = False
             u['password_reset_at'] = datetime.now().isoformat()
             u['password_reset_by'] = actor_id
             save_admin_users(users)
@@ -1446,7 +1462,7 @@ def cms_list_news(news_type='news', published_only=True, limit=100):
         params = [news_type]
         if published_only:
             sql += " AND is_published = 1"
-        sql += " ORDER BY published_at DESC, id DESC LIMIT %s"
+        sql += " ORDER BY is_pinned DESC, published_at DESC, id DESC LIMIT %s"
         params.append(limit)
         cursor.execute(sql, params)
         rows = cursor.fetchall()
@@ -1475,8 +1491,8 @@ def cms_replace_news(news_type, posts):
             published_at = p.get('published_at') or p.get('date') or p.get('created_at')
             cursor.execute("""
                 INSERT INTO cms_news (type, title, slug, category, excerpt, content,
-                                      image_url, author, published_at, is_published)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                      image_url, author, published_at, is_published, is_pinned)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (
                 news_type,
                 p.get('title', '')[:300],
@@ -1488,6 +1504,7 @@ def cms_replace_news(news_type, posts):
                 (p.get('author') or '')[:100],
                 published_at,
                 1 if p.get('is_published', True) else 0,
+                1 if p.get('is_pinned', False) else 0,
             ))
         conn.commit()
         return True
@@ -1591,6 +1608,10 @@ class WFXHandler(SimpleHTTPRequestHandler):
             self._handle_logout()
         elif path == '/api/auth/change-password':
             self._handle_change_password()
+        elif path == '/api/auth/forgot-password':
+            self._handle_forgot_password()
+        elif path == '/api/auth/reset-password':
+            self._handle_reset_password()
         elif path == '/api/users':
             self._handle_users_create()
         elif path == '/api/media':
@@ -2076,6 +2097,18 @@ class WFXHandler(SimpleHTTPRequestHandler):
         # Always do a dummy verify if user not found, to keep response time uniform
         if not user:
             verify_password(password, hash_password('dummy'))  # discard result
+            # ── Diagnostic logging (helps debug "can't log in" issues) ──
+            _all_users = load_admin_users()
+            _names = [u.get('username') for u in _all_users]
+            _match = next((u for u in _all_users if u.get('username') == username), None)
+            ts_d = datetime.now().strftime('%H:%M:%S')
+            if not _match:
+                print(f"  ✗  [{ts_d}] LOGIN FAILED: username '{username}' not found. "
+                      f"Accounts in file: {_names}")
+            else:
+                print(f"  ✗  [{ts_d}] LOGIN FAILED: username '{username}' exists but "
+                      f"PASSWORD MISMATCH (len typed={len(password)}, "
+                      f"must_change={_match.get('must_change_password')})")
             # Audit failed login (security monitoring — detect brute force)
             audit_log({'uid': None, 'name': username}, 'login_failed',
                       resource_type='auth', detail={'reason': 'invalid_credentials'},
@@ -2132,6 +2165,122 @@ class WFXHandler(SimpleHTTPRequestHandler):
         # Anyone can request a CSRF token; only admins can use it
         self._send_json(200, {'ok': True, 'csrf_token': issue_csrf_token()})
 
+    def _handle_forgot_password(self):
+        """POST /api/auth/forgot-password {username} → email a 6-digit code.
+
+        The code is ALWAYS sent to the fixed admin address
+        (lucindaz@wanfuxin.com), never to a user-supplied address. To avoid
+        leaking which usernames exist, we return the same success response
+        whether or not the username is valid.
+        """
+        max_req, window = RATE_LIMITS['reset']
+        if not rate_limiter.check(f"reset:{self._client_ip()}", max_req, window):
+            self._send_json(429, {'ok': False, 'error': 'Too many requests. Try again in a few minutes.'})
+            return
+
+        data = self._read_json_body(max_bytes=2048)
+        if data is None:
+            return
+        username = (data.get('username') or '').strip()
+
+        # Generic success message regardless of whether the user exists
+        generic = {'ok': True, 'message': 'If that account exists, a reset code has been sent to the registered admin email.'}
+
+        if not username:
+            self._send_json(400, {'ok': False, 'error': 'Username is required'})
+            return
+
+        users = load_admin_users()
+        match = next((u for u in users if u['username'] == username), None)
+        if not match:
+            # Don't reveal non-existence — return generic success
+            self._send_json(200, generic)
+            return
+
+        # Generate a 6-digit code
+        code = f"{secrets.randbelow(1000000):06d}"
+        with _reset_lock:
+            _reset_codes[username] = {
+                'code': code,
+                'expires': time.time() + RESET_CODE_TTL,
+                'attempts': 0,
+            }
+
+        # Email it to the fixed admin address
+        try:
+            subject = "[WFX Admin] Password reset code"
+            body = (
+                f"A password reset was requested for the WFX admin account '{username}'.\n\n"
+                f"Your verification code is:  {code}\n\n"
+                f"This code expires in 15 minutes. Enter it on the password reset\n"
+                f"page to set a new password.\n\n"
+                f"If you did not request this, you can ignore this email — the\n"
+                f"account password will not change without this code.\n"
+            )
+            send_notification_email(subject, body)
+        except Exception as e:
+            print(f"  ⚠  Reset email send error (non-fatal): {e}")
+
+        ts = datetime.now().strftime('%H:%M:%S')
+        print(f"  🔑 [{ts}] Password reset code issued for '{username}' (emailed to {RESET_NOTIFY_EMAIL})")
+        self._send_json(200, generic)
+
+    def _handle_reset_password(self):
+        """POST /api/auth/reset-password {username, code, new_password}."""
+        max_req, window = RATE_LIMITS['reset']
+        if not rate_limiter.check(f"resetverify:{self._client_ip()}", max_req * 3, window):
+            self._send_json(429, {'ok': False, 'error': 'Too many attempts. Try again in a few minutes.'})
+            return
+
+        data = self._read_json_body(max_bytes=2048)
+        if data is None:
+            return
+        username = (data.get('username') or '').strip()
+        code = (data.get('code') or '').strip()
+        new_password = data.get('new_password') or ''
+
+        if not username or not code or not new_password:
+            self._send_json(400, {'ok': False, 'error': 'Username, code, and new password are required'})
+            return
+        if len(new_password) < 8:
+            self._send_json(400, {'ok': False, 'error': 'New password must be at least 8 characters'})
+            return
+
+        with _reset_lock:
+            entry = _reset_codes.get(username)
+            if not entry:
+                self._send_json(400, {'ok': False, 'error': 'No reset code requested, or it has expired. Please request a new code.'})
+                return
+            if time.time() > entry['expires']:
+                del _reset_codes[username]
+                self._send_json(400, {'ok': False, 'error': 'Reset code has expired. Please request a new code.'})
+                return
+            entry['attempts'] += 1
+            if entry['attempts'] > RESET_MAX_ATTEMPTS:
+                del _reset_codes[username]
+                self._send_json(400, {'ok': False, 'error': 'Too many incorrect attempts. Please request a new code.'})
+                return
+            if not hmac.compare_digest(entry['code'], code):
+                self._send_json(400, {'ok': False, 'error': 'Incorrect code.'})
+                return
+            # Code is valid — consume it
+            del _reset_codes[username]
+
+        # Set the new password
+        users = load_admin_users()
+        match = next((u for u in users if u['username'] == username), None)
+        if not match:
+            self._send_json(400, {'ok': False, 'error': 'Account not found'})
+            return
+        if change_admin_password(match['id'], new_password):
+            audit_log({'uid': match['id'], 'name': username}, 'password_reset_via_email',
+                      resource_type='auth', ip=self._client_ip())
+            ts = datetime.now().strftime('%H:%M:%S')
+            print(f"  🔑 [{ts}] Password reset completed for '{username}'")
+            self._send_json(200, {'ok': True, 'message': 'Password reset successfully. You can now log in.'})
+        else:
+            self._send_json(500, {'ok': False, 'error': 'Could not update password'})
+
     def _handle_change_password(self):
         user = self._get_current_user()
         if not user:
@@ -2161,7 +2310,15 @@ class WFXHandler(SimpleHTTPRequestHandler):
 
         change_admin_password(user['uid'], new_pw)
         ts = datetime.now().strftime('%H:%M:%S')
-        print(f"  ✓  [{ts}] PASSWORD CHANGED: {user['name']}")
+        # ── Diagnostic: re-read the file and confirm the new password persisted ──
+        _verify_users = load_admin_users()
+        _vu = next((u for u in _verify_users if u['id'] == user['uid']), None)
+        if _vu and verify_password(new_pw, _vu.get('password_hash', '')):
+            print(f"  ✓  [{ts}] PASSWORD CHANGED & VERIFIED ON DISK: {user['name']} "
+                  f"(file: {AUTH_FILE})")
+        else:
+            print(f"  ⚠  [{ts}] PASSWORD CHANGE DID NOT PERSIST! Check write permissions "
+                  f"on {AUTH_FILE}")
         self._send_json(200, {'ok': True})
 
     def _read_json_body(self, max_bytes=5 * 1024 * 1024):

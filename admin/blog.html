@@ -189,6 +189,13 @@
                             </select>
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        <label class="form-label" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                            <input type="checkbox" id="post-pinned" style="width:auto; margin:0;">
+                            <span><i class="fas fa-thumbtack" aria-hidden="true"></i> Pin to top (置顶) — show this post first in listings</span>
+                        </label>
+                    </div>
                     
                     <div class="form-group">
                         <label class="form-label">Excerpt</label>
@@ -262,6 +269,11 @@
         // Load posts
         function loadPosts() {
             const posts = AdminCore.getBlogPosts();
+            // Pinned posts first, then by creation date (newest first)
+            posts.sort((a, b) => {
+                if (!!b.is_pinned !== !!a.is_pinned) return (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0);
+                return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+            });
             const tbody = document.getElementById('posts-table');
             document.getElementById('post-count').textContent = `${posts.length} posts`;
             
@@ -273,7 +285,7 @@
             tbody.innerHTML = posts.map(post => `
                 <tr>
                     <td>
-                        <strong>${post.title}</strong>
+                        ${post.is_pinned ? '<i class="fas fa-thumbtack" style="color:#0284c7; margin-right:6px;" title="Pinned"></i>' : ''}<strong>${post.title}</strong>
                         ${post.excerpt ? `<div style="font-size: 0.85rem; color: var(--admin-gray); margin-top: 5px;">${post.excerpt.substring(0, 60)}...</div>` : ''}
                     </td>
                     <td>${post.category || '-'}</td>
@@ -443,6 +455,7 @@
                 document.getElementById('post-title').value = post.title;
                 document.getElementById('post-category').value = post.category || '';
                 document.getElementById('post-status').value = post.status;
+                document.getElementById('post-pinned').checked = !!(post.is_pinned);
                 document.getElementById('post-excerpt').value = post.excerpt || '';
                 if (mdEditor) {
                     mdEditor.setMarkdown(post.content || '');
@@ -472,6 +485,7 @@
                 content: contentMd,
                 content_format: 'markdown',
                 featuredImage: document.getElementById('post-image').value,
+                is_pinned: document.getElementById('post-pinned').checked,
                 tags: document.getElementById('post-tags').value.split(',').map(t => t.trim()).filter(t => t)
             };
             

@@ -1,0 +1,14 @@
+# Don't bake secrets into the image — .env is mounted at runtime instead
+.env
+config.py
+
+# Junk
+__pycache__/
+*.pyc
+.DS_Store
+*.log
+.git/
+.gitignore
+
+# Local-only runtime data (mounted as a volume instead)
+uploads/
