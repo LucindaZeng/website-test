@@ -481,3 +481,114 @@ const ContentLoader = {
 
 // Auto-initialize
 ContentLoader.init();
+
+
+/**
+ * ─── Generic CMS Collections Renderer ──────────────────────────────────────
+ * Renders per-page editable lists (equipment, materials, …) that admins manage
+ * in the CMS. Fully self-contained and wrapped in try/catch so any failure here
+ * NEVER affects the rest of the page — the inline HTML fallback simply stays.
+ *
+ * Markup contract on a page:
+ *   <div data-cms-collection="cnc-milling:equipment">
+ *       <!-- existing hardcoded items here = the fallback, shown if CMS is empty -->
+ *       <template data-cms-item>
+ *           <div class="...">
+ *               <h3 data-field="name"></h3>
+ *               <p  data-field="description"></p>
+ *               <img data-field-src="image">
+ *               <a   data-field-href="link">…</a>
+ *           </div>
+ *       </template>
+ *   </div>
+ *
+ * Behaviour: if window.__WFX_CMS__.collections[page][collection] has items, the
+ * fallback children are replaced with rendered items. Otherwise nothing changes.
+ * All values are written via textContent / setAttribute (never innerHTML), so
+ * admin-entered content cannot inject markup.
+ */
+(function () {
+    function renderCollections() {
+        var cms = window.__WFX_CMS__;
+        var data = cms && cms.collections;
+        if (!data) return; // No server data (e.g. static preview) → keep fallbacks
+
+        var containers = document.querySelectorAll('[data-cms-collection]');
+        Array.prototype.forEach.call(containers, function (container) {
+            try {
+                var key = container.getAttribute('data-cms-collection') || '';
+                var sep = key.indexOf(':');
+                if (sep < 0) return;
+                var page = key.slice(0, sep);
+                var collection = key.slice(sep + 1);
+
+                var items = data[page] && data[page][collection];
+                if (!Array.isArray(items) || items.length === 0) return; // keep fallback
+
+                var tpl = container.querySelector('template[data-cms-item]');
+                if (!tpl || !tpl.content || !tpl.content.firstElementChild) return;
+
+                var frag = document.createDocumentFragment();
+                items.forEach(function (item) {
+                    var node = tpl.content.firstElementChild.cloneNode(true);
+
+                    // Text fields → textContent (auto-escaped)
+                    Array.prototype.forEach.call(node.querySelectorAll('[data-field]'), function (el) {
+                        var f = el.getAttribute('data-field');
+                        if (item[f] != null && item[f] !== '') el.textContent = item[f];
+                    });
+                    // Image source
+                    Array.prototype.forEach.call(node.querySelectorAll('[data-field-src]'), function (el) {
+                        var f = el.getAttribute('data-field-src');
+                        if (item[f]) el.setAttribute('src', item[f]);
+                    });
+                    // Link href
+                    Array.prototype.forEach.call(node.querySelectorAll('[data-field-href]'), function (el) {
+                        var f = el.getAttribute('data-field-href');
+                        if (item[f]) el.setAttribute('href', item[f]);
+                    });
+                    // Value-driven classes. slug("Very High") -> "very-high".
+                    var slug = function (v) {
+                        return String(v == null ? '' : v).trim().toLowerCase()
+                            .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+                    };
+                    // include the cloned root itself, not just descendants
+                    var withSelf = function (sel) {
+                        var list = Array.prototype.slice.call(node.querySelectorAll(sel));
+                        if (node.matches && node.matches(sel)) list.unshift(node);
+                        return list;
+                    };
+                    // data-field-class="machinability" -> adds "rating-excellent" (CSS colours it)
+                    withSelf('[data-field-class]').forEach(function (el) {
+                        var sv = slug(item[el.getAttribute('data-field-class')]);
+                        if (sv) el.classList.add('rating-' + sv);
+                    });
+                    // data-field-addclass="family" -> adds "aluminum" (keeps the row filter working)
+                    withSelf('[data-field-addclass]').forEach(function (el) {
+                        var sv = slug(item[el.getAttribute('data-field-addclass')]);
+                        if (sv) el.classList.add(sv);
+                    });
+                    frag.appendChild(node);
+                });
+
+                // Remove fallback children (but keep the <template>), then insert rendered items
+                Array.prototype.slice.call(container.children).forEach(function (c) {
+                    if (c.tagName !== 'TEMPLATE') c.remove();
+                });
+                container.appendChild(frag);
+            } catch (err) {
+                // Isolated failure: this one container keeps its fallback HTML
+                if (window.console) console.warn('CMS collection render skipped:', err);
+            }
+        });
+    }
+
+    function boot() {
+        try { renderCollections(); } catch (e) { /* keep all fallbacks */ }
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+    } else {
+        boot();
+    }
+})();

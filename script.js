@@ -50,7 +50,8 @@ function initHeroVideo() {
         const params = [
             'autoplay=1', 'mute=1', 'loop=1', 'playlist=' + ytId,
             'controls=0', 'showinfo=0', 'modestbranding=1', 'rel=0',
-            'disablekb=1', 'playsinline=1', 'iv_load_policy=3', 'fs=0'
+            'disablekb=1', 'playsinline=1', 'iv_load_policy=3', 'fs=0',
+            'vq=hd1080', 'hd=1'   // request higher quality (reduces blur)
         ].join('&');
         const iframe = document.createElement('iframe');
         iframe.src = 'https://www.youtube-nocookie.com/embed/' + ytId + '?' + params;
@@ -387,6 +388,15 @@ function initTestimonialSlider() {
     
     if (!slider || cards.length === 0) return;
 
+    // Guard against double-binding when the CMS loader rebuilds cards and
+    // re-invokes this. Clear any prior auto-advance timer + nav handlers.
+    if (slider._wfxSliderInit) {
+        if (slider._wfxAutoAdvance) clearInterval(slider._wfxAutoAdvance);
+        if (slider._wfxPrev && prevBtn) prevBtn.removeEventListener('click', slider._wfxPrev);
+        if (slider._wfxNext && nextBtn) nextBtn.removeEventListener('click', slider._wfxNext);
+    }
+    slider._wfxSliderInit = true;
+
     let currentSlide = 0;
     const totalSlides = cards.length;
 
@@ -417,6 +427,8 @@ function initTestimonialSlider() {
 
     if (prevBtn) prevBtn.addEventListener('click', prevSlide);
     if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+    slider._wfxPrev = prevSlide;
+    slider._wfxNext = nextSlide;
 
     dots.forEach((dot, index) => {
         dot.addEventListener('click', () => {
@@ -426,11 +438,13 @@ function initTestimonialSlider() {
     });
 
     // Auto-advance slider
-    setInterval(nextSlide, 5000);
+    slider._wfxAutoAdvance = setInterval(nextSlide, 5000);
 
     // Update on window resize
     window.addEventListener('resize', updateSlider);
 }
+// Exposed so the CMS testimonials loader can re-init after rebuilding cards
+window.initTestimonialSlider = initTestimonialSlider;
 
 /* ==========================================
    Scroll Animations

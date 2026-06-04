@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testimonials - WFX Admin</title>
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        .t-card {
+            background: #fff;
+            border: 1px solid var(--light-gray, #e2e8f0);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 18px;
+        }
+        .t-card .form-group { margin-bottom: 14px; }
+        .t-card label { display:block; font-size:0.85rem; font-weight:500; margin-bottom:5px; }
+        .t-card input, .t-card textarea {
+            width:100%; padding:10px 12px; border:1px solid #d1d5db;
+            border-radius:8px; font-size:0.95rem; font-family:inherit;
+        }
+        .t-card-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+        .t-card-head h3 { margin:0; font-size:1rem; color:#0f172a; }
+        .stars-row { display:flex; gap:4px; align-items:center; }
+        .star-pick { cursor:pointer; color:#d1d5db; font-size:1.2rem; }
+        .star-pick.on { color:#f59e0b; }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <img src="../images/logo.png" alt="WFX">
+                <h2 data-i18n="nav.panel_title">Admin Panel</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a href="dashboard.html" class="nav-item"><i class="fas fa-home" aria-hidden="true"></i> Dashboard</a>
+                    <a href="quotes.html" class="nav-item"><i class="fas fa-file-invoice-dollar" aria-hidden="true"></i> Quotes</a>
+                    <a href="requests.html" class="nav-item"><i class="fas fa-inbox" aria-hidden="true"></i> Requests</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Content Management</div>
+                    <a href="videos.html" class="nav-item"><i class="fas fa-video" aria-hidden="true"></i> Video Manager</a>
+                    <a href="pages.html" class="nav-item"><i class="fas fa-file-alt" aria-hidden="true"></i> Pages &amp; Text</a>
+                    <a href="page-images.html" class="nav-item"><i class="fas fa-image" aria-hidden="true"></i> Page Images</a>
+                    <a href="products.html" class="nav-item"><i class="fas fa-boxes" aria-hidden="true"></i> Industry Products</a>
+                    <a href="testimonials.html" class="nav-item active"><i class="fas fa-quote-right" aria-hidden="true"></i> Testimonials</a>
+                    <a href="categories.html" class="nav-item"><i class="fas fa-folder-open" aria-hidden="true"></i> Categories</a>
+                    <a href="media.html" class="nav-item"><i class="fas fa-images" aria-hidden="true"></i> Media Library</a>
+                    <a href="blog.html" class="nav-item"><i class="fas fa-blog" aria-hidden="true"></i> Blog Posts</a>
+                    <a href="news.html" class="nav-item"><i class="fas fa-newspaper" aria-hidden="true"></i> News</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">System</div>
+                    <a href="users.html" class="nav-item"><i class="fas fa-users" aria-hidden="true"></i> User Management</a>
+                    <a href="blocklist.html" class="nav-item"><i class="fas fa-ban" aria-hidden="true"></i> IP Blocklist</a>
+                    <a href="activity-log.html" class="nav-item"><i class="fas fa-history" aria-hidden="true"></i> Activity Log</a>
+                    <a href="settings.html" class="nav-item"><i class="fas fa-cog" aria-hidden="true"></i> Settings</a>
+                    <a href="change-password.html" class="nav-item"><i class="fas fa-key" aria-hidden="true"></i> Change Password</a>
+                </div>
+                <div class="nav-section">
+                    <a href="../index.html" class="nav-item" target="_blank"><i class="fas fa-external-link-alt" aria-hidden="true"></i> View Website</a>
+                    <a href="#" class="nav-item" onclick="AdminCore.logout()"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout</a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="admin-main">
+            <header class="admin-header">
+                <div>
+                    <h1>Testimonials</h1>
+                    <p style="color:var(--gray); margin:4px 0 0;">Edit the "What Our Customers Say" section on the homepage.</p>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn btn-outline" onclick="addCard()"><i class="fas fa-plus" aria-hidden="true"></i> Add Testimonial</button>
+                    <button class="btn btn-primary" onclick="saveAll()"><i class="fas fa-save" aria-hidden="true"></i> Save All</button>
+                </div>
+            </header>
+
+            <div class="admin-content">
+                <div id="alert-box"></div>
+                <div id="cards"></div>
+                <div id="empty" style="display:none; text-align:center; padding:40px; color:var(--gray);">
+                    No testimonials yet. Click "Add Testimonial" to create one.
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/cms-sync.js"></script>
+    <script src="js/admin-core.js"></script>
+    <script>
+        AdminCore.requireAuth();
+
+        const CMS_KEY = 'testimonials';
+        let items = [];
+
+        // Default seed (matches the hardcoded homepage testimonials)
+        const DEFAULTS = [
+            { quote: 'WFX consistently delivers precision parts that meet our tight specifications. Their 300+ CNC machines and 24/7 production capability means we can count on reliable turnaround for volume orders.', author: 'Molex Dongguan', subtitle: 'Awarded WFX "Best Quality Heat Sink Supplier"', stars: 5 },
+            { quote: 'The instant quoting system saves us hours every week. We can iterate on designs quickly and get accurate pricing immediately. Their 5-axis capabilities have opened up new design possibilities for our medical devices.', author: 'Electronics OEM Customer', subtitle: 'European Technology Company', stars: 5 }
+        ];
+
+        function escapeHtml(s) {
+            return String(s == null ? '' : s)
+                .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        function showAlert(msg, kind) {
+            document.getElementById('alert-box').innerHTML =
+                '<div class="alert alert-' + (kind || 'success') + '" style="padding:12px 16px; border-radius:8px; margin-bottom:16px; background:' +
+                (kind === 'danger' ? '#fee2e2;color:#991b1b' : '#dcfce7;color:#166534') + ';">' + escapeHtml(msg) + '</div>';
+            setTimeout(() => { document.getElementById('alert-box').innerHTML = ''; }, 4000);
+        }
+
+        function render() {
+            const wrap = document.getElementById('cards');
+            document.getElementById('empty').style.display = items.length ? 'none' : 'block';
+            wrap.innerHTML = items.map((t, i) => `
+                <div class="t-card">
+                    <div class="t-card-head">
+                        <h3>Testimonial #${i + 1}</h3>
+                        <button class="btn btn-sm btn-danger" onclick="removeCard(${i})"><i class="fas fa-trash" aria-hidden="true"></i></button>
+                    </div>
+                    <div class="form-group">
+                        <label>Quote</label>
+                        <textarea rows="3" oninput="items[${i}].quote=this.value">${escapeHtml(t.quote)}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Author / Company</label>
+                        <input type="text" value="${escapeHtml(t.author)}" oninput="items[${i}].author=this.value">
+                    </div>
+                    <div class="form-group">
+                        <label>Subtitle (role / note)</label>
+                        <input type="text" value="${escapeHtml(t.subtitle)}" oninput="items[${i}].subtitle=this.value">
+                    </div>
+                    <div class="form-group">
+                        <label>Rating</label>
+                        <div class="stars-row" data-idx="${i}">
+                            ${[1,2,3,4,5].map(n => `<i class="fas fa-star star-pick ${n <= (t.stars||5) ? 'on' : ''}" onclick="setStars(${i},${n})"></i>`).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function setStars(i, n) { items[i].stars = n; render(); }
+        function addCard() { items.push({ quote:'', author:'', subtitle:'', stars:5 }); render(); }
+        function removeCard(i) { items.splice(i, 1); render(); }
+
+        async function load() {
+            try {
+                const r = await fetch('/api/cms/content/' + CMS_KEY);
+                const j = await r.json();
+                if (j.ok && j.value) {
+                    const parsed = typeof j.value === 'string' ? JSON.parse(j.value) : j.value;
+                    if (Array.isArray(parsed) && parsed.length) { items = parsed; render(); return; }
+                }
+            } catch (e) { /* fall through to defaults */ }
+            items = JSON.parse(JSON.stringify(DEFAULTS));
+            render();
+        }
+
+        async function saveAll() {
+            // Basic validation
+            for (const t of items) {
+                if (!t.quote || !t.author) { showAlert('Each testimonial needs a quote and an author.', 'danger'); return; }
+            }
+            try {
+                const csrf = window.WFX_CSRF_TOKEN || localStorage.getItem('wfx_csrf_token') || '';
+                const r = await fetch('/api/cms/content/' + CMS_KEY, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
+                    body: JSON.stringify({ value: JSON.stringify(items) })
+                });
+                const j = await r.json();
+                if (r.ok && j.ok) {
+                    showAlert('Testimonials saved. The homepage will show them on next load.');
+                    AdminCore.logAction && AdminCore.logAction('testimonials_updated', 'Updated homepage testimonials', { count: items.length });
+                } else {
+                    showAlert(j.error || 'Save failed (is the database configured?)', 'danger');
+                }
+            } catch (e) {
+                showAlert('Server unreachable.', 'danger');
+            }
+        }
+
+        load();
+    </script>
+</body>
+</html>

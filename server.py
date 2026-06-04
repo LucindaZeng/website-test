@@ -47,6 +47,20 @@ from datetime import datetime, timedelta
 from urllib.parse import unquote, urlparse, parse_qs
 
 
+# ─── Make console output robust on non-UTF-8 terminals (Windows / NSSM) ─────────
+# This server prints status lines containing ✓ ⚠ ✗ ✉ and box-drawing characters.
+# When run as a Windows service via NSSM the process has no UTF-8 console, so its
+# stdout defaults to the system code page (e.g. GBK on Chinese Windows). The first
+# such print would then raise UnicodeEncodeError and terminate the process during
+# startup — the service appears to "fail to start" with no error returned.
+# Reconfiguring to UTF-8 with errors='replace' makes every print safe everywhere.
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+
+
 # ─── Load .env file (if present) for cloud deployments ──────────────────────────
 def _load_env_file(path='.env'):
     """Minimal .env parser. Lines: KEY=value or KEY="value".
@@ -163,7 +177,7 @@ SECURITY_HEADERS = {
         "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://cdn.tiny.cloud https://cdn.jsdelivr.net; "
         "font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com https://cdn.tiny.cloud; "
         "img-src 'self' data: blob: https://images.unsplash.com https://randomuser.me https://cdn.tiny.cloud https://sp.tinymce.com; "
-        "frame-src https://www.google.com https://maps.google.com https://www.720yun.com https://m.amap.com https://uri.amap.com https://www.amap.com https://www.youtube.com https://www.youtube-nocookie.com; "
+        "frame-src https://www.google.com https://maps.google.com https://www.openstreetmap.org https://www.720yun.com https://m.amap.com https://uri.amap.com https://www.amap.com https://www.youtube.com https://www.youtube-nocookie.com; "
         "frame-ancestors 'self'; "  # equivalent to X-Frame-Options for modern browsers
         "media-src 'self' blob:; "
         "connect-src 'self' https://cdn.tiny.cloud https://sp.tinymce.com; "
@@ -201,6 +215,33 @@ ALLOWED_MEDIA_EXTS = {
     '.pdf',
 }
 MEDIA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads', 'media')
+
+
+def sanitize_media_folder(folder):
+    """Normalise a media folder into a safe, optionally-nested relative path.
+
+    Supports page-organised paths like 'pages/cnc-milling/equipment' so files
+    are stored by the page/module they belong to. Each segment must be
+    alphanumeric + dash + underscore; '.', '..', empty segments, and absolute
+    paths are rejected. Falls back to 'general'. Max depth 4.
+
+    Returns a forward-slash path (used in URLs and, split, on disk).
+    """
+    folder = (folder or 'general').strip().strip('/')
+    if not folder:
+        return 'general'
+    segs = [s for s in folder.split('/') if s != '']
+    if not segs or len(segs) > 4:
+        return 'general'
+    clean = []
+    for s in segs:
+        if s in ('.', '..'):
+            return 'general'
+        if len(s) > 50 or not s.replace('-', '').replace('_', '').isalnum():
+            return 'general'
+        clean.append(s)
+    return '/'.join(clean)
+
 
 # Magic-number prefixes for binary CAD/archive files we accept.
 # Text-based formats (.step/.stp/.iges/.igs/.x_t/.sat) start with "ISO-10303-21"
@@ -786,6 +827,7 @@ ROLE_PERMISSIONS = {
         # Full access everywhere
         'content:read', 'content:write', 'content:delete',
         'products:read', 'products:write', 'products:delete',
+        'collections:read', 'collections:write', 'collections:delete',
         'news:read', 'news:write', 'news:delete',
         'blog:read', 'blog:write', 'blog:delete',
         'categories:read', 'categories:write', 'categories:delete',
@@ -802,6 +844,7 @@ ROLE_PERMISSIONS = {
         # Content lead — manage articles, products, categories, media
         'content:read', 'content:write',
         'products:read', 'products:write', 'products:delete',
+        'collections:read', 'collections:write', 'collections:delete',
         'news:read', 'news:write', 'news:delete',
         'blog:read', 'blog:write', 'blog:delete',
         'categories:read', 'categories:write', 'categories:delete',
@@ -814,6 +857,7 @@ ROLE_PERMISSIONS = {
         # SEO — meta tags, slugs, alt text, but no body content rewriting
         'content:read', 'content:write',  # SEO fields are inside content
         'products:read',
+        'collections:read',
         'news:read', 'news:write',        # Can edit slugs/titles for SEO
         'blog:read', 'blog:write',
         'categories:read',
@@ -825,11 +869,12 @@ ROLE_PERMISSIONS = {
         'quotes:read', 'quotes:write', 'quotes:delete',
         'contacts:read', 'contacts:write',
         'products:read',                  # Read-only product info to answer customer questions
+        'collections:read',
         'news:read', 'blog:read',
     },
     'viewer': {
         # Read-only across everything
-        'content:read', 'products:read', 'news:read', 'blog:read',
+        'content:read', 'products:read', 'collections:read', 'news:read', 'blog:read',
         'categories:read', 'media:read', 'quotes:read', 'contacts:read',
     },
 }
@@ -1451,6 +1496,141 @@ def cms_replace_industry_products(industry, products):
         conn.close()
 
 
+# ─── Generic per-page collections (equipment, materials, anything) ──────────────
+# Mirrors the industry-products pattern, but stores arbitrary item fields as JSON
+# so any page can have add/remove lists without new columns. The page's schema
+# (defined in the admin) decides which fields each item has.
+
+def cms_list_collection(page, collection=None):
+    """List items for page[/collection]. Returns rows with item fields flattened.
+
+    If collection is None, returns every collection for the page.
+    item_data JSON is merged up to the top level so the frontend reads
+    row['name'], row['description'], … directly (same shape as products).
+    """
+    conn = get_db_connection()
+    if not conn:
+        return []
+    try:
+        cursor = conn.cursor(dictionary=True)
+        if collection:
+            cursor.execute("""
+                SELECT id, page, collection, item_data, sort_order
+                FROM cms_collections
+                WHERE page = %s AND collection = %s
+                ORDER BY sort_order, id
+            """, (page, collection))
+        else:
+            cursor.execute("""
+                SELECT id, page, collection, item_data, sort_order
+                FROM cms_collections
+                WHERE page = %s
+                ORDER BY collection, sort_order, id
+            """, (page,))
+        rows = cursor.fetchall()
+        out = []
+        for r in rows:
+            raw = r.get('item_data')
+            try:
+                fields = json.loads(raw) if isinstance(raw, str) else (raw or {})
+            except (ValueError, TypeError):
+                fields = {}
+            if not isinstance(fields, dict):
+                fields = {}
+            out.append({
+                'id': r['id'],
+                'page': r['page'],
+                'collection': r['collection'],
+                'sort_order': r['sort_order'],
+                **fields,
+            })
+        return out
+    except mysql.connector.Error as e:
+        print(f"  ✗  list collection failed: {e}")
+        return []
+    finally:
+        conn.close()
+
+
+def cms_list_all_collections():
+    """Return every collection grouped as {page: {collection: [items...]}}.
+
+    Used by the injection bundle so public pages get their lists on first paint.
+    """
+    conn = get_db_connection()
+    if not conn:
+        return {}
+    try:
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT id, page, collection, item_data, sort_order
+            FROM cms_collections
+            ORDER BY page, collection, sort_order, id
+        """)
+        grouped = {}
+        for r in cursor.fetchall():
+            raw = r.get('item_data')
+            try:
+                fields = json.loads(raw) if isinstance(raw, str) else (raw or {})
+            except (ValueError, TypeError):
+                fields = {}
+            if not isinstance(fields, dict):
+                fields = {}
+            grouped.setdefault(r['page'], {}).setdefault(r['collection'], []).append({
+                'id': r['id'],
+                'sort_order': r['sort_order'],
+                **fields,
+            })
+        return grouped
+    except mysql.connector.Error as e:
+        print(f"  ✗  list all collections failed: {e}")
+        return {}
+    finally:
+        conn.close()
+
+
+# Reserved top-level item keys that are columns, not part of the JSON payload.
+_COLLECTION_RESERVED = {'id', 'page', 'collection', 'sort_order'}
+
+
+def cms_replace_collection(page, collection, items):
+    """Replace ALL items for page+collection with the supplied list.
+
+    Same replace-all semantics as cms_replace_industry_products: delete then
+    re-insert in one transaction, so a failed write never leaves a half-updated
+    list. Item fields go into item_data JSON verbatim (minus reserved keys).
+    """
+    conn = get_db_connection()
+    if not conn:
+        return False
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+            "DELETE FROM cms_collections WHERE page = %s AND collection = %s",
+            (page, collection),
+        )
+        for i, item in enumerate(items or []):
+            if not isinstance(item, dict):
+                continue
+            fields = {k: v for k, v in item.items() if k not in _COLLECTION_RESERVED}
+            sort_order = item.get('sort_order', i)
+            cursor.execute("""
+                INSERT INTO cms_collections (page, collection, item_data, sort_order)
+                VALUES (%s, %s, %s, %s)
+            """, (page, collection, json.dumps(fields, ensure_ascii=False), sort_order))
+        conn.commit()
+        return True
+    except mysql.connector.Error as e:
+        print(f"  ✗  replace collection failed: {e}")
+        try:
+            conn.rollback()
+        except mysql.connector.Error:
+            pass
+        return False
+    finally:
+        conn.close()
+
+
 def cms_list_news(news_type='news', published_only=True, limit=100):
     """Fetch news/blog posts."""
     conn = get_db_connection()
@@ -1525,6 +1705,7 @@ def cms_load_all_for_injection():
         'homepage_media':     cms_get('homepage_media', {}),
         'site_settings':      cms_get('site_settings', {}),
         'industry_products':  cms_list_industry_products(),
+        'collections':        cms_list_all_collections(),
         'news':               cms_list_news('news',  limit=20),
         'blog':               cms_list_news('blog',  limit=20),
         'categories':         cms_get('categories', {}),
@@ -1680,11 +1861,13 @@ class WFXHandler(SimpleHTTPRequestHandler):
             self._handle_blocklist_delete(value)
             return
         elif path.startswith('/api/media/'):
-            # /api/media/<folder>/<filename>
-            parts = path[len('/api/media/'):].split('/', 1)
-            if len(parts) == 2 and parts[0] and parts[1]:
-                self._handle_media_delete(parts[0], parts[1])
-                return
+            # /api/media/<folder.../><filename>  — folder may be nested
+            rest = unquote(path[len('/api/media/'):])
+            if '/' in rest:
+                folder, filename = rest.rsplit('/', 1)
+                if folder and filename:
+                    self._handle_media_delete(folder, filename)
+                    return
             self._send_json(400, {'ok': False, 'error': 'Format: /api/media/<folder>/<filename>'})
             return
         elif path.startswith('/api/quotes/') and path.endswith('/attachment'):
@@ -2362,6 +2545,16 @@ class WFXHandler(SimpleHTTPRequestHandler):
             self._send_json(200, {'ok': True, 'rows': cms_list_industry_products(industry)})
             return
 
+        if resource == 'collections':
+            # /api/cms/collections/<page>[/<collection>]
+            if len(parts) < 4:
+                self._send_json(400, {'ok': False, 'error': 'Format: /api/cms/collections/<page>[/<collection>]'})
+                return
+            page = parts[3]
+            collection = parts[4] if len(parts) >= 5 else None
+            self._send_json(200, {'ok': True, 'rows': cms_list_collection(page, collection)})
+            return
+
         if resource == 'news' and len(parts) >= 4:
             news_type = parts[3]  # 'news' or 'blog'
             if news_type not in ('news', 'blog'):
@@ -2394,6 +2587,7 @@ class WFXHandler(SimpleHTTPRequestHandler):
         permission_resource = {
             'content':    'content',
             'products':   'products',
+            'collections':'collections',
             'news':       'news',     # split below for blog vs news
             'categories': 'categories',
         }.get(resource)
@@ -2444,6 +2638,19 @@ class WFXHandler(SimpleHTTPRequestHandler):
             ok = cms_replace_industry_products(industry, products)
             audit_log(user, 'products_update', resource_type='products', resource_id=industry,
                       ip=self._client_ip())
+            self._send_json(200 if ok else 500, {'ok': ok})
+            return
+
+        if resource == 'collections' and len(parts) == 5:
+            page, collection = parts[3], parts[4]
+            items = body.get('items', [])
+            if not isinstance(items, list):
+                self._send_json(400, {'ok': False, 'error': 'items must be a list'})
+                return
+            ok = cms_replace_collection(page, collection, items)
+            audit_log(user, 'collection_update', resource_type='collections',
+                      resource_id=f'{page}/{collection}',
+                      detail=f'{len(items)} items', ip=self._client_ip())
             self._send_json(200 if ok else 500, {'ok': ok})
             return
 
@@ -2613,17 +2820,15 @@ class WFXHandler(SimpleHTTPRequestHandler):
             })
             return
 
-        # Optional folder/category from form (e.g. "products", "videos", "downloads")
-        folder = (form.getvalue('folder') or 'general').strip()
-        # Only allow safe folder names (alphanumeric + dash + underscore)
-        if not folder.replace('-', '').replace('_', '').isalnum() or len(folder) > 50:
-            folder = 'general'
+        # Optional folder from form. Page-organised paths like
+        # "pages/cnc-milling/equipment" keep files grouped by module.
+        folder = sanitize_media_folder(form.getvalue('folder'))
 
-        # Build target path
-        os.makedirs(os.path.join(MEDIA_DIR, folder), exist_ok=True)
+        # Build target path (folder may be nested)
+        os.makedirs(os.path.join(MEDIA_DIR, *folder.split('/')), exist_ok=True)
         safe_base = re.sub(r'[^a-zA-Z0-9_.-]', '_', os.path.splitext(original_name)[0])[:80] or 'file'
         stored_name = f"{safe_base}_{uuid.uuid4().hex[:8]}{ext}"
-        target_path = os.path.join(MEDIA_DIR, folder, stored_name)
+        target_path = os.path.join(MEDIA_DIR, *folder.split('/'), stored_name)
 
         # Stream-write the uploaded file with size limit enforcement
         size = 0
@@ -2678,12 +2883,13 @@ class WFXHandler(SimpleHTTPRequestHandler):
 
         items = []
         if os.path.isdir(MEDIA_DIR):
-            for folder_name in sorted(os.listdir(MEDIA_DIR)):
-                folder_path = os.path.join(MEDIA_DIR, folder_name)
-                if not os.path.isdir(folder_path):
-                    continue
-                for fname in sorted(os.listdir(folder_path)):
-                    fpath = os.path.join(folder_path, fname)
+            for dirpath, _dirs, files in os.walk(MEDIA_DIR):
+                rel = os.path.relpath(dirpath, MEDIA_DIR)
+                folder_name = '' if rel == '.' else rel.replace(os.sep, '/')
+                if not folder_name:
+                    continue  # files directly under media root are not expected
+                for fname in sorted(files):
+                    fpath = os.path.join(dirpath, fname)
                     if not os.path.isfile(fpath):
                         continue
                     try:
@@ -2697,6 +2903,7 @@ class WFXHandler(SimpleHTTPRequestHandler):
                         })
                     except OSError:
                         continue
+        items.sort(key=lambda x: (x['folder'], x['filename']))
 
         self._send_json(200, {'ok': True, 'items': items, 'total': len(items)})
 
@@ -2709,15 +2916,21 @@ class WFXHandler(SimpleHTTPRequestHandler):
             self._send_json(403, {'ok': False, 'error': 'Forbidden: requires media:delete'})
             return
 
-        # Prevent path traversal
-        if not folder.replace('-', '').replace('_', '').isalnum():
-            self._send_json(400, {'ok': False, 'error': 'Invalid folder name'})
-            return
+        # Prevent path traversal. Folder may be nested (e.g. pages/cnc-milling/equipment);
+        # sanitize_media_folder rejects '..', absolute paths and bad segments.
         if '..' in filename or '/' in filename or '\\' in filename:
             self._send_json(400, {'ok': False, 'error': 'Invalid filename'})
             return
+        clean_folder = sanitize_media_folder(folder)
+        if clean_folder != folder.strip().strip('/'):
+            self._send_json(400, {'ok': False, 'error': 'Invalid folder name'})
+            return
 
-        target = os.path.join(MEDIA_DIR, folder, filename)
+        target = os.path.join(MEDIA_DIR, *clean_folder.split('/'), filename)
+        # Defence in depth: ensure the resolved path is still inside MEDIA_DIR
+        if os.path.commonpath([os.path.abspath(target), os.path.abspath(MEDIA_DIR)]) != os.path.abspath(MEDIA_DIR):
+            self._send_json(400, {'ok': False, 'error': 'Invalid path'})
+            return
         if not os.path.isfile(target):
             self._send_json(404, {'ok': False, 'error': 'File not found'})
             return
