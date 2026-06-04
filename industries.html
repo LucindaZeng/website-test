@@ -382,7 +382,7 @@
     <!-- Industries Section -->
     <section class="industries-section">
         <div class="container">
-            <div class="industries-grid">
+            <div data-cms-collection="industries:cards" class="industries-grid">
                 <!-- Aerospace -->
                 <div class="industry-card">
                     <div class="industry-card-image">
@@ -472,6 +472,19 @@
                         <a href="robotics.html" class="btn-link">Learn More <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
                     </div>
                 </div>
+                <template data-cms-item>
+                    <div class="industry-card">
+                        <div class="industry-card-image">
+                            <img src="" alt="" data-field-src="image" loading="lazy">
+                            <div class="industry-icon"><i class="fas fa-industry" data-field-iconclass="icon" aria-hidden="true"></i></div>
+                        </div>
+                        <div class="industry-card-content">
+                            <h3 data-field="title"></h3>
+                            <p data-field="description"></p>
+                            <a href="#" class="btn-link" data-field-href="link">Learn More <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                        </div>
+                    </div>
+                </template>
             </div>
         </div>
     </section>

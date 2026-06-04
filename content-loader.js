@@ -532,41 +532,79 @@ ContentLoader.init();
                 items.forEach(function (item) {
                     var node = tpl.content.firstElementChild.cloneNode(true);
 
-                    // Text fields → textContent (auto-escaped)
-                    Array.prototype.forEach.call(node.querySelectorAll('[data-field]'), function (el) {
-                        var f = el.getAttribute('data-field');
-                        if (item[f] != null && item[f] !== '') el.textContent = item[f];
-                    });
-                    // Image source
-                    Array.prototype.forEach.call(node.querySelectorAll('[data-field-src]'), function (el) {
-                        var f = el.getAttribute('data-field-src');
-                        if (item[f]) el.setAttribute('src', item[f]);
-                    });
-                    // Link href
-                    Array.prototype.forEach.call(node.querySelectorAll('[data-field-href]'), function (el) {
-                        var f = el.getAttribute('data-field-href');
-                        if (item[f]) el.setAttribute('href', item[f]);
-                    });
-                    // Value-driven classes. slug("Very High") -> "very-high".
+                    // slug("Very High") -> "very-high"
                     var slug = function (v) {
                         return String(v == null ? '' : v).trim().toLowerCase()
                             .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
                     };
-                    // include the cloned root itself, not just descendants
+                    // include the cloned root itself, not just descendants (a field
+                    // attribute may sit on the item's root element, e.g. <a data-field-href>)
                     var withSelf = function (sel) {
                         var list = Array.prototype.slice.call(node.querySelectorAll(sel));
                         if (node.matches && node.matches(sel)) list.unshift(node);
                         return list;
                     };
+
+                    // Text fields → textContent (auto-escaped)
+                    withSelf('[data-field]').forEach(function (el) {
+                        var f = el.getAttribute('data-field');
+                        if (item[f] != null && item[f] !== '') el.textContent = item[f];
+                    });
+                    // Image source
+                    withSelf('[data-field-src]').forEach(function (el) {
+                        var f = el.getAttribute('data-field-src');
+                        if (item[f]) el.setAttribute('src', item[f]);
+                    });
+                    // Link href
+                    withSelf('[data-field-href]').forEach(function (el) {
+                        var f = el.getAttribute('data-field-href');
+                        if (item[f]) el.setAttribute('href', item[f]);
+                    });
                     // data-field-class="machinability" -> adds "rating-excellent" (CSS colours it)
                     withSelf('[data-field-class]').forEach(function (el) {
                         var sv = slug(item[el.getAttribute('data-field-class')]);
                         if (sv) el.classList.add('rating-' + sv);
                     });
+                    // data-field-iconclass="icon" -> sets the element's class to the field value
+                    // (e.g. "fas fa-plane"). Sanitised to class-name-safe chars only.
+                    withSelf('[data-field-iconclass]').forEach(function (el) {
+                        var v = item[el.getAttribute('data-field-iconclass')];
+                        if (v != null && v !== '') {
+                            var safe = String(v).replace(/[^a-zA-Z0-9 _-]/g, '').trim();
+                            if (safe) el.className = safe;
+                        }
+                    });
                     // data-field-addclass="family" -> adds "aluminum" (keeps the row filter working)
                     withSelf('[data-field-addclass]').forEach(function (el) {
                         var sv = slug(item[el.getAttribute('data-field-addclass')]);
                         if (sv) el.classList.add(sv);
+                    });
+                    // Nested string list (e.g. feature bullets). A container with
+                    // data-cms-list="features" holds <template data-cms-subitem>; the field
+                    // value is an array of strings (or newline-separated string). Each entry
+                    // clones the sub-template; data-field="." receives the entry text.
+                    withSelf('[data-cms-list]').forEach(function (listEl) {
+                        var fname = listEl.getAttribute('data-cms-list');
+                        var raw = item[fname];
+                        var entries = Array.isArray(raw)
+                            ? raw
+                            : (raw == null || raw === '' ? [] : String(raw).split('\n'));
+                        entries = entries.map(function (e) { return String(e).trim(); })
+                                         .filter(function (e) { return e !== ''; });
+                        var sub = listEl.querySelector('template[data-cms-subitem]');
+                        if (!sub || !sub.content || !sub.content.firstElementChild || !entries.length) return;
+                        var subfrag = node.ownerDocument.createDocumentFragment();
+                        entries.forEach(function (text) {
+                            var li = sub.content.firstElementChild.cloneNode(true);
+                            var target = (li.matches && li.matches('[data-field="."]'))
+                                ? li : li.querySelector('[data-field="."]');
+                            if (target) target.textContent = text;
+                            subfrag.appendChild(li);
+                        });
+                        Array.prototype.slice.call(listEl.children).forEach(function (c) {
+                            if (c.tagName !== 'TEMPLATE') c.remove();
+                        });
+                        listEl.appendChild(subfrag);
                     });
                     frag.appendChild(node);
                 });

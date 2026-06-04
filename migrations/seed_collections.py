@@ -42,8 +42,59 @@ TARGETS = [
         "columns": ("name", "category", "density", "machinability",
                     "strength", "corrosion", "applications"),
     },
+    {
+        "key": "services:cards", "file": "services.html", "strategy": "cards",
+        "item_selector": "a.service-card-link",
+        "fields": {
+            "title": {"sel": "h3"},
+            "description": {"sel": "p"},
+            "link": {"attr": "href"},
+            "icon": {"sel": "i", "attr": "class"},
+        },
+    },
+    {
+        "key": "industries:cards", "file": "industries.html", "strategy": "cards",
+        "item_selector": "div.industry-card",
+        "fields": {
+            "title": {"sel": ".industry-card-content h3"},
+            "description": {"sel": ".industry-card-content p"},
+            "link": {"sel": ".industry-card-content a", "attr": "href"},
+            "image": {"sel": "img", "attr": "src"},
+            "icon": {"sel": ".industry-icon i", "attr": "class"},
+        },
+    },
+    {
+        "key": "faq:general", "file": "faq.html", "strategy": "cards",
+        "item_selector": ".faq-item",
+        "fields": {"question": {"sel": ".faq-question"}, "answer": {"sel": ".faq-answer"}},
+    },
+    {
+        "key": "faq:technical", "file": "faq.html", "strategy": "cards",
+        "item_selector": ".faq-item",
+        "fields": {"question": {"sel": ".faq-question"}, "answer": {"sel": ".faq-answer"}},
+    },
+    {
+        "key": "faq:ordering", "file": "faq.html", "strategy": "cards",
+        "item_selector": ".faq-item",
+        "fields": {"question": {"sel": ".faq-question"}, "answer": {"sel": ".faq-answer"}},
+    },
     # Future pages get added here as they are converted.
 ]
+
+# finishing.html: 7 process families, each its own grid/collection. Same card shape.
+for _slug in ("electroplating", "chemical-treatment", "anodizing", "heat-treatment",
+              "mechanical", "marking-printing", "other-specialty"):
+    TARGETS.append({
+        "key": f"finishing:{_slug}", "file": "finishing.html", "strategy": "cards",
+        "item_selector": ".process-card",
+        "fields": {
+            "title":        {"sel": "h3"},
+            "icon":         {"sel": "h3 i", "attr": "class"},
+            "description":  {"sel": "p"},
+            "features":     {"sel": ".process-features li", "list": True, "join": "\n"},
+            "applications": {"sel": ".process-applications span"},
+        },
+    })
 
 
 def _text(el):
@@ -98,6 +149,38 @@ def extract_table_rows(container, columns):
     return items
 
 
+def _extract_field(item_el, spec):
+    """spec: {"sel": css?, "attr": attr?, "list": bool?}. Reads from a descendant
+    (or the item itself if no sel). 'list' returns an array of texts from all
+    matches; otherwise text by default, or an attribute if 'attr' is given."""
+    if spec.get("list"):
+        vals = [_text(e) for e in item_el.select(spec["sel"]) if _text(e)]
+        return spec["join"].join(vals) if spec.get("join") else vals
+    target = item_el
+    if spec.get("sel"):
+        target = item_el.select_one(spec["sel"])
+        if target is None:
+            return ""
+    if spec.get("attr"):
+        val = target.get(spec["attr"], "")
+        return " ".join(val) if isinstance(val, list) else (val or "")
+    return _text(target)
+
+
+def extract_cards(container, item_selector, fields):
+    """Generic: each element matching item_selector becomes an item; each field
+    is pulled per its spec. Items inside the <template> stub are skipped."""
+    items = []
+    for el in container.select(item_selector):
+        if el.find_parent("template") is not None:
+            continue
+        item = {k: _extract_field(el, spec) for k, spec in fields.items()}
+        # need at least one non-empty value to count as a real item
+        if any(str(v).strip() for v in item.values()):
+            items.append(item)
+    return items
+
+
 def find_container(soup, key):
     return soup.find(attrs={"data-cms-collection": key})
 
@@ -127,6 +210,8 @@ def build_sql():
             items = extract_heading_paragraph(container, t["fields"])
         elif t["strategy"] == "table_rows":
             items = extract_table_rows(container, t["columns"])
+        elif t["strategy"] == "cards":
+            items = extract_cards(container, t["item_selector"], t["fields"])
         else:
             print(f"  ⚠  unknown strategy {t['strategy']} for {key}", file=sys.stderr)
             continue

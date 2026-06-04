@@ -52,9 +52,84 @@ window.WFX_PAGE_SCHEMAS = {
                 ]
             }
         }
-    }
+    },
 
     // Add more pages below as they are converted, e.g.:
     // "cnc-turning":  { label: "CNC Turning",  collections: { equipment: {...} } },
     // "finishing":    { label: "Surface Finishing", collections: { processes: {...} } },
+
+    "services": {
+        label: "Services (overview)",
+        collections: {
+            cards: {
+                label: "服务卡片 / Service cards",
+                itemLabel: "Service",
+                fields: [
+                    { key: "title",       label: "Title",       type: "text", required: true },
+                    { key: "description", label: "Description", type: "textarea" },
+                    { key: "link",        label: "Link (href)", type: "url" },
+                    { key: "icon",        label: "Icon class",  type: "text", hint: "e.g. fas fa-cog" }
+                ]
+            }
+        }
+    },
+
+    "industries": {
+        label: "Industries (overview)",
+        collections: {
+            cards: {
+                label: "行业卡片 / Industry cards",
+                itemLabel: "Industry",
+                fields: [
+                    { key: "title",       label: "Title",       type: "text", required: true },
+                    { key: "description", label: "Description", type: "textarea" },
+                    { key: "image",       label: "Image",       type: "image" },
+                    { key: "icon",        label: "Icon class",  type: "text", hint: "e.g. fas fa-plane" },
+                    { key: "link",        label: "Link (href)", type: "url" }
+                ]
+            }
+        }
+    },
+
+    "faq": {
+        label: "FAQ",
+        collections: {
+            general:   { label: "General Questions",   itemLabel: "Q&A", fields: [
+                { key: "question", label: "Question", type: "text", required: true },
+                { key: "answer",   label: "Answer",   type: "textarea", required: true } ] },
+            technical: { label: "Technical Questions", itemLabel: "Q&A", fields: [
+                { key: "question", label: "Question", type: "text", required: true },
+                { key: "answer",   label: "Answer",   type: "textarea", required: true } ] },
+            ordering:  { label: "Ordering & Shipping", itemLabel: "Q&A", fields: [
+                { key: "question", label: "Question", type: "text", required: true },
+                { key: "answer",   label: "Answer",   type: "textarea", required: true } ] }
+        }
+    },
+
+    "finishing": {
+        label: "Surface Finishing",
+        collections: (function () {
+            var fields = [
+                { key: "title",        label: "Title",        type: "text", required: true },
+                { key: "icon",         label: "Icon class",   type: "text", hint: "e.g. fas fa-shield-alt" },
+                { key: "description",  label: "Description",  type: "textarea" },
+                { key: "features",     label: "Features (one per line)", type: "textarea" },
+                { key: "applications", label: "Applications", type: "text" }
+            ];
+            var groups = {
+                "electroplating": "Electroplating",
+                "chemical-treatment": "Chemical Treatment",
+                "anodizing": "Anodizing",
+                "heat-treatment": "Heat Treatment & Surface Hardening",
+                "mechanical": "Mechanical Treatment",
+                "marking-printing": "Marking & Printing",
+                "other-specialty": "Other Specialty Treatments"
+            };
+            var c = {};
+            Object.keys(groups).forEach(function (k) {
+                c[k] = { label: groups[k], itemLabel: "Process", fields: fields };
+            });
+            return c;
+        })()
+    }
 };

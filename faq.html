@@ -269,7 +269,7 @@
     <section style="padding: 100px 0;">
         <div class="container">
             <div style="max-width: 900px; margin: 0 auto;">
-                <div class="faq-category" style="margin-bottom: 50px;">
+                <div data-cms-collection="faq:general" class="faq-category" style="margin-bottom: 50px;">
                     <h2 style="font-size: 1.5rem; margin-bottom: 25px; color: var(--primary);">General Questions</h2>
                     
                     <div class="faq-item" style="background: var(--off-white); border-radius: 12px; margin-bottom: 15px; overflow: hidden;">
@@ -301,9 +301,18 @@
                             No minimum order required. We handle everything from single prototypes to production runs of 100,000+ parts. Our pricing is competitive at any volume.
                         </div>
                     </div>
+                    <template data-cms-item>
+                        <div class="faq-item" style="background: var(--off-white); border-radius: 12px; margin-bottom: 15px; overflow: hidden;">
+                            <button class="faq-question" style="width: 100%; padding: 25px; text-align: left; background: none; border: none; font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                                <span data-field="question"></span>
+                                <i class="fas fa-chevron-down" aria-hidden="true" style="transition: transform 0.3s;"></i>
+                            </button>
+                            <div class="faq-answer" style="padding: 0 25px 25px; color: var(--gray);" data-field="answer"></div>
+                        </div>
+                    </template>
                 </div>
 
-                <div class="faq-category" style="margin-bottom: 50px;">
+                <div data-cms-collection="faq:technical" class="faq-category" style="margin-bottom: 50px;">
                     <h2 style="font-size: 1.5rem; margin-bottom: 25px; color: var(--primary);">Technical Questions</h2>
                     
                     <div class="faq-item" style="background: var(--off-white); border-radius: 12px; margin-bottom: 15px; overflow: hidden;">
@@ -335,9 +344,18 @@
                             We are ISO9001 and IATF16949 certified. We provide complete quality documentation including inspection reports, material certifications, and certificates of conformance.
                         </div>
                     </div>
+                    <template data-cms-item>
+                        <div class="faq-item" style="background: var(--off-white); border-radius: 12px; margin-bottom: 15px; overflow: hidden;">
+                            <button class="faq-question" style="width: 100%; padding: 25px; text-align: left; background: none; border: none; font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                                <span data-field="question"></span>
+                                <i class="fas fa-chevron-down" aria-hidden="true" style="transition: transform 0.3s;"></i>
+                            </button>
+                            <div class="faq-answer" style="padding: 0 25px 25px; color: var(--gray);" data-field="answer"></div>
+                        </div>
+                    </template>
                 </div>
 
-                <div class="faq-category">
+                <div data-cms-collection="faq:ordering" class="faq-category">
                     <h2 style="font-size: 1.5rem; margin-bottom: 25px; color: var(--primary);">Ordering & Shipping</h2>
                     
                     <div class="faq-item" style="background: var(--off-white); border-radius: 12px; margin-bottom: 15px; overflow: hidden;">
@@ -359,6 +377,15 @@
                             Yes, we ship worldwide. We have experience with international shipping and can handle export documentation. DHL, FedEx, and UPS options are available.
                         </div>
                     </div>
+                    <template data-cms-item>
+                        <div class="faq-item" style="background: var(--off-white); border-radius: 12px; margin-bottom: 15px; overflow: hidden;">
+                            <button class="faq-question" style="width: 100%; padding: 25px; text-align: left; background: none; border: none; font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                                <span data-field="question"></span>
+                                <i class="fas fa-chevron-down" aria-hidden="true" style="transition: transform 0.3s;"></i>
+                            </button>
+                            <div class="faq-answer" style="padding: 0 25px 25px; color: var(--gray);" data-field="answer"></div>
+                        </div>
+                    </template>
                 </div>
             </div>
         </div>
