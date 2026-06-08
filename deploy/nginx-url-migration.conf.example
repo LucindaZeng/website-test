@@ -1,0 +1,131 @@
+# ============================================================================
+# WFX — #13 directory-style URL migration (nginx)
+# Serves new directory URLs from the existing .html files (no file moves) and
+# 301-redirects the old .html URLs to the new ones. Deploy this AT THE SAME
+# TIME as the migrated HTML (canonical/links/sitemap). Review before applying.
+#
+# Assumes:  root /var/www/wfx;   index index.html;
+# try_files serves the file in place (no redirect loop); the .html 301 blocks
+# only fire on direct old-URL requests.
+# ============================================================================
+
+# 1) Home: 301 /index.html -> /
+location = /index.html { return 301 /; }
+
+# 2) Serve new directory URLs from existing files + add missing trailing slash
+location = /services/ { try_files /services.html =404; }
+location = /services { return 301 /services/; }
+location = /services/cnc-milling/ { try_files /cnc-milling.html =404; }
+location = /services/cnc-milling { return 301 /services/cnc-milling/; }
+location = /services/cnc-turning/ { try_files /cnc-turning.html =404; }
+location = /services/cnc-turning { return 301 /services/cnc-turning/; }
+location = /services/5-axis-cnc-machining/ { try_files /5-axis.html =404; }
+location = /services/5-axis-cnc-machining { return 301 /services/5-axis-cnc-machining/; }
+location = /services/rapid-prototyping/ { try_files /prototyping.html =404; }
+location = /services/rapid-prototyping { return 301 /services/rapid-prototyping/; }
+location = /services/production-machining/ { try_files /production.html =404; }
+location = /services/production-machining { return 301 /services/production-machining/; }
+location = /services/surface-finishing/ { try_files /finishing.html =404; }
+location = /services/surface-finishing { return 301 /services/surface-finishing/; }
+location = /services/assembly/ { try_files /assembly.html =404; }
+location = /services/assembly { return 301 /services/assembly/; }
+location = /services/die-casting/ { try_files /die-casting.html =404; }
+location = /services/die-casting { return 301 /services/die-casting/; }
+location = /services/forging/ { try_files /forging.html =404; }
+location = /services/forging { return 301 /services/forging/; }
+location = /services/metal-stamping/ { try_files /stamping.html =404; }
+location = /services/metal-stamping { return 301 /services/metal-stamping/; }
+location = /services/sheet-metal-fabrication/ { try_files /sheet-metal.html =404; }
+location = /services/sheet-metal-fabrication { return 301 /services/sheet-metal-fabrication/; }
+location = /services/investment-casting/ { try_files /investment-casting.html =404; }
+location = /services/investment-casting { return 301 /services/investment-casting/; }
+location = /services/precision-inspection/ { try_files /precision-inspection.html =404; }
+location = /services/precision-inspection { return 301 /services/precision-inspection/; }
+location = /industries/ { try_files /industries.html =404; }
+location = /industries { return 301 /industries/; }
+location = /industries/aerospace-cnc-machining/ { try_files /aerospace.html =404; }
+location = /industries/aerospace-cnc-machining { return 301 /industries/aerospace-cnc-machining/; }
+location = /industries/medical-cnc-machining/ { try_files /medical.html =404; }
+location = /industries/medical-cnc-machining { return 301 /industries/medical-cnc-machining/; }
+location = /industries/electronics-cnc-parts/ { try_files /electronics.html =404; }
+location = /industries/electronics-cnc-parts { return 301 /industries/electronics-cnc-parts/; }
+location = /industries/industrial-equipment-machining/ { try_files /industrial.html =404; }
+location = /industries/industrial-equipment-machining { return 301 /industries/industrial-equipment-machining/; }
+location = /industries/liquid-cooling-cold-plates/ { try_files /liquid-cooling.html =404; }
+location = /industries/liquid-cooling-cold-plates { return 301 /industries/liquid-cooling-cold-plates/; }
+location = /industries/robotics-precision-machining/ { try_files /robotics.html =404; }
+location = /industries/robotics-precision-machining { return 301 /industries/robotics-precision-machining/; }
+location = /materials/ { try_files /materials.html =404; }
+location = /materials { return 301 /materials/; }
+location = /materials/metals-alloys/ { try_files /metals.html =404; }
+location = /materials/metals-alloys { return 301 /materials/metals-alloys/; }
+location = /quality/ { try_files /quality.html =404; }
+location = /quality { return 301 /quality/; }
+location = /quality/tolerances/ { try_files /tolerances.html =404; }
+location = /quality/tolerances { return 301 /quality/tolerances/; }
+location = /resources/ { try_files /resources.html =404; }
+location = /resources { return 301 /resources/; }
+location = /resources/design-guide/ { try_files /design-guide.html =404; }
+location = /resources/design-guide { return 301 /resources/design-guide/; }
+location = /resources/material-selection-guide/ { try_files /material-guide.html =404; }
+location = /resources/material-selection-guide { return 301 /resources/material-selection-guide/; }
+location = /resources/downloads/ { try_files /downloads.html =404; }
+location = /resources/downloads { return 301 /resources/downloads/; }
+location = /faq/ { try_files /faq.html =404; }
+location = /faq { return 301 /faq/; }
+location = /blog/ { try_files /blog.html =404; }
+location = /blog { return 301 /blog/; }
+location = /case-studies/ { try_files /case-studies.html =404; }
+location = /case-studies { return 301 /case-studies/; }
+location = /about/ { try_files /about.html =404; }
+location = /about { return 301 /about/; }
+location = /contact/ { try_files /contact.html =404; }
+location = /contact { return 301 /contact/; }
+location = /careers/ { try_files /careers.html =404; }
+location = /careers { return 301 /careers/; }
+location = /privacy/ { try_files /privacy.html =404; }
+location = /privacy { return 301 /privacy/; }
+location = /terms/ { try_files /terms.html =404; }
+location = /terms { return 301 /terms/; }
+
+# 3) 301 old .html URLs -> new directory URLs (preserve query string)
+location = /services.html { return 301 /services/$is_args$args; }
+location = /cnc-milling.html { return 301 /services/cnc-milling/$is_args$args; }
+location = /cnc-turning.html { return 301 /services/cnc-turning/$is_args$args; }
+location = /5-axis.html { return 301 /services/5-axis-cnc-machining/$is_args$args; }
+location = /prototyping.html { return 301 /services/rapid-prototyping/$is_args$args; }
+location = /production.html { return 301 /services/production-machining/$is_args$args; }
+location = /finishing.html { return 301 /services/surface-finishing/$is_args$args; }
+location = /assembly.html { return 301 /services/assembly/$is_args$args; }
+location = /die-casting.html { return 301 /services/die-casting/$is_args$args; }
+location = /forging.html { return 301 /services/forging/$is_args$args; }
+location = /stamping.html { return 301 /services/metal-stamping/$is_args$args; }
+location = /sheet-metal.html { return 301 /services/sheet-metal-fabrication/$is_args$args; }
+location = /investment-casting.html { return 301 /services/investment-casting/$is_args$args; }
+location = /precision-inspection.html { return 301 /services/precision-inspection/$is_args$args; }
+location = /industries.html { return 301 /industries/$is_args$args; }
+location = /aerospace.html { return 301 /industries/aerospace-cnc-machining/$is_args$args; }
+location = /medical.html { return 301 /industries/medical-cnc-machining/$is_args$args; }
+location = /electronics.html { return 301 /industries/electronics-cnc-parts/$is_args$args; }
+location = /industrial.html { return 301 /industries/industrial-equipment-machining/$is_args$args; }
+location = /liquid-cooling.html { return 301 /industries/liquid-cooling-cold-plates/$is_args$args; }
+location = /robotics.html { return 301 /industries/robotics-precision-machining/$is_args$args; }
+location = /materials.html { return 301 /materials/$is_args$args; }
+location = /metals.html { return 301 /materials/metals-alloys/$is_args$args; }
+location = /quality.html { return 301 /quality/$is_args$args; }
+location = /tolerances.html { return 301 /quality/tolerances/$is_args$args; }
+location = /resources.html { return 301 /resources/$is_args$args; }
+location = /design-guide.html { return 301 /resources/design-guide/$is_args$args; }
+location = /material-guide.html { return 301 /resources/material-selection-guide/$is_args$args; }
+location = /downloads.html { return 301 /resources/downloads/$is_args$args; }
+location = /faq.html { return 301 /faq/$is_args$args; }
+location = /blog.html { return 301 /blog/$is_args$args; }
+location = /case-studies.html { return 301 /case-studies/$is_args$args; }
+location = /about.html { return 301 /about/$is_args$args; }
+location = /contact.html { return 301 /contact/$is_args$args; }
+location = /careers.html { return 301 /careers/$is_args$args; }
+location = /privacy.html { return 301 /privacy/$is_args$args; }
+location = /terms.html { return 301 /terms/$is_args$args; }
+
+# 4) Optional: block direct .html access entirely after verifying redirects work.
+# Rollback: remove this file's include and redeploy the original flat HTML.

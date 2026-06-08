@@ -1,0 +1,50 @@
+# ============================================================================
+# WFX — recommended nginx performance config for Core Web Vitals
+# (LCP <= 2.5s, INP < 200ms, CLS < 0.1)
+#
+# These SERVER-SIDE settings are the biggest remaining CWV lever — the HTML/CSS
+# is already optimized (preconnect, hero preload+fetchpriority, display=swap,
+# deferred JS, lazy + decoding=async images, explicit logo/image dimensions).
+# Review and merge into your existing server block; do NOT paste blindly.
+# ============================================================================
+
+# 1) Compression — biggest TTFB/LCP win for HTML/CSS/JS/SVG/JSON
+gzip on;
+gzip_comp_level 6;
+gzip_min_length 1024;
+gzip_types text/plain text/css text/xml application/javascript application/json
+           image/svg+xml application/xml application/rss+xml font/ttf font/otf;
+gzip_vary on;
+# If the brotli module is available, prefer it:
+# brotli on; brotli_comp_level 5;
+# brotli_types text/css application/javascript application/json image/svg+xml text/xml;
+
+# 2) Cache headers — long cache for fingerprint-free static assets
+location ~* \.(?:webp|jpg|jpeg|png|gif|svg|ico|woff2?|ttf|otf)$ {
+    expires 30d;
+    add_header Cache-Control "public, max-age=2592000, immutable";
+    access_log off;
+}
+location ~* \.(?:css|js)$ {
+    expires 7d;
+    add_header Cache-Control "public, max-age=604800";
+}
+location ~* \.pdf$ {
+    expires 7d;
+    add_header Cache-Control "public, max-age=604800";
+    # downloadable resources (downloads/*.pdf) — keep crawlable, not gated
+}
+
+# 3) HTML — short cache so content edits show quickly
+location ~* \.html$ {
+    add_header Cache-Control "public, max-age=300, must-revalidate";
+}
+
+# 4) HTTP/2 (or HTTP/3) — enable on the TLS listener for parallel asset loading
+#   listen 443 ssl http2;
+
+# 5) index.html -> root canonical (task 12): 301 the .html form to /
+#   if ($request_uri ~ ^/index\.html$) { return 301 /; }
+
+# Note: real CWV is measured on live field data (CrUX). After deploying these,
+# verify with PageSpeed Insights / Lighthouse and the Search Console CWV report.

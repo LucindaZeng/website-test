@@ -24,17 +24,17 @@
 -->
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Frequently asked questions about CNC machining services, materials, tolerances, lead times, and more. Get answers from WFX experts.">
     <title>FAQ - Frequently Asked Questions | WFX CNC Machining</title>
-    <link rel="canonical" href="faq.html">
-    <link rel="alternate" hreflang="en" href="faq.html">
-    <link rel="alternate" hreflang="x-default" href="faq.html">
+    <link rel="canonical" href="https://wanfuxin-dg.com/faq.html">
+    <link rel="alternate" hreflang="en" href="https://wanfuxin-dg.com/faq.html">
+    <link rel="alternate" hreflang="x-default" href="https://wanfuxin-dg.com/faq.html">
     <!-- TODO: when /de/ /ja/ /fr/ subpaths exist, add additional hreflang tags here -->
     <!-- Open Graph / social sharing -->
     <meta property="og:type" content="website">
@@ -54,7 +54,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/styles.css">
 
     <!-- FAQPage schema for SEO rich snippets -->
     <script type="application/ld+json">
@@ -129,6 +129,16 @@
       ]
     }
     </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://wanfuxin-dg.com/" },
+        { "@type": "ListItem", "position": 2, "name": "FAQ", "item": "https://wanfuxin-dg.com/faq.html" }
+      ]
+    }
+    </script>
 </head>
 <body>
     <!-- Top Bar -->
@@ -152,7 +162,7 @@
         <div class="container">
             <nav class="navbar">
                 <a href="index.html" class="logo">
-                    <img src="images/logo.png" alt="WFX - Wanfuxin" class="logo-img">
+                    <img src="/images/logo.png" alt="WFX - Wanfuxin" width="235" height="40" class="logo-img">
                 </a>
                 
                 <ul class="nav-menu" id="nav-menu">
@@ -266,9 +276,26 @@
         </div>
     </section>
 
+    <!-- Conversion CTA band (Upload STEP / CMM-FAI Quote / Ask an Engineer) -->
+    <section class="dfm-cta-band">
+        <div class="container">
+            <p class="dfm-cta-lead"><strong>Upload your design &mdash; get engineering feedback fast.</strong></p>
+            <div class="dfm-cta-actions">
+                <a class="btn btn-primary" href="index.html#quote"><i class="fas fa-file-upload" aria-hidden="true"></i> Upload STEP File for 24-Hour DFM Review</a>
+                <a class="btn dfm-cta-secondary" href="index.html#quote"><i class="fas fa-ruler-combined" aria-hidden="true"></i> Request CMM/FAI Quote</a>
+                <a class="btn dfm-cta-secondary" href="contact.html"><i class="fas fa-headset" aria-hidden="true"></i> Ask an Engineer</a>
+            </div>
+        </div>
+    </section>
+
+
     <section style="padding: 100px 0;">
         <div class="container">
             <div style="max-width: 900px; margin: 0 auto;">
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-bottom:25px; flex-wrap:wrap;">
+                    <button class="btn btn-outline" type="button" onclick="faqExpandAll(true)" style="padding:8px 18px;"><i class="fas fa-list" aria-hidden="true"></i> 查看全部 / Expand all</button>
+                    <button class="btn btn-outline" type="button" onclick="faqExpandAll(false)" style="padding:8px 18px;"><i class="fas fa-compress" aria-hidden="true"></i> 收起 / Collapse all</button>
+                </div>
                 <div data-cms-collection="faq:general" class="faq-category" style="margin-bottom: 50px;">
                     <h2 style="font-size: 1.5rem; margin-bottom: 25px; color: var(--primary);">General Questions</h2>
                     
@@ -321,7 +348,7 @@
                             <i class="fas fa-chevron-down" aria-hidden="true"></i>
                         </button>
                         <div class="faq-answer" style="padding: 0 25px 25px; color: var(--gray);">
-                            Standard tolerances are ±0.005" (0.127mm). Precision tolerances to ±0.005mm (0.0127mm) are available for critical features. Tighter tolerances may be possible depending on geometry.
+                            Standard tolerances are ±0.005" (0.127mm). Precision tolerances to ±0.005mm (±0.0002") are available for critical features. Tighter tolerances may be possible depending on geometry.
                         </div>
                     </div>
 
@@ -411,7 +438,7 @@
             <div class="footer-main">
                 <div class="footer-brand">
                     <a href="index.html" class="footer-logo">
-                        <img src="images/logo.png" alt="WFX - Wanfuxin" class="logo-img footer-logo-visible">
+                        <img src="/images/logo.png" alt="WFX - Wanfuxin" width="235" height="40" class="logo-img footer-logo-visible">
                     </a>
                     <p>Industry-leading CNC machining services delivering precision parts from prototype to production. Trusted by engineers worldwide.</p>
                     <div class="footer-social footer-social-grid">
@@ -522,8 +549,8 @@
         <i class="fas fa-chevron-up" aria-hidden="true"></i>
     </button>
 
-    <script defer src="content-loader.js"></script>
-    <script defer src="script.js"></script>
+    <script defer src="/content-loader.js"></script>
+    <script defer src="/script.js"></script>
 
     <!-- Mobile quick-contact float (visible <769px viewport) -->
     <div class="mobile-quick-contact" aria-label="Quick contact">
@@ -538,21 +565,22 @@
         </a>
     </div>
     <!-- WhatsApp floating button + QR popup -->
-    <div class="whatsapp-widget">
+    <!-- Left social float: all 6 channels (WhatsApp keeps its QR popup) -->
+    <div class="social-float">
+        <a class="social-float-btn sf-linkedin" href="https://www.linkedin.com/company/29932516/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fab fa-linkedin-in" aria-hidden="true"></i></a>
+        <a class="social-float-btn sf-youtube" href="https://www.youtube.com/@dongguanwanfuxinintelligen9042" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="fab fa-youtube" aria-hidden="true"></i></a>
+        <a class="social-float-btn sf-instagram" href="https://www.instagram.com/wanfuxinofficial/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+        <a class="social-float-btn sf-facebook" href="https://www.facebook.com/profile.php?id=61573519499140" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+        <a class="social-float-btn sf-tiktok" href="https://www.tiktok.com/@user6799076350910" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><i class="fab fa-tiktok" aria-hidden="true"></i></a>
+        <button class="social-float-btn sf-whatsapp" type="button" aria-label="Show WhatsApp QR code" onclick="toggleWhatsAppPopup()"><i class="fab fa-whatsapp" aria-hidden="true"></i></button>
         <div class="whatsapp-popup" id="whatsapp-popup" role="dialog" aria-label="WhatsApp QR code" aria-hidden="true">
-            <button class="whatsapp-popup-close" aria-label="Close" onclick="toggleWhatsAppPopup(false)">
-                <i class="fas fa-times" aria-hidden="true"></i>
-            </button>
+            <button class="whatsapp-popup-close" aria-label="Close" onclick="toggleWhatsAppPopup(false)"><i class="fas fa-times" aria-hidden="true"></i></button>
             <h4>Scan to chat on WhatsApp</h4>
-            <img src="images/whatsapp-qr.jpeg" alt="WFX WhatsApp QR code" draggable="false">
-            <p>Scan with your phone camera, or
-                <a href="https://wa.me/qr/X5LU67WJBOWDE1" target="_blank" rel="noopener noreferrer">open chat &rarr;</a>
-            </p>
+            <img src="/images/whatsapp-qr.jpeg" alt="WFX WhatsApp QR code" draggable="false">
+            <p>Scan with your phone camera, or <a href="https://wa.me/qr/X5LU67WJBOWDE1" target="_blank" rel="noopener noreferrer">open chat &rarr;</a></p>
         </div>
-        <button class="whatsapp-float" aria-label="Show WhatsApp QR code" onclick="toggleWhatsAppPopup()">
-            <i class="fab fa-whatsapp" aria-hidden="true"></i>
-        </button>
     </div>
+
     <script>
         function toggleWhatsAppPopup(force) {
             var p = document.getElementById('whatsapp-popup');
@@ -571,6 +599,6 @@
     </script>
 
 
-    <script src="copy-protect.js" defer></script>
+    <script src="/copy-protect.js" defer></script>
 </body>
 </html>

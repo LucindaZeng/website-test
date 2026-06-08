@@ -79,6 +79,17 @@ TARGETS = [
         "fields": {"question": {"sel": ".faq-question"}, "answer": {"sel": ".faq-answer"}},
     },
     # Future pages get added here as they are converted.
+    {
+        "key": "tolerances:standards",
+        "file": "tolerances.html",
+        "strategy": "field_rows",
+        "row_selector": "tr.tol-row",
+    },
+    {
+        "key": "case-studies:cases",
+        "file": "case-studies.html",
+        "strategy": "case_studies",
+    },
 ]
 
 # finishing.html: 7 process families, each its own grid/collection. Same card shape.
@@ -189,6 +200,65 @@ def sql_escape(s):
     return s.replace("\\", "\\\\").replace("'", "\\'")
 
 
+
+
+def extract_field_rows(container, row_selector):
+    """Each row = an element matching row_selector; fields = its td[data-field] cells."""
+    items = []
+    for row in container.select(row_selector):
+        if row.find_parent("template"):
+            continue
+        item = {}
+        for cell in row.select("[data-field]"):
+            item[cell.get("data-field")] = cell.get_text(strip=True)
+        if item:
+            items.append(item)
+    return items
+
+
+def extract_case_studies(container):
+    """Each case = a direct child div containing a span.section-badge. Pulls the
+    badge, title, description, challenge, solution, 3 stats and the fallback icon."""
+    items = []
+    for badge in container.select("span.section-badge"):
+        if badge.find_parent("template"):
+            continue  # skip the editable template stub
+        body = badge.find_parent("div")
+        grid = body.find_parent("div")
+        i = grid.find("i")
+        icon = " ".join(i.get("class", [])) if i else ""
+        h2 = body.find("h2")
+        title = h2.get_text(strip=True) if h2 else ""
+        desc_p = h2.find_next("p") if h2 else None
+        item = {
+            "industry": badge.get_text(strip=True),
+            "title": title,
+            "image": "",
+            "icon": icon,
+            "description": desc_p.get_text(strip=True) if desc_p else "",
+            "challenge": "",
+            "solution": "",
+        }
+        for strong in body.find_all("strong"):
+            label = strong.get_text(strip=True)
+            p = strong.find_next("p")
+            if label == "Challenge" and p:
+                item["challenge"] = p.get_text(strip=True)
+            elif label == "Solution" and p:
+                item["solution"] = p.get_text(strip=True)
+        # stats: the row of three div>(value,label)
+        for d in body.select("div"):
+            kids = [c for c in d.find_all("div", recursive=False)]
+            if len(kids) == 3 and all(len(k.find_all("div", recursive=False)) == 2 for k in kids):
+                for n, k in enumerate(kids, 1):
+                    inner = k.find_all("div", recursive=False)
+                    item["stat%d_value" % n] = inner[0].get_text(strip=True)
+                    item["stat%d_label" % n] = inner[1].get_text(strip=True)
+                break
+        items.append(item)
+    return items
+
+
 def build_sql():
     blocks = []
     summary = []
@@ -212,6 +282,10 @@ def build_sql():
             items = extract_table_rows(container, t["columns"])
         elif t["strategy"] == "cards":
             items = extract_cards(container, t["item_selector"], t["fields"])
+        elif t["strategy"] == "field_rows":
+            items = extract_field_rows(container, t["row_selector"])
+        elif t["strategy"] == "case_studies":
+            items = extract_case_studies(container)
         else:
             print(f"  ⚠  unknown strategy {t['strategy']} for {key}", file=sys.stderr)
             continue

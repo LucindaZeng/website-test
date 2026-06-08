@@ -243,6 +243,45 @@ def sanitize_media_folder(folder):
     return '/'.join(clean)
 
 
+# Optional Pillow for converting uploaded images to WebP. If unavailable, uploads
+# are stored in their original format (conversion is skipped gracefully — no crash).
+try:
+    from PIL import Image as _PILImage
+    HAS_PILLOW = True
+except Exception:
+    HAS_PILLOW = False
+
+# Raster formats we re-encode to WebP on upload (smaller + modern). SVG stays
+# vector; GIF/WebP are left as-is to preserve animation / avoid re-encoding.
+_WEBP_CONVERT_EXTS = {'.png', '.jpg', '.jpeg', '.bmp', '.tif', '.tiff'}
+
+
+def convert_image_to_webp(path, ext, quality=82):
+    """Convert an image file to WebP (writes a new .webp, removes the original).
+    Returns the new path on success, or the original path if Pillow is missing,
+    the format isn't convertible, or anything goes wrong. Never raises."""
+    if not HAS_PILLOW or ext.lower() not in _WEBP_CONVERT_EXTS:
+        return path
+    webp_path = os.path.splitext(path)[0] + '.webp'
+    try:
+        with _PILImage.open(path) as im:
+            # Keep transparency where present; otherwise flatten to RGB
+            im = im.convert('RGBA') if im.mode in ('RGBA', 'LA', 'P') else im.convert('RGB')
+            im.save(webp_path, 'WEBP', quality=quality, method=6)
+        if os.path.abspath(webp_path) != os.path.abspath(path):
+            try: os.unlink(path)
+            except OSError: pass
+        return webp_path
+    except Exception as e:
+        print(f"  \u26a0  WebP conversion skipped ({os.path.basename(path)}): {e}")
+        try:
+            if os.path.exists(webp_path) and os.path.abspath(webp_path) != os.path.abspath(path):
+                os.unlink(webp_path)
+        except OSError:
+            pass
+        return path
+
+
 # Magic-number prefixes for binary CAD/archive files we accept.
 # Text-based formats (.step/.stp/.iges/.igs/.x_t/.sat) start with "ISO-10303-21"
 # or human-readable headers — checked separately by content sniffing.
@@ -1658,6 +1697,59 @@ def cms_list_news(news_type='news', published_only=True, limit=100):
         conn.close()
 
 
+def cms_get_homepage_news():
+    """Resolve the admin-selected homepage articles for the "What's New" section.
+
+    The selection is stored in the content key `homepage_news_titles` as an ordered
+    list of article titles (the FIRST is the big "featured" card). We key by title,
+    not DB id, because the admin saves news with a replace-all that reassigns ids.
+    Only published articles are returned, in the chosen order, each tagged
+    `featured`. Returns [] when nothing is selected → the homepage keeps its
+    built-in cards.
+    """
+    titles = cms_get('homepage_news_titles', [])
+    if not isinstance(titles, list):
+        return []
+    # dedupe preserving order, keep non-empty strings, cap at 3 (1 featured + 2)
+    seen, clean = set(), []
+    for t in titles:
+        if isinstance(t, str) and t.strip() and t not in seen:
+            seen.add(t); clean.append(t)
+    clean = clean[:3]
+    if not clean:
+        return []
+    conn = get_db_connection()
+    if not conn:
+        return []
+    try:
+        cursor = conn.cursor(dictionary=True)
+        fmt = ','.join(['%s'] * len(clean))
+        cursor.execute(
+            f"SELECT * FROM cms_news WHERE title IN ({fmt}) AND is_published = 1",
+            clean,
+        )
+        by_title = {}
+        for row in cursor.fetchall():
+            for k, v in row.items():
+                if isinstance(v, datetime):
+                    row[k] = v.isoformat()
+            by_title[row['title']] = row   # if duplicate titles, last wins
+        out = []
+        for t in clean:
+            row = by_title.get(t)
+            if not row:
+                continue  # renamed / unpublished / deleted → silently skip
+            row = dict(row)
+            row['featured'] = (len(out) == 0)  # first surviving item is the big card
+            out.append(row)
+        return out
+    except mysql.connector.Error as e:
+        print(f"  \u2717  homepage news resolve failed: {e}")
+        return []
+    finally:
+        conn.close()
+
+
 def cms_replace_news(news_type, posts):
     """Replace all news of a given type. Used by admin Save All operations."""
     conn = get_db_connection()
@@ -1708,6 +1800,8 @@ def cms_load_all_for_injection():
         'collections':        cms_list_all_collections(),
         'news':               cms_list_news('news',  limit=20),
         'blog':               cms_list_news('blog',  limit=20),
+        'homepage_news':      cms_get_homepage_news(),
+        'branding':           cms_get('branding', {}),
         'categories':         cms_get('categories', {}),
     }
 
@@ -2855,6 +2949,14 @@ class WFXHandler(SimpleHTTPRequestHandler):
                 'error': f'File content does not match {ext} format. Upload rejected.'
             })
             return
+
+        # Convert raster images to WebP (smaller, modern format). Falls back to the
+        # original file automatically if Pillow is unavailable or conversion fails.
+        converted_path = convert_image_to_webp(target_path, ext)
+        if converted_path != target_path:
+            target_path = converted_path
+            stored_name = os.path.basename(target_path)
+            size = os.path.getsize(target_path)
 
         # Public URL the admin can paste into product/page fields
         public_url = f"/uploads/media/{folder}/{stored_name}"

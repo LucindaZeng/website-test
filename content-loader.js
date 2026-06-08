@@ -1,3 +1,14 @@
+/* Normalize a same-origin relative image path (e.g. "images/x.webp") to
+   root-absolute ("/images/x.webp") so CMS images resolve on directory URLs.
+   Leaves absolute URLs (http(s):// or /...) and empty values untouched. */
+function _absImg(u) {
+    if (!u || typeof u !== 'string') return u;
+    var t = u.trim();
+    if (!t) return t;
+    if (/^(https?:)?\/\//i.test(t) || t.charAt(0) === '/') return t;
+    return '/' + t;
+}
+
 /**
  * WFX Content Loader
  * Loads editable content from localStorage and updates page elements
@@ -553,7 +564,7 @@ ContentLoader.init();
                     // Image source
                     withSelf('[data-field-src]').forEach(function (el) {
                         var f = el.getAttribute('data-field-src');
-                        if (item[f]) el.setAttribute('src', item[f]);
+                        if (item[f]) el.setAttribute('src', _absImg(item[f]));
                     });
                     // Link href
                     withSelf('[data-field-href]').forEach(function (el) {
@@ -629,4 +640,225 @@ ContentLoader.init();
     } else {
         boot();
     }
+})();
+
+
+/**
+ * ─── Homepage "What's New" Renderer ─────────────────────────────────────────
+ * Rebuilds the .news-grid from the admin-selected articles
+ * (window.__WFX_CMS__.homepage_news; first item = featured big card). If nothing
+ * is selected or the data is missing, the built-in cards in the HTML stay as the
+ * fallback. Self-contained + try/caught so it can never break the page; every
+ * value is written via textContent / setAttribute (no markup injection).
+ */
+(function () {
+    function fmtDate(s) {
+        if (!s) return '';
+        var d = new Date(s);
+        if (isNaN(d.getTime())) return String(s);
+        try { return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); }
+        catch (e) { return d.toISOString().slice(0, 10); }
+    }
+    function el(tag, cls) { var e = document.createElement(tag); if (cls) e.className = cls; return e; }
+
+    function buildCard(item, featured) {
+        var card = el('div', 'news-card' + (featured ? ' featured' : ''));
+        var imgWrap = el('div', 'news-image');
+        var img = el('img');
+        img.setAttribute('loading', 'lazy');
+        img.setAttribute('decoding', 'async');
+        if (item.image_url) img.setAttribute('src', _absImg(item.image_url));
+        img.setAttribute('alt', item.title || '');
+        imgWrap.appendChild(img);
+        if (item.category) {
+            var cat = el('span', 'news-category');
+            cat.textContent = item.category;
+            imgWrap.appendChild(cat);
+        }
+        card.appendChild(imgWrap);
+
+        var content = el('div', 'news-content');
+        var date = el('span', 'news-date');
+        date.textContent = fmtDate(item.published_at);
+        content.appendChild(date);
+        var h3 = el('h3'); h3.textContent = item.title || ''; content.appendChild(h3);
+        if (item.excerpt) { var p = el('p'); p.textContent = item.excerpt; content.appendChild(p); }
+        var link = el('a', 'news-link');
+        link.setAttribute('href', item.slug ? ('blog.html#' + item.slug) : 'blog.html');
+        link.innerHTML = 'Read More <i class="fas fa-arrow-right" aria-hidden="true"></i>';
+        content.appendChild(link);
+        card.appendChild(content);
+        return card;
+    }
+
+    function renderHomepageNews() {
+        var cms = window.__WFX_CMS__;
+        var items = cms && cms.homepage_news;
+        if (!Array.isArray(items) || items.length === 0) return;  // keep built-in cards
+        var grid = document.querySelector('.news-grid');
+        if (!grid) return;
+        var frag = document.createDocumentFragment();
+        items.forEach(function (item, i) {
+            try { frag.appendChild(buildCard(item, item.featured != null ? !!item.featured : i === 0)); }
+            catch (e) { /* skip a bad item, keep the rest */ }
+        });
+        if (!frag.childNodes.length) return;  // nothing valid → keep fallback
+        grid.innerHTML = '';
+        grid.appendChild(frag);
+    }
+
+    function boot() { try { renderHomepageNews(); } catch (e) { /* keep built-in cards */ } }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+    else boot();
+})();
+
+
+/**
+ * ─── Blog & News page (blog.html) ────────────────────────────────────────────
+ * Renders #blog-dynamic from the CMS as a LIST, with News and Blog kept in
+ * separate sections. A single article opens at blog.html?post=<slug> (detail
+ * view). If there's no CMS data, #blog-fallback (static cards) stays visible.
+ * All values via textContent (no markup injection); the article body renders as
+ * text paragraphs (preserves line breaks) for safety.
+ */
+(function () {
+    function el(t, c) { var e = document.createElement(t); if (c) e.className = c; return e; }
+    function fmtDate(s) {
+        if (!s) return '';
+        var d = new Date(s);
+        if (isNaN(d.getTime())) return String(s);
+        try { return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); }
+        catch (e) { return d.toISOString().slice(0, 10); }
+    }
+    function param(name) { try { return new URLSearchParams(window.location.search).get(name); } catch (e) { return null; } }
+    function published(arr) {
+        return (Array.isArray(arr) ? arr : []).filter(function (x) {
+            return x && x.is_published !== 0 && x.is_published !== false;
+        });
+    }
+
+    function listItem(item) {
+        var a = el('a', 'blog-list-item');
+        a.setAttribute('href', 'blog.html?post=' + encodeURIComponent(item.slug || ''));
+        if (item.image_url) {
+            var th = el('div', 'blog-list-thumb');
+            var img = el('img'); img.setAttribute('loading', 'lazy');
+            img.setAttribute('src', item.image_url); img.setAttribute('alt', item.title || '');
+            th.appendChild(img); a.appendChild(th);
+        }
+        var body = el('div', 'blog-list-body');
+        var meta = el('div', 'blog-list-meta');
+        if (item.category) { var c = el('span', 'blog-list-cat'); c.textContent = item.category; meta.appendChild(c); }
+        var dt = el('span', 'blog-list-date'); dt.textContent = fmtDate(item.published_at); meta.appendChild(dt);
+        body.appendChild(meta);
+        var h = el('h3'); h.textContent = item.title || ''; body.appendChild(h);
+        if (item.excerpt) { var p = el('p'); p.textContent = item.excerpt; body.appendChild(p); }
+        a.appendChild(body);
+        var chev = el('i', 'blog-list-arrow fas fa-chevron-right'); chev.setAttribute('aria-hidden', 'true');
+        a.appendChild(chev);
+        return a;
+    }
+
+    function renderList(host, news, blog) {
+        host.innerHTML = '';
+        function listOf(items) {
+            var list = el('div', 'blog-list');
+            items.forEach(function (it) { try { list.appendChild(listItem(it)); } catch (e) {} });
+            return list;
+        }
+        if (news.length) {
+            var nh = el('h2', 'blog-section-title'); nh.textContent = 'News'; host.appendChild(nh);
+            host.appendChild(listOf(news));
+        }
+        if (blog.length) {
+            var bh = el('h2', 'blog-section-title'); bh.textContent = 'Blog & Articles'; host.appendChild(bh);
+            // Group articles by category; show the three core types first, then any others.
+            var order = ['CNC Processes & Machines', 'Materials Knowledge Hub', 'Engineering Drawings & DFM', 'Surface Finishing', 'Related Processes & Quality'];
+            var groups = {}, seen = [];
+            blog.forEach(function (it) {
+                var c = (it.category && String(it.category).trim()) || 'Other';
+                if (!groups[c]) { groups[c] = []; seen.push(c); }
+                groups[c].push(it);
+            });
+            var cats = order.filter(function (c) { return groups[c]; })
+                .concat(seen.filter(function (c) { return order.indexOf(c) < 0; }));
+            cats.forEach(function (c) {
+                var ch = el('h3', 'blog-cat-title'); ch.textContent = c; host.appendChild(ch);
+                host.appendChild(listOf(groups[c]));
+            });
+        }
+    }
+
+    function injectArticleSchema(item) {
+        try {
+            var data = {
+                "@context": "https://schema.org",
+                "@type": "Article",
+                "headline": item.title || "",
+                "datePublished": item.published_at || undefined,
+                "author": { "@type": "Organization", "name": "WFX Wanfuxin" },
+                "publisher": {
+                    "@type": "Organization", "name": "WFX Wanfuxin",
+                    "logo": { "@type": "ImageObject", "url": "https://wanfuxin-dg.com/images/logo.png" }
+                },
+                "mainEntityOfPage": window.location.href
+            };
+            if (item.image_url) data.image = item.image_url;
+            if (item.excerpt) data.description = item.excerpt;
+            var sc = document.createElement('script');
+            sc.type = 'application/ld+json';
+            sc.setAttribute('data-blog-article', '1');
+            sc.textContent = JSON.stringify(data);
+            document.head.appendChild(sc);
+        } catch (e) {}
+    }
+    function renderDetail(host, item) {
+        host.innerHTML = '';
+        injectArticleSchema(item);
+        var back = el('a', 'blog-back'); back.setAttribute('href', 'blog.html');
+        back.innerHTML = '<i class="fas fa-arrow-left" aria-hidden="true"></i> All articles';
+        host.appendChild(back);
+        var art = el('article', 'blog-detail');
+        if (item.category) { var c = el('span', 'blog-detail-cat'); c.textContent = item.category; art.appendChild(c); }
+        var h = el('h1', 'blog-detail-title'); h.textContent = item.title || ''; art.appendChild(h);
+        var meta = el('div', 'blog-detail-meta');
+        meta.textContent = [fmtDate(item.published_at), item.author].filter(Boolean).join('  ·  ');
+        art.appendChild(meta);
+        if (item.image_url) {
+            var img = el('img', 'blog-detail-img'); img.setAttribute('src', _absImg(item.image_url));
+            img.setAttribute('alt', item.title || ''); art.appendChild(img);
+        }
+        var bodyDiv = el('div', 'blog-detail-body');
+        var content = item.content || item.excerpt || '';
+        String(content).split(/\n{2,}/).forEach(function (par) {
+            var t = par.replace(/\r/g, '').trim(); if (!t) return;
+            var p = el('p');
+            t.split(/\n/).forEach(function (line, i) { if (i) p.appendChild(document.createElement('br')); p.appendChild(document.createTextNode(line)); });
+            bodyDiv.appendChild(p);
+        });
+        art.appendChild(bodyDiv);
+        var cta = el('div', 'blog-detail-cta');
+        var btn = el('a', 'btn btn-primary'); btn.setAttribute('href', 'contact.html');
+        btn.textContent = 'Contact Us for Details'; cta.appendChild(btn);
+        art.appendChild(cta);
+        host.appendChild(art);
+    }
+
+    function boot() {
+        var cms = window.__WFX_CMS__; if (!cms) return;
+        var host = document.getElementById('blog-dynamic');
+        var fb = document.getElementById('blog-fallback');
+        if (!host) return;
+        var news = published(cms.news), blog = published(cms.blog);
+        if (!news.length && !blog.length) return;     // no CMS data → keep static fallback
+        if (fb) fb.style.display = 'none';
+        var slug = param('post');
+        if (slug) {
+            var item = news.concat(blog).filter(function (x) { return x.slug === slug; })[0];
+            if (item) { renderDetail(host, item); return; }
+        }
+        renderList(host, news, blog);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { try { boot(); } catch (e) {} });
+    else { try { boot(); } catch (e) {} }
 })();

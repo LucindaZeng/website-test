@@ -5,6 +5,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize all components
     initHeroVideo();        // must run early — affects LCP
+    initFaqAccordion();
     initCustomLogos();
     initHeader();
     initMobileMenu();
@@ -37,30 +38,37 @@ function initHeroVideo() {
         if (navigator.connection && navigator.connection.saveData) return false;
         // 3. Slow connection
         if (navigator.connection && ['slow-2g', '2g'].includes(navigator.connection.effectiveType)) return false;
+        // 4. Reduced-motion preference
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
         return true;
     }
 
     function activateVideo() {
-        // Idempotent — don't inject the iframe twice
-        if (container.querySelector('iframe')) return;
-        const ytId = container.getAttribute('data-yt-id');
-        if (!ytId) return;
-        // Background-video params: autoplay, muted, looping, no controls/UI.
-        // loop requires playlist=<id>. Use the privacy nocookie domain.
-        const params = [
-            'autoplay=1', 'mute=1', 'loop=1', 'playlist=' + ytId,
-            'controls=0', 'showinfo=0', 'modestbranding=1', 'rel=0',
-            'disablekb=1', 'playsinline=1', 'iv_load_policy=3', 'fs=0',
-            'vq=hd1080', 'hd=1'   // request higher quality (reduces blur)
-        ].join('&');
-        const iframe = document.createElement('iframe');
-        iframe.src = 'https://www.youtube-nocookie.com/embed/' + ytId + '?' + params;
-        iframe.title = 'WFX background video';
-        iframe.setAttribute('frameborder', '0');
-        iframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
-        iframe.setAttribute('aria-hidden', 'true');
-        iframe.setAttribute('tabindex', '-1');
-        container.appendChild(iframe);
+        // Idempotent — don't inject the <video> twice
+        if (container.querySelector('video')) return;
+        const src = container.getAttribute('data-video-webm');
+        if (!src) return;
+        const video = document.createElement('video');
+        video.muted = true;          // required for autoplay
+        video.defaultMuted = true;
+        video.autoplay = true;
+        video.loop = true;
+        video.playsInline = true;
+        video.preload = 'auto';
+        video.poster = '/images/hero-video-poster.jpg';
+        video.setAttribute('muted', '');
+        video.setAttribute('playsinline', '');
+        video.setAttribute('aria-hidden', 'true');
+        video.setAttribute('tabindex', '-1');
+        const source = document.createElement('source');
+        source.src = src;
+        source.type = 'video/webm';
+        video.appendChild(source);
+        container.appendChild(video);
+        const p = video.play();
+        if (p && typeof p.catch === 'function') {
+            p.catch(function () { /* autoplay blocked → poster image stays visible */ });
+        }
     }
 
     if (shouldPlayVideo()) {
@@ -71,11 +79,11 @@ function initHeroVideo() {
             setTimeout(activateVideo, 200);
         }
     }
-    // On mobile or save-data: do nothing. Poster image (CSS background) is the visual.
+    // On mobile / save-data / reduced-motion: do nothing — the poster (CSS background) is the visual.
 
-    // If user resizes from mobile → desktop later, activate then
-    window.addEventListener('resize', () => {
-        if (shouldPlayVideo() && !container.querySelector('iframe')) {
+    // If the user resizes from mobile → desktop later, activate then
+    window.addEventListener('resize', function () {
+        if (shouldPlayVideo() && !container.querySelector('video')) {
             activateVideo();
         }
     });
@@ -85,23 +93,30 @@ function initHeroVideo() {
    Custom Logo Loading from Admin
    ========================================== */
 function initCustomLogos() {
-    // Load custom main logo
-    const customLogo = localStorage.getItem('wfx_custom_logo');
-    if (customLogo) {
-        const logoImages = document.querySelectorAll('.logo-img, .footer-logo img, a.logo img');
-        logoImages.forEach(img => {
-            if (img.src.includes('images/logo.png')) {
-                img.src = customLogo;
+    // Prefer the server-side branding (window.__WFX_CMS__.branding) so the logo
+    // set in Admin shows for ALL visitors. Fall back to the legacy localStorage
+    // value (admin's own browser only), then to the default images/logo.png.
+    const branding = (window.__WFX_CMS__ && window.__WFX_CMS__.branding) || {};
+    const mainLogo = branding.logo_url || localStorage.getItem('wfx_custom_logo');
+    const footerLogo = branding.footer_logo_url || mainLogo;
+
+    if (mainLogo) {
+        document.querySelectorAll('a.logo .logo-img, a.logo img').forEach(img => {
+            if (img.src.includes('/images/logo.png') || img.classList.contains('logo-img')) {
+                img.src = mainLogo;
             }
         });
     }
-    
-    // Load custom favicon
-    const customFavicon = localStorage.getItem('wfx_custom_favicon');
+    if (footerLogo) {
+        document.querySelectorAll('.footer-logo .logo-img, .footer-logo img').forEach(img => {
+            img.src = footerLogo;
+        });
+    }
+
+    // Favicon (server branding first, then legacy localStorage)
+    const customFavicon = branding.favicon_url || localStorage.getItem('wfx_custom_favicon');
     if (customFavicon) {
-        // Update favicon links
-        const faviconLinks = document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]');
-        faviconLinks.forEach(link => {
+        document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]').forEach(link => {
             link.href = customFavicon;
         });
     }
@@ -815,7 +830,7 @@ function loadHomepageMedia() {
     const defaultMedia = {
         heroVideo: 'hero-video.mp4',
         companyVideo: 'company-video.mp4',
-        companyVideoPoster: 'images/company-video-poster.jpg',
+        companyVideoPoster: '/images/company-video-poster.jpg',
         services: {
             cncMilling: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&h=300&fit=crop',
             cncTurning: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=400&h=300&fit=crop',
@@ -843,7 +858,7 @@ function loadHomepageMedia() {
             if (media.companyVideoPoster &&
                 (media.companyVideoPoster.includes('1565193566173-7a0ee3dbe261') ||
                  media.companyVideoPoster.includes('1581094271901-8022df4466f9'))) {
-                media.companyVideoPoster = 'images/company-video-poster.jpg';
+                media.companyVideoPoster = '/images/company-video-poster.jpg';
                 localStorage.setItem('wfx_homepage_media', JSON.stringify(media));
             }
         }
@@ -851,9 +866,9 @@ function loadHomepageMedia() {
         console.log('Using default media configuration');
     }
 
-    // Hero background is now a YouTube embed (jrpMWDeBmIg, see initHeroVideo).
-    // The CMS no longer swaps a local <source>; to change the hero video,
-    // update the data-yt-id attribute on #hero-video in index.html.
+    // Hero background is a self-hosted WebM (see initHeroVideo). To change it,
+    // replace images/hero-video-optimized.webm (and the poster), or update the
+    // data-video-webm attribute on #hero-video in index.html.
 
     // Company video is now a YouTube embed (xOvLkmzvKwc). The CMS no longer
     // swaps a local <source>; to change it, update the iframe src in index.html.
@@ -1177,8 +1192,13 @@ window.WFX_renderIndustryProducts = function(galleryId, industryKey) {
     function safeImageUrl(raw) {
         if (!raw || typeof raw !== 'string') return 'https://via.placeholder.com/400x250?text=Product';
         const trimmed = raw.trim();
-        if (/^https?:\/\//i.test(trimmed) || /^\//.test(trimmed)) return trimmed;
-        return 'https://via.placeholder.com/400x250?text=Product';
+        // Block dangerous schemes (javascript:, data:, vbscript:, file: ...) but
+        // allow http(s) URLs, root-relative (/...) and same-origin relative paths
+        // (e.g. images/content/part.webp) so admin-uploaded photos display.
+        if (/^[a-z][a-z0-9+.-]*:/i.test(trimmed) && !/^https?:/i.test(trimmed)) {
+            return 'https://via.placeholder.com/400x250?text=Product';
+        }
+        return trimmed.charAt(0) === '/' ? trimmed : '/' + trimmed;
     }
 
     // Replace static fallback with admin-managed products
@@ -1193,7 +1213,7 @@ window.WFX_renderIndustryProducts = function(galleryId, industryKey) {
         // Image — setAttribute is safe (browser ignores JS-protocol URLs in src
         // when the URL has already been validated above, but we also blanket-block).
         const img = document.createElement('img');
-        img.setAttribute('src', safeImageUrl(product.image));
+        img.setAttribute('src', safeImageUrl(product.image_url || product.image));
         img.setAttribute('alt', product.name || 'Product');  // setAttribute escapes attrs
         img.setAttribute('loading', 'lazy');
         img.style.cssText = 'width: 100%; height: 220px; object-fit: cover;';
@@ -1232,5 +1252,22 @@ window.WFX_renderIndustryProducts = function(galleryId, industryKey) {
 
         card.appendChild(body);
         gallery.appendChild(card);
+    });
+};
+
+
+/* FAQ accordion: delegated so it also covers CMS-rendered items.
+   faqExpandAll(true/false) opens/closes everything (the "view all" list). */
+function initFaqAccordion() {
+    document.addEventListener('click', function (e) {
+        var btn = e.target.closest ? e.target.closest('.faq-question') : null;
+        if (!btn) return;
+        var item = btn.closest('.faq-item');
+        if (item) item.classList.toggle('active');
+    });
+}
+window.faqExpandAll = function (open) {
+    document.querySelectorAll('.faq-item').forEach(function (it) {
+        it.classList.toggle('active', !!open);
     });
 };
