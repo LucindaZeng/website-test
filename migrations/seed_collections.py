@@ -9,17 +9,22 @@ idempotent SQL (DELETE then INSERT per page+collection). Running the SQL makes
 the live page render the *identical* content — but now editable in the admin.
 
 Usage:
-    python3 migrations/seed_collections.py            # writes seed-collections.sql
+    python3 migrations/seed_collections.py            # writes SQL + JSON defaults
     python3 migrations/seed_collections.py --print     # also print to stdout
 
-Safety: this script only READS html and WRITES a .sql file. It never touches
-the database itself. Review the SQL, then apply it once.
+Safety: this script only READS html and WRITES generated seed files. It never
+touches the database itself. The JSON file is also used as the admin fallback
+when the database table has not been seeded yet.
 """
 import json
 import os
+import re
 import sys
 
-from bs4 import BeautifulSoup
+try:
+    from bs4 import BeautifulSoup
+except ImportError:
+    BeautifulSoup = None
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -260,8 +265,11 @@ def extract_case_studies(container):
 
 
 def build_sql():
+    if BeautifulSoup is None:
+        raise RuntimeError("BeautifulSoup is required to regenerate the SQL seed")
     blocks = []
     summary = []
+    defaults = {}
     for t in TARGETS:
         key = t["key"]
         page, collection = key.split(":", 1)
@@ -290,6 +298,7 @@ def build_sql():
             print(f"  ⚠  unknown strategy {t['strategy']} for {key}", file=sys.stderr)
             continue
 
+        defaults.setdefault(page, {})[collection] = items
         lines = [
             f"-- {key}  ({len(items)} items extracted from {t['file']})",
             f"DELETE FROM cms_collections WHERE page = '{sql_escape(page)}' "
@@ -312,15 +321,50 @@ def build_sql():
         "-- Re-running is safe: each block DELETEs its own page+collection first.\n"
         "-- ============================================================\n"
     )
-    return header + "\n\n".join(blocks) + "\n", summary
+    return header + "\n\n".join(blocks) + "\n", summary, defaults
+
+
+def build_defaults_from_sql(sql):
+    """Rebuild the JSON fallback from an existing generated SQL seed."""
+    defaults = {}
+    pattern = re.compile(
+        r"INSERT INTO cms_collections \(page, collection, item_data, sort_order\) "
+        r"VALUES \('((?:\\.|[^'])*)', '((?:\\.|[^'])*)', "
+        r"'((?:\\.|[^'])*)', (\d+)\);"
+    )
+
+    def unescape(value):
+        return re.sub(r"\\(.)", r"\1", value)
+
+    for match in pattern.finditer(sql):
+        page, collection, payload, _ = match.groups()
+        item = json.loads(unescape(payload))
+        defaults.setdefault(unescape(page), {}).setdefault(unescape(collection), []).append(item)
+    return defaults
 
 
 def main():
-    sql, summary = build_sql()
     out = os.path.join(ROOT, "migrations", "seed-collections.sql")
-    with open(out, "w", encoding="utf-8") as f:
-        f.write(sql)
-    print(f"✓ wrote {out}")
+    if BeautifulSoup is None:
+        with open(out, encoding="utf-8") as f:
+            sql = f.read()
+        defaults = build_defaults_from_sql(sql)
+        summary = [
+            f"{page}:{collection}: {len(items)} items"
+            for page, collections in defaults.items()
+            for collection, items in collections.items()
+        ]
+        print("BeautifulSoup is unavailable; kept the existing SQL seed.")
+    else:
+        sql, summary, defaults = build_sql()
+        with open(out, "w", encoding="utf-8") as f:
+            f.write(sql)
+        print(f"✓ wrote {out}")
+    json_out = os.path.join(ROOT, "migrations", "collection-defaults.json")
+    with open(json_out, "w", encoding="utf-8") as f:
+        json.dump(defaults, f, ensure_ascii=False, indent=2)
+        f.write("\n")
+    print(f"✓ wrote {json_out}")
     for line in summary:
         print(f"   • {line}")
     if "--print" in sys.argv:

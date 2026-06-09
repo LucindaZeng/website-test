@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/apple-touch-icon.png">
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | WFX Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../images/logo.png" alt="WFX">
+            <h2 data-i18n="nav.panel_title">Admin Panel</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.main">Main</div>
+                <a href="dashboard.html" class="nav-item" data-i18n="nav.dashboard">
+                    <i class="fas fa-home" aria-hidden="true"></i> Dashboard
+                </a>
+                <a href="quotes.html" class="nav-item" data-i18n="nav.quotes">
+                    <i class="fas fa-file-invoice-dollar" aria-hidden="true"></i> Quotes
+                </a>
+                <a href="requests.html" class="nav-item" data-i18n="nav.requests">
+                    <i class="fas fa-inbox" aria-hidden="true"></i> Requests
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.content">Content Management</div>
+                <a href="videos.html" class="nav-item" data-i18n="nav.video_manager">
+                    <i class="fas fa-video" aria-hidden="true"></i> Video Manager
+                </a>
+                <a href="pages.html" class="nav-item" data-i18n="nav.pages">
+                    <i class="fas fa-file-alt" aria-hidden="true"></i> Pages & Text
+                </a>
+                <a href="page-images.html" class="nav-item" data-i18n="nav.page_images">
+                    <i class="fas fa-image" aria-hidden="true"></i> Page Images
+                </a>
+                <a href="collections.html" class="nav-item" data-i18n="nav.collections">
+                    <i class="fas fa-layer-group" aria-hidden="true"></i> Page Collections
+                </a>
+                <a href="products.html" class="nav-item" data-i18n="nav.products">
+                    <i class="fas fa-boxes" aria-hidden="true"></i> Industry Products
+                </a>
+                <a href="testimonials.html" class="nav-item" data-i18n="nav.testimonials">
+                    <i class="fas fa-quote-right" aria-hidden="true"></i> Testimonials
+                </a>
+                <a href="categories.html" class="nav-item" data-i18n="nav.categories">
+                    <i class="fas fa-folder-open" aria-hidden="true"></i> Categories
+                </a>
+                <a href="media.html" class="nav-item" data-i18n="nav.media">
+                    <i class="fas fa-images" aria-hidden="true"></i> Media Library
+                </a>
+                <a href="blog.html" class="nav-item" data-i18n="nav.blog">
+                    <i class="fas fa-blog" aria-hidden="true"></i> Articles
+                </a>
+                <a href="news.html" class="nav-item" data-i18n="nav.news">
+                    <i class="fas fa-newspaper" aria-hidden="true"></i> News
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.system">System</div>
+                <a href="users.html" class="nav-item" data-i18n="nav.users">
+                    <i class="fas fa-users" aria-hidden="true"></i> User Management
+                </a>
+                <a href="blocklist.html" class="nav-item" data-i18n="nav.blocklist">
+                    <i class="fas fa-ban" aria-hidden="true"></i> IP Blocklist
+                </a>
+                <a href="activity-log.html" class="nav-item" data-i18n="nav.activity_log">
+                    <i class="fas fa-history" aria-hidden="true"></i> Activity Log
+                </a>
+                <a href="settings.html" class="nav-item active" data-i18n="nav.settings">
+                    <i class="fas fa-cog" aria-hidden="true"></i> Settings
+                </a>
+            </div>
+            <div class="nav-section">
+                <a href="../index.html" class="nav-item" target="_blank" data-i18n="nav.view_website">
+                    <i class="fas fa-external-link-alt" aria-hidden="true"></i> View Website
+                </a>
+                <a href="#" class="nav-item" onclick="AdminCore.logout()" data-i18n="nav.logout">
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <header class="admin-header">
+            <div class="header-left">
+                <h1><span data-i18n="page.settings">Settings</span></h1>
+            </div>
+            <div class="header-right">
+                <div class="user-menu">
+                    <div class="user-avatar" id="user-avatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="user-name">Admin</div>
+                        <div class="user-role" id="user-role">Administrator</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="admin-content">
+            <div id="alert-container"></div>
+
+            <!-- Profile Settings -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-user-circle" aria-hidden="true"></i> My Profile</h3>
+                </div>
+                <div class="card-body">
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="profile-name" placeholder="Your name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="profile-email" placeholder="Your email">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-control" id="profile-username" disabled>
+                        <small style="color: var(--admin-gray);">Username cannot be changed</small>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveProfile()">
+                        <i class="fas fa-save" aria-hidden="true"></i> Update Profile
+                    </button>
+                </div>
+            </div>
+
+            <!-- Change Password -->
+            <div class="card" style="margin-top: 25px;">
+                <div class="card-header">
+                    <h3><i class="fas fa-key" aria-hidden="true"></i> Change Password</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" class="form-control" id="current-password" placeholder="Enter current password">
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="new-password" placeholder="Enter new password">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirm-password" placeholder="Confirm new password">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="changePassword()">
+                        <i class="fas fa-lock" aria-hidden="true"></i> Change Password
+                    </button>
+                </div>
+            </div>
+
+            <!-- Site Settings -->
+            <div class="card" style="margin-top: 25px;">
+                <div class="card-header">
+                    <h3><i class="fas fa-globe" aria-hidden="true"></i> Site Settings</h3>
+                </div>
+                <div class="card-body">
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Site Name</label>
+                            <input type="text" class="form-control" id="site-name" value="WFX Wanfuxin">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Canonical Site URL</label>
+                            <input type="url" class="form-control" id="site-url" value="https://wanfuxin-dg.com">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Homepage Description (for SEO)</label>
+                        <textarea class="form-control" id="site-description" rows="2">Precision CNC machining services - CNC milling, turning, 5-axis machining. ISO9001 & IATF16949 certified. Fast quotes, global delivery.</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Homepage Keywords (for SEO)</label>
+                        <input type="text" class="form-control" id="site-keywords" value="CNC machining, CNC milling, CNC turning, precision machining, Dongguan, China">
+                    </div>
+                    <button class="btn btn-primary" onclick="saveSiteSettings()">
+                        <i class="fas fa-save" aria-hidden="true"></i> Save Site Settings
+                    </button>
+                </div>
+            </div>
+
+            <!-- Logo Settings -->
+            <div class="card" style="margin-top: 25px;">
+                <div class="card-header">
+                    <h3><i class="fas fa-image" aria-hidden="true"></i> Logo Settings</h3>
+                </div>
+                <div class="card-body">
+                    <p style="color: var(--admin-gray); margin-bottom: 25px;">
+                        Update your website logos. Changes will be applied to all pages.
+                    </p>
+                    
+                    <div class="grid-2" style="gap: 30px;">
+                        <!-- Main Logo (Header & Footer) -->
+                        <div class="logo-upload-section">
+                            <h4 style="margin-bottom: 15px; color: var(--admin-dark);">
+                                <i class="fas fa-heading" aria-hidden="true" style="margin-right: 8px; color: var(--admin-primary);"></i>
+                                Main Logo (Header & Footer)
+                            </h4>
+                            <p style="font-size: 0.85rem; color: var(--admin-gray); margin-bottom: 15px;">
+                                Recommended: PNG with transparent background, ~290×50 pixels
+                            </p>
+                            <div class="logo-preview" id="main-logo-preview" style="background: #f8f9fa; border: 2px dashed #dee2e6; border-radius: 12px; padding: 20px; text-align: center; min-height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+                                <img src="../images/logo.png" alt="Main Logo" style="max-width: 100%; max-height: 80px;" id="main-logo-img">
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <label class="btn btn-secondary" style="cursor: pointer; margin: 0;">
+                                    <i class="fas fa-upload" aria-hidden="true"></i> Upload New Logo
+                                    <input type="file" id="main-logo-file" accept="image/png,image/jpeg,image/webp" style="display: none;" onchange="previewLogo(this, 'main')">
+                                </label>
+                                <button class="btn btn-primary" onclick="saveMainLogo()" id="save-main-logo-btn" disabled>
+                                    <i class="fas fa-save" aria-hidden="true"></i> Save
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Favicon (Browser Tab) -->
+                        <div class="logo-upload-section">
+                            <h4 style="margin-bottom: 15px; color: var(--admin-dark);">
+                                <i class="fas fa-bookmark" aria-hidden="true" style="margin-right: 8px; color: var(--admin-primary);"></i>
+                                Favicon (Browser Tab Icon)
+                            </h4>
+                            <p style="font-size: 0.85rem; color: var(--admin-gray); margin-bottom: 15px;">
+                                Recommended: Square PNG, 512×512 pixels (icon only, no text)
+                            </p>
+                            <div class="logo-preview" id="favicon-preview" style="background: #f8f9fa; border: 2px dashed #dee2e6; border-radius: 12px; padding: 20px; text-align: center; min-height: 100px; display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 15px;">
+                                <div style="text-align: center;">
+                                    <img src="../images/favicon-32x32.png" alt="Favicon 32" style="width: 32px; height: 32px; border: 1px solid #dee2e6;" id="favicon-32-img">
+                                    <div style="font-size: 0.75rem; color: var(--admin-gray); margin-top: 5px;">32×32</div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <img src="../images/apple-touch-icon.png" alt="Favicon 180" style="width: 64px; height: 64px; border: 1px solid #dee2e6; border-radius: 8px;" id="favicon-180-img">
+                                    <div style="font-size: 0.75rem; color: var(--admin-gray); margin-top: 5px;">180×180</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <label class="btn btn-secondary" style="cursor: pointer; margin: 0;">
+                                    <i class="fas fa-upload" aria-hidden="true"></i> Upload New Icon
+                                    <input type="file" id="favicon-file" accept="image/png,image/jpeg,image/webp" style="display: none;" onchange="previewLogo(this, 'favicon')">
+                                </label>
+                                <button class="btn btn-primary" onclick="saveFavicon()" id="save-favicon-btn" disabled>
+                                    <i class="fas fa-save" aria-hidden="true"></i> Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Logo Usage Guide -->
+                    <div style="margin-top: 30px; padding: 20px; background: #e7f3ff; border-radius: 12px; border-left: 4px solid var(--admin-primary);">
+                        <h5 style="margin-bottom: 10px; color: var(--admin-dark);"><i class="fas fa-info-circle" aria-hidden="true" style="margin-right: 8px;"></i>Logo Usage Guide</h5>
+                        <ul style="margin: 0; padding-left: 20px; color: var(--admin-gray); line-height: 1.8;">
+                            <li><strong>Main Logo:</strong> Displayed in the top navigation bar and footer. Use your full company logo with text.</li>
+                            <li><strong>Favicon:</strong> Displayed in browser tabs, bookmarks, and mobile home screens. Use a simple icon version without text.</li>
+                            <li><strong>Format:</strong> PNG with transparent background is recommended for best results.</li>
+                            <li><strong>Note:</strong> After saving, refresh the browser to see changes (Ctrl+F5 or Cmd+Shift+R).</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Reset to Default -->
+                    <div style="margin-top: 20px; padding: 20px; background: #fff3cd; border-radius: 12px; border-left: 4px solid #ffc107;">
+                        <h5 style="margin-bottom: 10px; color: var(--admin-dark);"><i class="fas fa-undo" aria-hidden="true" style="margin-right: 8px;"></i>Reset to Default</h5>
+                        <p style="color: var(--admin-gray); margin-bottom: 15px;">Remove custom logos and restore the original default logos.</p>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-secondary" onclick="resetMainLogo()">
+                                <i class="fas fa-undo" aria-hidden="true"></i> Reset Main Logo
+                            </button>
+                            <button class="btn btn-secondary" onclick="resetFavicon()">
+                                <i class="fas fa-undo" aria-hidden="true"></i> Reset Favicon
+                            </button>
+                            <button class="btn btn-danger" onclick="resetAllLogos()">
+                                <i class="fas fa-trash" aria-hidden="true"></i> Reset All Logos
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Management -->
+            <div class="card" style="margin-top: 25px;">
+                <div class="card-header">
+                    <h3><i class="fas fa-database" aria-hidden="true"></i> Data Management</h3>
+                </div>
+                <div class="card-body">
+                    <p style="color: var(--admin-gray); margin-bottom: 20px;">
+                        Export or restore the content managed by this CMS. User accounts, submissions,
+                        uploaded files, and the audit log are not included.
+                    </p>
+                    
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <button class="btn btn-secondary" onclick="exportData()">
+                            <i class="fas fa-download" aria-hidden="true"></i> Export CMS Content
+                        </button>
+                        <button class="btn btn-secondary" onclick="importData()">
+                            <i class="fas fa-upload" aria-hidden="true"></i> Import CMS Content
+                        </button>
+                    </div>
+                    
+                    <input type="file" id="import-file" accept=".json" style="display: none;">
+                </div>
+            </div>
+
+            <!-- System Info -->
+            <div class="card" style="margin-top: 25px;">
+                <div class="card-header">
+                    <h3><i class="fas fa-info-circle" aria-hidden="true"></i> System Information</h3>
+                </div>
+                <div class="card-body">
+                    <table class="admin-table">
+                        <tbody>
+                            <tr>
+                                <td style="width: 200px;"><strong>Admin Version</strong></td>
+                                <td>1.0.0</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Users</strong></td>
+                                <td id="info-users">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Articles</strong></td>
+                                <td id="info-blogs">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total News Articles</strong></td>
+                                <td id="info-news">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Activity Log Entries</strong></td>
+                                <td id="info-logs">-</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Last Login</strong></td>
+                                <td id="info-last-login">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/cms-sync.js?v=20260609c"></script>
+    <script src="js/admin-core.js?v=20260609c"></script>
+    <script>
+        if (!AdminCore.checkAuth()) {
+            window.location.href = 'index.html';
+        }
+
+        const currentUser = AdminCore.getCurrentUser();
+        if (currentUser) {
+            document.getElementById('user-name').textContent = currentUser.name || currentUser.username;
+            document.getElementById('user-role').textContent = currentUser.role === 'super_admin' ? 'Super Admin' : 'Editor';
+            document.getElementById('user-avatar').textContent = (currentUser.name || currentUser.username).charAt(0).toUpperCase();
+        }
+
+        // Load the current profile from the server account.
+        async function loadProfile() {
+            try {
+                const response = await fetch('/api/auth/me', { credentials: 'same-origin' });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok || !result.ok || !result.user) {
+                    throw new Error(result.error || 'Could not load profile');
+                }
+                const user = result.user;
+                document.getElementById('profile-name').value = user.full_name || '';
+                document.getElementById('profile-email').value = user.email || '';
+                document.getElementById('profile-username').value = user.username || user.name || '';
+            } catch (error) {
+                showAlert(error.message, 'danger');
+            }
+        }
+        loadProfile();
+
+        // Save profile
+        async function saveProfile() {
+            const userData = {
+                full_name: document.getElementById('profile-name').value.trim(),
+                email: document.getElementById('profile-email').value.trim()
+            };
+
+            try {
+                const response = await fetch('/api/auth/profile', {
+                    method: 'PUT',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': window.WFX_CSRF_TOKEN || localStorage.getItem('wfx_csrf_token') || ''
+                    },
+                    body: JSON.stringify(userData)
+                });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok || !result.ok) {
+                    throw new Error(result.error || 'Could not update profile');
+                }
+                const cachedUser = {
+                    ...currentUser,
+                    name: userData.full_name || currentUser.username,
+                    full_name: userData.full_name,
+                    email: userData.email
+                };
+                localStorage.setItem('wfx_admin_user', JSON.stringify(cachedUser));
+                document.getElementById('user-name').textContent = cachedUser.name;
+                document.getElementById('user-avatar').textContent = cachedUser.name.charAt(0).toUpperCase();
+                showAlert('Profile updated on the server.', 'success');
+            } catch (error) {
+                showAlert(error.message, 'danger');
+            }
+        }
+
+        // Change password (uses server-side /api/auth/change-password)
+        async function changePassword() {
+            const currentPwd = document.getElementById('current-password').value;
+            const newPwd = document.getElementById('new-password').value;
+            const confirmPwd = document.getElementById('confirm-password').value;
+
+            if (newPwd !== confirmPwd) {
+                showAlert('New passwords do not match', 'danger');
+                return;
+            }
+            if (newPwd.length < 8) {
+                showAlert('Password must be at least 8 characters', 'danger');
+                return;
+            }
+
+            const csrf = window.WFX_CSRF_TOKEN || localStorage.getItem('wfx_csrf_token') || '';
+            try {
+                const r = await fetch('/api/auth/change-password', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': csrf,
+                    },
+                    body: JSON.stringify({
+                        current_password: currentPwd,
+                        new_password: newPwd,
+                    })
+                });
+                const j = await r.json().catch(() => ({}));
+                if (r.ok && j.ok) {
+                    showAlert('Password changed successfully', 'success');
+                    document.getElementById('current-password').value = '';
+                    document.getElementById('new-password').value = '';
+                    document.getElementById('confirm-password').value = '';
+                } else {
+                    showAlert(j.error || 'Password change failed', 'danger');
+                }
+            } catch (e) {
+                showAlert('Server unreachable: ' + e.message, 'danger');
+            }
+        }
+
+        let siteSettingsVersion = null;
+
+        async function saveSiteSettings() {
+            const settings = {
+                siteName: document.getElementById('site-name').value,
+                siteUrl: document.getElementById('site-url').value,
+                siteDescription: document.getElementById('site-description').value,
+                siteKeywords: document.getElementById('site-keywords').value
+            };
+
+            try {
+                const response = await fetch('/api/cms/content/site_settings', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': window.WFX_CSRF_TOKEN || localStorage.getItem('wfx_csrf_token') || ''
+                    },
+                    body: JSON.stringify({
+                        value: settings,
+                        expected_version: siteSettingsVersion
+                    })
+                });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok || !result.ok) {
+                    throw new Error(result.message || result.error || 'Could not save site settings');
+                }
+                siteSettingsVersion = result.version;
+                if (window.WFX_CMS_SYNC && window.WFX_CMS_SYNC.cacheRaw) {
+                    window.WFX_CMS_SYNC.cacheRaw('wfx_site_settings', settings);
+                }
+                AdminCore.logAction('settings_updated', 'Updated site settings');
+                showAlert('Site settings saved to the website CMS.', 'success');
+            } catch (error) {
+                showAlert(error.message, 'danger');
+            }
+        }
+
+        async function loadSiteSettings() {
+            let settings = {};
+            try {
+                const response = await fetch('/api/cms/content/site_settings', {
+                    credentials: 'same-origin'
+                });
+                const result = await response.json();
+                if (response.ok && result.ok) {
+                    settings = result.value && typeof result.value === 'object' ? result.value : {};
+                    siteSettingsVersion = result.version == null ? null : result.version;
+                    if (window.WFX_CMS_SYNC && window.WFX_CMS_SYNC.cacheRaw) {
+                        window.WFX_CMS_SYNC.cacheRaw('wfx_site_settings', settings);
+                    }
+                }
+            } catch (error) {
+                settings = JSON.parse(localStorage.getItem('wfx_site_settings') || '{}');
+                console.warn('Could not load site settings from CMS:', error.message);
+            }
+            if (settings.siteName) document.getElementById('site-name').value = settings.siteName;
+            if (settings.siteUrl) document.getElementById('site-url').value = settings.siteUrl;
+            if (settings.siteDescription) document.getElementById('site-description').value = settings.siteDescription;
+            if (settings.siteKeywords) document.getElementById('site-keywords').value = settings.siteKeywords;
+        }
+        loadSiteSettings();
+
+        async function cmsRequest(path, body) {
+            const response = await fetch(path, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': window.WFX_CSRF_TOKEN || localStorage.getItem('wfx_csrf_token') || ''
+                },
+                body: JSON.stringify(body)
+            });
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok || !result.ok) {
+                throw new Error(result.message || result.error || `Import failed at ${path}`);
+            }
+            return result;
+        }
+
+        // Export the server CMS, not this browser's local cache.
+        async function exportData() {
+            try {
+                const response = await fetch('/api/cms/all', { credentials: 'same-origin' });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok || !result.ok || !result.data) {
+                    throw new Error(result.error || 'Could not read CMS content');
+                }
+                const data = {
+                    format: 'wfx-cms-backup-v1',
+                    cms: result.data,
+                    exportedAt: new Date().toISOString()
+                };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `wfx-cms-backup-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                AdminCore.logAction('data_exported', 'Exported CMS content');
+                showAlert('CMS content exported from the server.', 'success');
+            } catch (error) {
+                showAlert(error.message, 'danger');
+            }
+        }
+
+        // Import data
+        function importData() {
+            document.getElementById('import-file').click();
+        }
+
+        document.getElementById('import-file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.format !== 'wfx-cms-backup-v1' || !data.cms || typeof data.cms !== 'object') {
+                        throw new Error('This is not a WFX CMS backup file.');
+                    }
+                    if (!confirm('This will replace the current CMS content with the backup. Continue?')) return;
+
+                    const cms = data.cms;
+                    const contentKeys = [
+                        'page_content', 'homepage_media', 'page_images', 'site_settings',
+                        'branding', 'categories', 'testimonials', 'homepage_news_titles'
+                    ];
+                    for (const key of contentKeys) {
+                        if (Object.prototype.hasOwnProperty.call(cms, key)) {
+                            await cmsRequest('/api/cms/content/' + encodeURIComponent(key), { value: cms[key] });
+                        }
+                    }
+                    if (Array.isArray(cms.industry_products)) {
+                        await cmsRequest('/api/cms/products', { products: cms.industry_products });
+                    }
+                    if (Array.isArray(cms.news)) {
+                        await cmsRequest('/api/cms/news/news', { posts: cms.news });
+                    }
+                    if (Array.isArray(cms.blog)) {
+                        await cmsRequest('/api/cms/news/blog', { posts: cms.blog });
+                    }
+                    if (cms.collections && typeof cms.collections === 'object') {
+                        for (const [page, collections] of Object.entries(cms.collections)) {
+                            for (const [collection, items] of Object.entries(collections || {})) {
+                                await cmsRequest(
+                                    '/api/cms/collections/' + encodeURIComponent(page) + '/' + encodeURIComponent(collection),
+                                    { items: Array.isArray(items) ? items : [] }
+                                );
+                            }
+                        }
+                    }
+
+                    if (window.WFX_CMS_SYNC && window.WFX_CMS_SYNC.pullAll) {
+                        await window.WFX_CMS_SYNC.pullAll();
+                    }
+                    AdminCore.logAction('data_imported', 'Imported CMS content backup');
+                    showAlert('CMS content restored on the server.', 'success');
+                    loadSystemInfo();
+                } catch (err) {
+                    showAlert(err.message || 'Invalid backup file', 'danger');
+                } finally {
+                    document.getElementById('import-file').value = '';
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        // Load system info from the server-backed sources.
+        async function loadSystemInfo() {
+            if (window.WFX_CMS_SYNC && window.WFX_CMS_SYNC.pullAll) {
+                try { await window.WFX_CMS_SYNC.pullAll(); } catch (e) {}
+            }
+            document.getElementById('info-blogs').textContent = AdminCore.getBlogPosts().length;
+            document.getElementById('info-news').textContent = AdminCore.getNews().length;
+
+            try {
+                const response = await fetch('/api/users', { credentials: 'same-origin' });
+                const result = await response.json().catch(() => ({}));
+                document.getElementById('info-users').textContent =
+                    response.ok && Array.isArray(result.users) ? result.users.length : 'Restricted';
+            } catch (error) {
+                document.getElementById('info-users').textContent = 'Unavailable';
+            }
+
+            try {
+                const response = await fetch('/api/audit', { credentials: 'same-origin' });
+                const result = await response.json().catch(() => ({}));
+                document.getElementById('info-logs').textContent =
+                    response.ok && Array.isArray(result.rows) ? result.rows.length : 'Restricted';
+            } catch (error) {
+                document.getElementById('info-logs').textContent = 'Unavailable';
+            }
+
+            try {
+                const response = await fetch('/api/auth/me', { credentials: 'same-origin' });
+                const result = await response.json().catch(() => ({}));
+                const lastLogin = result.user && result.user.last_login_at;
+                if (lastLogin) {
+                    document.getElementById('info-last-login').textContent = AdminCore.formatDate(lastLogin);
+                }
+            } catch (error) {}
+        }
+        loadSystemInfo();
+
+        function showAlert(message, type) {
+            const container = document.getElementById('alert-container');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}" aria-hidden="true"></i> ${message}`;
+            container.appendChild(alert);
+            setTimeout(() => alert.remove(), 3000);
+        }
+
+        // Logo Management
+        let branding = {};
+        let brandingVersion = null;
+        let pendingMainLogo = null;
+        let pendingFavicon = null;
+
+        function csrfToken() {
+            return window.WFX_CSRF_TOKEN || localStorage.getItem('wfx_csrf_token') || '';
+        }
+
+        function previewLogo(input, type) {
+            const file = input.files[0];
+            if (!file) return;
+
+            // Validate file size (max 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                showAlert('File size must be less than 2MB', 'danger');
+                input.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const dataUrl = e.target.result;
+                
+                if (type === 'main') {
+                    document.getElementById('main-logo-img').src = dataUrl;
+                    document.getElementById('main-logo-preview').style.borderColor = '#0d6efd';
+                    document.getElementById('save-main-logo-btn').disabled = false;
+                    pendingMainLogo = file;
+                } else if (type === 'favicon') {
+                    document.getElementById('favicon-32-img').src = dataUrl;
+                    document.getElementById('favicon-180-img').src = dataUrl;
+                    document.getElementById('favicon-preview').style.borderColor = '#0d6efd';
+                    document.getElementById('save-favicon-btn').disabled = false;
+                    pendingFavicon = file;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function uploadBrandFile(file, folder) {
+            const form = new FormData();
+            form.append('file', file);
+            form.append('folder', folder);
+            const response = await fetch('/api/media', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'X-CSRF-Token': csrfToken() },
+                body: form
+            });
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok || !result.ok) {
+                throw new Error(result.error || 'Upload failed');
+            }
+            return result.url;
+        }
+
+        async function saveBranding(nextBranding) {
+            const response = await fetch('/api/cms/content/branding', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken()
+                },
+                body: JSON.stringify({
+                    value: nextBranding,
+                    expected_version: brandingVersion
+                })
+            });
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok || !result.ok) {
+                throw new Error(result.message || result.error || 'Could not save branding');
+            }
+            branding = nextBranding;
+            brandingVersion = result.version;
+        }
+
+        async function saveMainLogo() {
+            if (!pendingMainLogo) {
+                showAlert('Please select a logo file first', 'danger');
+                return;
+            }
+
+            const button = document.getElementById('save-main-logo-btn');
+            button.disabled = true;
+            try {
+                const url = await uploadBrandFile(pendingMainLogo, 'branding/logo');
+                await saveBranding({ ...branding, logo_url: url, footer_logo_url: url });
+                localStorage.setItem('wfx_custom_logo', url);
+                document.getElementById('main-logo-img').src = url;
+                document.getElementById('main-logo-preview').style.borderColor = '#198754';
+                document.getElementById('main-logo-file').value = '';
+                pendingMainLogo = null;
+                AdminCore.logAction('logo_updated', 'Updated main logo');
+                showAlert('Main logo saved to the website CMS.', 'success');
+            } catch (error) {
+                button.disabled = false;
+                showAlert(error.message, 'danger');
+            }
+        }
+
+        async function saveFavicon() {
+            if (!pendingFavicon) {
+                showAlert('Please select an icon file first', 'danger');
+                return;
+            }
+
+            const button = document.getElementById('save-favicon-btn');
+            button.disabled = true;
+            try {
+                const url = await uploadBrandFile(pendingFavicon, 'branding/favicon');
+                await saveBranding({ ...branding, favicon_url: url });
+                localStorage.setItem('wfx_custom_favicon', url);
+                document.getElementById('favicon-32-img').src = url;
+                document.getElementById('favicon-180-img').src = url;
+                document.getElementById('favicon-preview').style.borderColor = '#198754';
+                document.getElementById('favicon-file').value = '';
+                pendingFavicon = null;
+                AdminCore.logAction('favicon_updated', 'Updated favicon');
+                showAlert('Favicon saved to the website CMS.', 'success');
+            } catch (error) {
+                button.disabled = false;
+                showAlert(error.message, 'danger');
+            }
+        }
+
+        async function loadCustomLogos() {
+            try {
+                const response = await fetch('/api/cms/content/branding', {
+                    credentials: 'same-origin'
+                });
+                const result = await response.json();
+                if (response.ok && result.ok) {
+                    branding = result.value && typeof result.value === 'object' ? result.value : {};
+                    brandingVersion = result.version == null ? null : result.version;
+                }
+            } catch (error) {
+                console.warn('Could not load branding from CMS:', error.message);
+            }
+
+            const customLogo = branding.logo_url || localStorage.getItem('wfx_custom_logo');
+            const customFavicon = branding.favicon_url || localStorage.getItem('wfx_custom_favicon');
+            if (customLogo) {
+                document.getElementById('main-logo-img').src = customLogo;
+            }
+            if (customFavicon) {
+                document.getElementById('favicon-32-img').src = customFavicon;
+                document.getElementById('favicon-180-img').src = customFavicon;
+            }
+        }
+        loadCustomLogos();
+
+        // Reset functions
+        async function resetMainLogo() {
+            if (confirm('Reset main logo to default? This will remove your custom logo.')) {
+                try {
+                    const next = { ...branding };
+                    delete next.logo_url;
+                    delete next.footer_logo_url;
+                    await saveBranding(next);
+                    localStorage.removeItem('wfx_custom_logo');
+                    document.getElementById('main-logo-img').src = '../images/logo.png';
+                    document.getElementById('main-logo-preview').style.borderColor = '#dee2e6';
+                    AdminCore.logAction('logo_reset', 'Reset main logo to default');
+                    showAlert('Main logo reset in the website CMS.', 'success');
+                } catch (error) {
+                    showAlert(error.message, 'danger');
+                }
+            }
+        }
+
+        async function resetFavicon() {
+            if (confirm('Reset favicon to default? This will remove your custom icon.')) {
+                try {
+                    const next = { ...branding };
+                    delete next.favicon_url;
+                    await saveBranding(next);
+                    localStorage.removeItem('wfx_custom_favicon');
+                    document.getElementById('favicon-32-img').src = '../images/favicon-32x32.png';
+                    document.getElementById('favicon-180-img').src = '../images/apple-touch-icon.png';
+                    document.getElementById('favicon-preview').style.borderColor = '#dee2e6';
+                    AdminCore.logAction('favicon_reset', 'Reset favicon to default');
+                    showAlert('Favicon reset in the website CMS.', 'success');
+                } catch (error) {
+                    showAlert(error.message, 'danger');
+                }
+            }
+        }
+
+        async function resetAllLogos() {
+            if (confirm('Reset ALL logos to default? This will remove all custom logos.')) {
+                try {
+                    const next = { ...branding };
+                    delete next.logo_url;
+                    delete next.footer_logo_url;
+                    delete next.favicon_url;
+                    await saveBranding(next);
+                    localStorage.removeItem('wfx_custom_logo');
+                    localStorage.removeItem('wfx_custom_favicon');
+                    document.getElementById('main-logo-img').src = '../images/logo.png';
+                    document.getElementById('favicon-32-img').src = '../images/favicon-32x32.png';
+                    document.getElementById('favicon-180-img').src = '../images/apple-touch-icon.png';
+                    document.getElementById('main-logo-preview').style.borderColor = '#dee2e6';
+                    document.getElementById('favicon-preview').style.borderColor = '#dee2e6';
+                    AdminCore.logAction('all_logos_reset', 'Reset all logos to default');
+                    showAlert('All logos reset in the website CMS.', 'success');
+                } catch (error) {
+                    showAlert(error.message, 'danger');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

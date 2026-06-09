@@ -9,6 +9,94 @@ function _absImg(u) {
     return '/' + t;
 }
 
+function _categoryLabel(value) {
+    if (!value) return '';
+    var categories = window.__WFX_CMS__ && window.__WFX_CMS__.categories;
+    var newsCategories = categories && Array.isArray(categories.news) ? categories.news : [];
+    var match = newsCategories.find(function (category) {
+        return category && (category.slug === value || category.name === value);
+    });
+    if (match && match.name) return match.name;
+    var defaults = {
+        'cnc-processes': 'CNC Processes & Machines',
+        'materials': 'Materials Knowledge Hub',
+        'drawings-dfm': 'Engineering Drawings & DFM',
+        'surface-finishing': 'Surface Finishing',
+        'related-processes': 'Related Processes & Quality'
+    };
+    return defaults[value] || value;
+}
+
+var _markedLoader = null;
+
+function _loadMarked() {
+    if (window.marked) return Promise.resolve(window.marked);
+    if (_markedLoader) return _markedLoader;
+    _markedLoader = new Promise(function (resolve, reject) {
+        var script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js';
+        script.crossOrigin = 'anonymous';
+        script.onload = function () {
+            if (window.marked) resolve(window.marked);
+            else reject(new Error('Markdown parser did not initialize'));
+        };
+        script.onerror = function () { reject(new Error('Could not load Markdown parser')); };
+        document.head.appendChild(script);
+    });
+    return _markedLoader;
+}
+
+function _sanitizeArticleHtml(html) {
+    var parser = new DOMParser();
+    var doc = parser.parseFromString(String(html || ''), 'text/html');
+    var allowed = new Set([
+        'P', 'BR', 'STRONG', 'B', 'EM', 'I', 'U', 'S', 'DEL', 'INS',
+        'SUB', 'SUP', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'UL', 'OL',
+        'LI', 'A', 'IMG', 'BLOCKQUOTE', 'PRE', 'CODE', 'TABLE', 'THEAD',
+        'TBODY', 'TR', 'TH', 'TD', 'HR'
+    ]);
+    var blocked = new Set(['SCRIPT', 'STYLE', 'IFRAME', 'OBJECT', 'EMBED', 'FORM', 'LINK', 'META']);
+
+    Array.from(doc.body.querySelectorAll('*')).forEach(function (element) {
+        if (blocked.has(element.tagName)) {
+            element.remove();
+            return;
+        }
+        if (!allowed.has(element.tagName)) {
+            element.replaceWith.apply(element, Array.from(element.childNodes));
+            return;
+        }
+
+        var keep = {
+            A: new Set(['href', 'title', 'target']),
+            IMG: new Set(['src', 'alt', 'title', 'width', 'height']),
+            TH: new Set(['scope'])
+        }[element.tagName] || new Set();
+        Array.from(element.attributes).forEach(function (attribute) {
+            if (!keep.has(attribute.name.toLowerCase())) element.removeAttribute(attribute.name);
+        });
+
+        if (element.tagName === 'A') {
+            var href = element.getAttribute('href') || '';
+            if (/^\s*(javascript|data|vbscript|file):/i.test(href)) element.removeAttribute('href');
+            if (element.getAttribute('target') === '_blank') {
+                element.setAttribute('rel', 'noopener noreferrer');
+            }
+        }
+        if (element.tagName === 'IMG') {
+            var src = element.getAttribute('src') || '';
+            if (/^\s*(javascript|data|vbscript|file):/i.test(src)) element.removeAttribute('src');
+        }
+    });
+    return doc.body.innerHTML;
+}
+
+async function _renderMarkdownSafe(markdown) {
+    var marked = await _loadMarked();
+    var html = marked.parse(String(markdown || ''), { gfm: true, breaks: false });
+    return _sanitizeArticleHtml(html);
+}
+
 /**
  * WFX Content Loader
  * Loads editable content from localStorage and updates page elements
@@ -21,9 +109,13 @@ const ContentLoader = {
     // Page selectors mapping - defines which elements to update on each page
     PAGE_SELECTORS: {
         index: {
+            'hero.badge': '.hero-badge span',
             'hero.title': '.hero-title',
+            'hero.subtitle': '.hero-title .gradient-text',
             'hero.description': '.hero-description',
             'hero.videoUrl': '.hero-video source',
+            'hero.primaryButtonText': '.hero-actions .btn-primary',
+            'hero.secondaryButtonText': '.hero-actions .btn-secondary-light',
             'trustedBy.label': '.trusted-by-label',
             'services.sectionTitle': '#services .section-title',
             'services.sectionDescription': '#services .section-description',
@@ -32,14 +124,14 @@ const ContentLoader = {
             'quote.description': '#quote > .container > .quote-wrapper > .quote-content > p',
             'whyChoose.title': '.features-section .section-title, .why-choose .section-title',
             'whyChoose.description': '.features-section .section-description, .why-choose .section-description',
-            'companyVideo.title': '.company-video-section h2, .video-section h2',
-            'companyVideo.description': '.company-video-section p, .video-section p'
+            'companyVideo.title': '.factory-tour .section-title',
+            'companyVideo.description': '.factory-tour .section-description'
         },
         about: {
             'hero.title': '.page-hero h1',
             'hero.description': '.page-hero p',
             'intro.title': '.about-intro h2, .about-intro-content h2',
-            'intro.content': '.about-intro p, .about-intro-content p'
+            'intro.content': '.about-intro-content > p:first-of-type'
         },
         industries: {
             'hero.title': '.page-hero h1',
@@ -57,7 +149,13 @@ const ContentLoader = {
         },
         contact: {
             'hero.title': '.page-hero h1',
-            'hero.description': '.page-hero p'
+            'hero.description': '.page-hero p',
+            'intro.title': '.contact-info h2'
+        },
+        services: {
+            'hero.title': '.page-hero h1',
+            'hero.description': '.page-hero > .container > p',
+            'cta.description': 'section[style*="text-align: center"] > .container > p'
         },
         cncMilling: {
             'hero.title': '.page-hero h1',
@@ -147,12 +245,7 @@ const ContentLoader = {
             'materials': 'materials',
             'resources': 'resources',
             'contact': 'contact',
-            'aerospace': 'industries',
-            'medical': 'industries',
-            'electronics': 'industries',
-            'industrial': 'industries',
-            'robotics': 'industries',
-            'liquid-cooling': 'industries'
+            'services': 'services'
         };
         
         return pageMap[filename] || null;
@@ -162,6 +255,8 @@ const ContentLoader = {
     loadPageContent: function() {
         const allContent = this.getContent();
         if (!allContent) return;
+
+        this.applyGlobalContent(allContent);
 
         const pageName = this.getCurrentPage();
         if (!pageName) return;
@@ -180,6 +275,67 @@ const ContentLoader = {
 
         // Load repeated/array content
         this.loadRepeatedContent(pageName, pageContent, allContent);
+    },
+
+    applyGlobalContent: function(allContent) {
+        const contact = allContent && allContent.index && allContent.index.contact;
+        if (!contact) return;
+
+        const replaceTextPreservingIcon = (element, value) => {
+            const icon = element.querySelector('i, svg');
+            if (!icon) {
+                element.textContent = value;
+                return;
+            }
+            Array.from(element.childNodes).forEach(node => {
+                if (node !== icon && node.nodeType === Node.TEXT_NODE) node.remove();
+            });
+            element.appendChild(document.createTextNode(' ' + value));
+        };
+
+        if (contact.phone) {
+            const phoneHref = 'tel:' + String(contact.phone).replace(/[^\d+]/g, '');
+            document.querySelectorAll('a[href^="tel:"]').forEach(link => {
+                link.href = phoneHref;
+                if (link.querySelector('i, svg')) {
+                    link.setAttribute('aria-label', 'Call ' + contact.phone);
+                } else {
+                    link.textContent = contact.phone;
+                }
+            });
+            document.querySelectorAll('.top-bar-left span').forEach(item => {
+                if (item.querySelector('.fa-phone')) replaceTextPreservingIcon(item, contact.phone);
+            });
+        }
+        if (contact.email) {
+            document.querySelectorAll('a[href^="mailto:"]').forEach(link => {
+                link.href = 'mailto:' + contact.email;
+                if (link.querySelector('i, svg')) {
+                    link.setAttribute('aria-label', 'Email ' + contact.email);
+                } else {
+                    link.textContent = contact.email;
+                }
+            });
+            document.querySelectorAll('.top-bar-left span').forEach(item => {
+                if (item.querySelector('.fa-envelope')) replaceTextPreservingIcon(item, contact.email);
+            });
+        }
+        if (contact.address) {
+            document.querySelectorAll('.footer-contact address > p:first-child').forEach(paragraph => {
+                const icon = paragraph.querySelector('i');
+                paragraph.textContent = '';
+                if (icon) paragraph.appendChild(icon);
+                paragraph.appendChild(document.createTextNode(' ' + contact.address));
+            });
+        }
+        if (contact.hours) {
+            document.querySelectorAll('.footer-hours .hours-list').forEach(list => {
+                const item = document.createElement('li');
+                item.textContent = contact.hours;
+                list.textContent = '';
+                list.appendChild(item);
+            });
+        }
     },
 
     // Load video content
@@ -224,7 +380,7 @@ const ContentLoader = {
             }
 
             // Update video section title and description
-            const videoSection = document.querySelector('.video-section, .company-video-section');
+            const videoSection = document.querySelector('.factory-tour');
             if (videoSection) {
                 const title = videoSection.querySelector('h2, .section-title');
                 const desc = videoSection.querySelector('p, .section-description');
@@ -493,6 +649,203 @@ const ContentLoader = {
 // Auto-initialize
 ContentLoader.init();
 
+/* Apply global settings that are managed in Admin > Settings. Page-specific
+   titles stay in the HTML; the global description and keywords apply only to
+   the homepage so they do not overwrite stronger per-page SEO metadata. */
+(function () {
+    'use strict';
+
+    function setMeta(selector, value) {
+        if (!value) return;
+        var element = document.querySelector(selector);
+        if (element) element.setAttribute('content', value);
+    }
+
+    function boot() {
+        var settings = window.__WFX_CMS__ && window.__WFX_CMS__.site_settings;
+        if (!settings || typeof settings !== 'object') {
+            try {
+                settings = JSON.parse(localStorage.getItem('wfx_site_settings') || '{}');
+            } catch (e) {
+                settings = {};
+            }
+        }
+
+        setMeta('meta[property="og:site_name"]', settings.siteName);
+
+        if (settings.siteUrl) {
+            var base = String(settings.siteUrl).replace(/\/+$/, '');
+            var pathname = window.location.pathname;
+            var canonicalUrl = base + (pathname === '/index.html' ? '/' : pathname);
+            var canonical = document.querySelector('link[rel="canonical"]');
+            if (canonical) canonical.setAttribute('href', canonicalUrl);
+            setMeta('meta[property="og:url"]', canonicalUrl);
+        }
+
+        var page = (window.location.pathname.split('/').pop() || 'index.html').replace(/\.html$/, '') || 'index';
+        if (page === 'index') {
+            setMeta('meta[name="description"]', settings.siteDescription);
+            setMeta('meta[property="og:description"]', settings.siteDescription);
+            setMeta('meta[name="twitter:description"]', settings.siteDescription);
+            setMeta('meta[name="keywords"]', settings.siteKeywords);
+        }
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+    else boot();
+})();
+
+/* Apply server-managed images to their real public-page locations. Page Images
+   stores only URL overrides; these selectors remain the source of truth for
+   where each image is used. */
+(function () {
+    'use strict';
+
+    var TARGETS = {
+        index: {
+            'hero-poster': { selector: '#hero-video', type: 'background' },
+            'service-milling': { selector: '.service-card[data-service="cnc-milling"] img' },
+            'service-turning': { selector: '.service-card[data-service="cnc-turning"] img' },
+            'service-5axis': { selector: '.service-card[data-service="5-axis"] img' },
+            'service-inspection': { selector: '.service-card[data-service="precision-inspection"] img' },
+            'industry-aerospace': { selector: '.industry-card[data-industry="aerospace"] img' },
+            'industry-liquid-cooling': { selector: '.industry-card[data-industry="liquid-cooling"] img' },
+            'industry-medical': { selector: '.industry-card[data-industry="medical"] img' },
+            'industry-electronics': { selector: '.industry-card[data-industry="electronics"] img' },
+            'industry-robotics': { selector: '.industry-card[data-industry="robotics"] img' },
+            'industry-industrial': { selector: '.industry-card[data-industry="industrial"] img' },
+            'news-1': { selector: '.news-grid .news-card:nth-child(1) img' },
+            'news-2': { selector: '.news-grid .news-card:nth-child(2) img' },
+            'news-3': { selector: '.news-grid .news-card:nth-child(3) img' }
+        },
+        about: {
+            'tour-poster': { selector: '.vr-facade', type: 'background' }
+        },
+        'cnc-milling': {
+            'hero': { selector: '.page-hero-image img' },
+            'gallery-1': { selector: '.gallery-item:nth-child(1) img' },
+            'gallery-2': { selector: '.gallery-item:nth-child(2) img' },
+            'gallery-3': { selector: '.gallery-item:nth-child(3) img' },
+            'gallery-4': { selector: '.gallery-item:nth-child(4) img' }
+        },
+        industries: {
+            'aerospace': { selector: '.industry-card:nth-child(1) img' },
+            'liquid-cooling': { selector: '.industry-card:nth-child(2) img' },
+            'medical': { selector: '.industry-card:nth-child(3) img' },
+            'electronics': { selector: '.industry-card:nth-child(4) img' },
+            'industrial': { selector: '.industry-card:nth-child(5) img' },
+            'robotics': { selector: '.industry-card:nth-child(6) img' }
+        },
+        contact: {
+            'facility-1': { selector: '.location-card:nth-child(1) img' },
+            'facility-2': { selector: '.location-card:nth-child(2) img' },
+            'facility-3': { selector: '.location-card:nth-child(3) img' }
+        },
+        resources: {
+            'featured': { selector: 'img[src*="CNC_Milling_800x600"]' }
+        },
+        blog: {
+            'fallback-1': { selector: '#blog-fallback article:nth-child(1) img' },
+            'fallback-2': { selector: '#blog-fallback article:nth-child(2) img' },
+            'fallback-3': { selector: '#blog-fallback article:nth-child(3) img' },
+            'fallback-4': { selector: '#blog-fallback article:nth-child(4) img' },
+            'fallback-5': { selector: '#blog-fallback article:nth-child(5) img' },
+            'fallback-6': { selector: '#blog-fallback article:nth-child(6) img' }
+        }
+    };
+
+    function pageName() {
+        return (window.location.pathname.split('/').pop() || 'index.html').replace(/\.html$/, '') || 'index';
+    }
+
+    function apply(data) {
+        var page = pageName();
+        var values = data && data[page];
+        var targets = TARGETS[page];
+        if (!values || !targets) return;
+        Object.keys(values).forEach(function (key) {
+            var target = targets[key];
+            var url = _absImg(values[key]);
+            if (!target || !url) return;
+            document.querySelectorAll(target.selector).forEach(function (element) {
+                if (target.type === 'background') {
+                    element.style.backgroundImage = "url('" + String(url).replace(/'/g, "%27") + "')";
+                    element.dataset.posterImage = url;
+                } else if (element.tagName === 'IMG') {
+                    element.src = url;
+                }
+            });
+        });
+    }
+
+    var currentData = null;
+    window.WFX_applyManagedPageImages = function () {
+        if (currentData) apply(currentData);
+    };
+
+    function boot() {
+        var injected = window.__WFX_CMS__ && window.__WFX_CMS__.page_images;
+        if (injected && Object.keys(injected).length) {
+            currentData = injected;
+            apply(injected);
+            return;
+        }
+        fetch('/api/cms/content/page_images')
+            .then(function (response) { return response.ok ? response.json() : null; })
+            .then(function (result) {
+                if (result && result.ok && result.value) {
+                    currentData = result.value;
+                    apply(result.value);
+                }
+            })
+            .catch(function () {});
+    }
+
+    document.addEventListener('wfxCollectionsRendered', function () {
+        window.WFX_applyManagedPageImages();
+    });
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+    else boot();
+})();
+
+/* Keep the company-video assignment in the Video Manager effective for both
+   YouTube embeds and uploaded MP4/WebM files. */
+(function () {
+    'use strict';
+
+    function youtubeEmbed(url) {
+        var match = String(url || '').match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?v=|embed\/))([^?&/]+)/i);
+        return match ? 'https://www.youtube-nocookie.com/embed/' + match[1] + '?rel=0&modestbranding=1' : '';
+    }
+
+    function boot() {
+        var page = (window.location.pathname.split('/').pop() || 'index.html').replace(/\.html$/, '') || 'index';
+        if (page !== 'index') return;
+        var pageContent = window.__WFX_CMS__ && window.__WFX_CMS__.page_content;
+        var config = pageContent && pageContent.index && pageContent.index.companyVideo;
+        var wrap = document.querySelector('.youtube-embed-wrap');
+        if (!config || !config.videoUrl || !wrap) return;
+        var embed = youtubeEmbed(config.videoUrl);
+        if (embed) {
+            var frame = wrap.querySelector('iframe');
+            if (frame) frame.src = embed;
+            return;
+        }
+        var video = document.createElement('video');
+        video.controls = true;
+        video.preload = 'metadata';
+        video.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;';
+        video.src = _absImg(config.videoUrl);
+        if (config.posterUrl) video.poster = _absImg(config.posterUrl);
+        wrap.innerHTML = '';
+        wrap.appendChild(video);
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+    else boot();
+})();
+
 
 /**
  * ─── Generic CMS Collections Renderer ──────────────────────────────────────
@@ -533,11 +886,19 @@ ContentLoader.init();
                 var page = key.slice(0, sep);
                 var collection = key.slice(sep + 1);
 
-                var items = data[page] && data[page][collection];
-                if (!Array.isArray(items) || items.length === 0) return; // keep fallback
-
+                var pageCollections = data[page];
+                if (!pageCollections || !Object.prototype.hasOwnProperty.call(pageCollections, collection)) return;
+                var items = pageCollections[collection];
+                if (!Array.isArray(items)) return;
                 var tpl = container.querySelector('template[data-cms-item]');
                 if (!tpl || !tpl.content || !tpl.content.firstElementChild) return;
+                if (items.length === 0) {
+                    Array.prototype.slice.call(container.children).forEach(function (child) {
+                        if (child.tagName !== 'TEMPLATE') child.remove();
+                    });
+                    container.hidden = true;
+                    return;
+                }
 
                 var frag = document.createDocumentFragment();
                 items.forEach(function (item) {
@@ -630,6 +991,7 @@ ContentLoader.init();
                 if (window.console) console.warn('CMS collection render skipped:', err);
             }
         });
+        try { document.dispatchEvent(new CustomEvent('wfxCollectionsRendered')); } catch (e) {}
     }
 
     function boot() {
@@ -672,7 +1034,7 @@ ContentLoader.init();
         imgWrap.appendChild(img);
         if (item.category) {
             var cat = el('span', 'news-category');
-            cat.textContent = item.category;
+            cat.textContent = _categoryLabel(item.category);
             imgWrap.appendChild(cat);
         }
         card.appendChild(imgWrap);
@@ -684,7 +1046,7 @@ ContentLoader.init();
         var h3 = el('h3'); h3.textContent = item.title || ''; content.appendChild(h3);
         if (item.excerpt) { var p = el('p'); p.textContent = item.excerpt; content.appendChild(p); }
         var link = el('a', 'news-link');
-        link.setAttribute('href', item.slug ? ('blog.html#' + item.slug) : 'blog.html');
+        link.setAttribute('href', item.slug ? ('blog.html?post=' + encodeURIComponent(item.slug)) : 'blog.html');
         link.innerHTML = 'Read More <i class="fas fa-arrow-right" aria-hidden="true"></i>';
         content.appendChild(link);
         card.appendChild(content);
@@ -705,6 +1067,9 @@ ContentLoader.init();
         if (!frag.childNodes.length) return;  // nothing valid → keep fallback
         grid.innerHTML = '';
         grid.appendChild(frag);
+        if (typeof window.WFX_applyManagedPageImages === 'function') {
+            window.WFX_applyManagedPageImages();
+        }
     }
 
     function boot() { try { renderHomepageNews(); } catch (e) { /* keep built-in cards */ } }
@@ -748,7 +1113,7 @@ ContentLoader.init();
         }
         var body = el('div', 'blog-list-body');
         var meta = el('div', 'blog-list-meta');
-        if (item.category) { var c = el('span', 'blog-list-cat'); c.textContent = item.category; meta.appendChild(c); }
+        if (item.category) { var c = el('span', 'blog-list-cat'); c.textContent = _categoryLabel(item.category); meta.appendChild(c); }
         var dt = el('span', 'blog-list-date'); dt.textContent = fmtDate(item.published_at); meta.appendChild(dt);
         body.appendChild(meta);
         var h = el('h3'); h.textContent = item.title || ''; body.appendChild(h);
@@ -776,7 +1141,7 @@ ContentLoader.init();
             var order = ['CNC Processes & Machines', 'Materials Knowledge Hub', 'Engineering Drawings & DFM', 'Surface Finishing', 'Related Processes & Quality'];
             var groups = {}, seen = [];
             blog.forEach(function (it) {
-                var c = (it.category && String(it.category).trim()) || 'Other';
+                var c = _categoryLabel(it.category) || 'Other';
                 if (!groups[c]) { groups[c] = []; seen.push(c); }
                 groups[c].push(it);
             });
@@ -812,14 +1177,14 @@ ContentLoader.init();
             document.head.appendChild(sc);
         } catch (e) {}
     }
-    function renderDetail(host, item) {
+    async function renderDetail(host, item) {
         host.innerHTML = '';
         injectArticleSchema(item);
         var back = el('a', 'blog-back'); back.setAttribute('href', 'blog.html');
         back.innerHTML = '<i class="fas fa-arrow-left" aria-hidden="true"></i> All articles';
         host.appendChild(back);
         var art = el('article', 'blog-detail');
-        if (item.category) { var c = el('span', 'blog-detail-cat'); c.textContent = item.category; art.appendChild(c); }
+        if (item.category) { var c = el('span', 'blog-detail-cat'); c.textContent = _categoryLabel(item.category); art.appendChild(c); }
         var h = el('h1', 'blog-detail-title'); h.textContent = item.title || ''; art.appendChild(h);
         var meta = el('div', 'blog-detail-meta');
         meta.textContent = [fmtDate(item.published_at), item.author].filter(Boolean).join('  ·  ');
@@ -830,12 +1195,19 @@ ContentLoader.init();
         }
         var bodyDiv = el('div', 'blog-detail-body');
         var content = item.content || item.excerpt || '';
-        String(content).split(/\n{2,}/).forEach(function (par) {
-            var t = par.replace(/\r/g, '').trim(); if (!t) return;
-            var p = el('p');
-            t.split(/\n/).forEach(function (line, i) { if (i) p.appendChild(document.createElement('br')); p.appendChild(document.createTextNode(line)); });
-            bodyDiv.appendChild(p);
-        });
+        try {
+            bodyDiv.innerHTML = await _renderMarkdownSafe(String(content));
+        } catch (e) {
+            String(content).split(/\n{2,}/).forEach(function (par) {
+                var t = par.replace(/\r/g, '').trim(); if (!t) return;
+                var p = el('p');
+                t.split(/\n/).forEach(function (line, i) {
+                    if (i) p.appendChild(document.createElement('br'));
+                    p.appendChild(document.createTextNode(line));
+                });
+                bodyDiv.appendChild(p);
+            });
+        }
         art.appendChild(bodyDiv);
         var cta = el('div', 'blog-detail-cta');
         var btn = el('a', 'btn btn-primary'); btn.setAttribute('href', 'contact.html');
@@ -844,7 +1216,7 @@ ContentLoader.init();
         host.appendChild(art);
     }
 
-    function boot() {
+    async function boot() {
         var cms = window.__WFX_CMS__; if (!cms) return;
         var host = document.getElementById('blog-dynamic');
         var fb = document.getElementById('blog-fallback');
@@ -855,10 +1227,13 @@ ContentLoader.init();
         var slug = param('post');
         if (slug) {
             var item = news.concat(blog).filter(function (x) { return x.slug === slug; })[0];
-            if (item) { renderDetail(host, item); return; }
+            if (item) { await renderDetail(host, item); return; }
         }
         renderList(host, news, blog);
     }
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { try { boot(); } catch (e) {} });
-    else { try { boot(); } catch (e) {} }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () { boot().catch(function () {}); });
+    } else {
+        boot().catch(function () {});
+    }
 })();

@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories - WFX Admin</title>
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--light-gray);
+            margin-bottom: 25px;
+        }
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--gray);
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+        .tab:hover { color: var(--primary); }
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .add-form {
+            background: var(--white);
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+        .add-form h3 {
+            margin: 0 0 20px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .add-form h3 i { color: var(--primary); }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 2fr auto;
+            gap: 15px;
+            align-items: end;
+        }
+        .form-grid .form-group { margin: 0; }
+
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+        }
+
+        .category-table {
+            width: 100%;
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            border-collapse: collapse;
+        }
+        .category-table thead {
+            background: var(--off-white);
+        }
+        .category-table th {
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+        .category-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--light-gray);
+            color: var(--gray);
+        }
+        .category-table tr:last-child td {
+            border-bottom: none;
+        }
+        .category-table tr:hover {
+            background: var(--off-white);
+        }
+        .category-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        .category-slug {
+            font-family: monospace;
+            font-size: 0.85rem;
+            background: var(--off-white);
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: var(--gray);
+        }
+        .category-count {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1d4ed8;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 1px solid var(--light-gray);
+            background: var(--white);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            transition: all 0.2s;
+        }
+        .btn-icon:hover {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+        .btn-icon.danger:hover {
+            background: #dc2626;
+            border-color: #dc2626;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--light-gray);
+            margin-bottom: 15px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            z-index: 9999;
+            animation: slideUp 0.3s;
+        }
+        .toast.success { background: #16a34a; }
+        .toast.error   { background: #dc2626; }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+    </style>
+</head>
+<body class="admin-body">
+    <aside class="admin-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="dashboard.html" class="sidebar-logo"><span>WFX Admin</span></a>
+            <button class="sidebar-toggle" id="sidebar-toggle"><i class="fas fa-bars" aria-hidden="true"></i></button>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.main">Main</div>
+                <a href="dashboard.html" class="nav-item" data-i18n="nav.dashboard">
+                    <i class="fas fa-home" aria-hidden="true"></i> Dashboard
+                </a>
+                <a href="quotes.html" class="nav-item" data-i18n="nav.quotes">
+                    <i class="fas fa-file-invoice-dollar" aria-hidden="true"></i> Quotes
+                </a>
+                <a href="requests.html" class="nav-item" data-i18n="nav.requests">
+                    <i class="fas fa-inbox" aria-hidden="true"></i> Requests
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.content">Content Management</div>
+                <a href="videos.html" class="nav-item" data-i18n="nav.video_manager">
+                    <i class="fas fa-video" aria-hidden="true"></i> Video Manager
+                </a>
+                <a href="pages.html" class="nav-item" data-i18n="nav.pages">
+                    <i class="fas fa-file-alt" aria-hidden="true"></i> Pages & Text
+                </a>
+                <a href="page-images.html" class="nav-item" data-i18n="nav.page_images">
+                    <i class="fas fa-image" aria-hidden="true"></i> Page Images
+                </a>
+                <a href="collections.html" class="nav-item" data-i18n="nav.collections">
+                    <i class="fas fa-layer-group" aria-hidden="true"></i> Page Collections
+                </a>
+                <a href="products.html" class="nav-item" data-i18n="nav.products">
+                    <i class="fas fa-boxes" aria-hidden="true"></i> Industry Products
+                </a>
+                <a href="testimonials.html" class="nav-item" data-i18n="nav.testimonials">
+                    <i class="fas fa-quote-right" aria-hidden="true"></i> Testimonials
+                </a>
+                <a href="categories.html" class="nav-item active" data-i18n="nav.categories">
+                    <i class="fas fa-folder-open" aria-hidden="true"></i> Categories
+                </a>
+                <a href="media.html" class="nav-item" data-i18n="nav.media">
+                    <i class="fas fa-images" aria-hidden="true"></i> Media Library
+                </a>
+                <a href="blog.html" class="nav-item" data-i18n="nav.blog">
+                    <i class="fas fa-blog" aria-hidden="true"></i> Articles
+                </a>
+                <a href="news.html" class="nav-item" data-i18n="nav.news">
+                    <i class="fas fa-newspaper" aria-hidden="true"></i> News
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.system">System</div>
+                <a href="users.html" class="nav-item" data-i18n="nav.users">
+                    <i class="fas fa-users" aria-hidden="true"></i> User Management
+                </a>
+                <a href="blocklist.html" class="nav-item" data-i18n="nav.blocklist">
+                    <i class="fas fa-ban" aria-hidden="true"></i> IP Blocklist
+                </a>
+                <a href="activity-log.html" class="nav-item" data-i18n="nav.activity_log">
+                    <i class="fas fa-history" aria-hidden="true"></i> Activity Log
+                </a>
+                <a href="settings.html" class="nav-item" data-i18n="nav.settings">
+                    <i class="fas fa-cog" aria-hidden="true"></i> Settings
+                </a>
+                <a href="change-password.html" class="nav-item" data-i18n="nav.change_password">
+                    <i class="fas fa-key" aria-hidden="true"></i> Change Password
+                </a>
+            </div>
+            <div class="nav-section">
+                <a href="../index.html" class="nav-item" target="_blank" data-i18n="nav.view_website">
+                    <i class="fas fa-external-link-alt" aria-hidden="true"></i> View Website
+                </a>
+                <a href="#" class="nav-item" onclick="AdminCore.logout()" data-i18n="nav.logout">
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <button class="mobile-menu-btn" id="mobile-menu-btn"><i class="fas fa-bars" aria-hidden="true"></i></button>
+            <div class="header-title">
+                <h1><span data-i18n="page.categories">Categories</span></h1>
+                <p>Organize News articles and Products into categories</p>
+            </div>
+            <div class="header-actions">
+                <span id="user-name"></span>
+            </div>
+        </header>
+
+        <div class="admin-content">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('news')" id="tab-news">
+                    <i class="fas fa-newspaper" aria-hidden="true"></i> News & Articles
+                </button>
+                <button class="tab" onclick="switchTab('product')" id="tab-product">
+                    <i class="fas fa-boxes" aria-hidden="true"></i> Products
+                </button>
+            </div>
+
+            <!-- News categories tab -->
+            <div class="tab-content active" id="content-news">
+                <div class="add-form">
+                    <h3><i class="fas fa-plus-circle" aria-hidden="true"></i> Add News / Article Category</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" id="news-name" placeholder="e.g. Materials Knowledge Hub">
+                        </div>
+                        <div class="form-group">
+                            <label>Slug</label>
+                            <input type="text" id="news-slug" placeholder="cnc-processes">
+                        </div>
+                        <div class="form-group">
+                            <label>Description (optional)</label>
+                            <input type="text" id="news-desc" placeholder="Manufacturing trends and analysis">
+                        </div>
+                        <button class="btn btn-primary" onclick="addCategory('news')">
+                            <i class="fas fa-plus" aria-hidden="true"></i> Add
+                        </button>
+                    </div>
+                </div>
+
+                <table class="category-table" id="news-table">
+                    <thead>
+                        <tr>
+                            <th style="width:40px;">#</th>
+                            <th>Name</th>
+                            <th>Slug</th>
+                            <th>Description</th>
+                            <th style="width:90px; text-align:center;">Articles</th>
+                            <th style="width:120px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="news-tbody"></tbody>
+                </table>
+            </div>
+
+            <!-- Product categories tab -->
+            <div class="tab-content" id="content-product">
+                <div class="add-form">
+                    <h3><i class="fas fa-plus-circle" aria-hidden="true"></i> Add Product Category</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" id="product-name" placeholder="e.g. Aerospace">
+                        </div>
+                        <div class="form-group">
+                            <label>Slug</label>
+                            <input type="text" id="product-slug" placeholder="aerospace">
+                        </div>
+                        <div class="form-group">
+                            <label>Description (optional)</label>
+                            <input type="text" id="product-desc" placeholder="Aerospace components">
+                        </div>
+                        <button class="btn btn-primary" onclick="addCategory('product')">
+                            <i class="fas fa-plus" aria-hidden="true"></i> Add
+                        </button>
+                    </div>
+                </div>
+
+                <table class="category-table" id="product-table">
+                    <thead>
+                        <tr>
+                            <th style="width:40px;">#</th>
+                            <th>Name</th>
+                            <th>Slug</th>
+                            <th>Description</th>
+                            <th style="width:90px; text-align:center;">Products</th>
+                            <th style="width:120px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="product-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/cms-sync.js?v=20260609c"></script>
+    <script src="js/admin-core.js?v=20260609c"></script>
+    <script>
+        AdminCore.checkAuth();
+
+        // ─── Storage helpers ─────────────────────────────────────────────
+        const KEY = 'wfx_categories';
+
+        const DEFAULT_CATEGORIES = {
+            news: [
+                { id: 1, name: 'CNC Processes & Machines',     slug: 'cnc-processes',       description: 'Milling, turning, 5-axis, EDM techniques and machine capabilities' },
+                { id: 2, name: 'Materials Knowledge Hub',      slug: 'materials',           description: 'Aluminum, steel, titanium, plastics — properties and machinability' },
+                { id: 3, name: 'Engineering Drawings & DFM',   slug: 'drawings-dfm',        description: 'Design for manufacturability, tolerances, GD&T, drawing standards' },
+                { id: 4, name: 'Surface Finishing',            slug: 'surface-finishing',   description: 'Anodizing, plating, coating, polishing, passivation — post-processing' },
+                { id: 5, name: 'Related Processes & Quality',  slug: 'related-processes',   description: 'Casting, forging, sheet metal, inspection, QA, certifications' }
+            ],
+            product: [
+                { id: 1, name: 'Aerospace',      slug: 'aerospace',      description: 'Aerospace components' },
+                { id: 2, name: 'Medical',        slug: 'medical',        description: 'Medical device parts' },
+                { id: 3, name: 'Electronics',    slug: 'electronics',    description: 'Electronics enclosures and parts' },
+                { id: 4, name: 'Robotics',       slug: 'robotics',       description: 'Robotics components' },
+                { id: 5, name: 'Industrial',     slug: 'industrial',     description: 'Industrial machinery parts' },
+                { id: 6, name: 'Liquid Cooling', slug: 'liquid-cooling', description: 'Cold plates, heat sinks, manifolds' }
+            ]
+        };
+
+        function loadCategories() {
+            try {
+                const stored = localStorage.getItem(KEY);
+                if (stored) return JSON.parse(stored);
+            } catch (e) {}
+            return DEFAULT_CATEGORIES;
+        }
+
+        function saveCategories(cats) {
+            localStorage.setItem(KEY, JSON.stringify(cats));
+        }
+
+        let categories = loadCategories();
+
+        // ─── Counts (from existing localStorage data) ────────────────────
+        function countItems(type, slug, name) {
+            try {
+                if (type === 'news') {
+                    const articles = JSON.parse(localStorage.getItem('wfx_news') || '[]')
+                        .concat(JSON.parse(localStorage.getItem('wfx_blog_posts') || '[]'));
+                    return articles.filter(a => a.category === slug || a.category === name).length;
+                } else {
+                    const products = JSON.parse(localStorage.getItem('wfx_industry_products') || '[]');
+                    return products.filter(p => p.industry === slug).length;
+                }
+            } catch (e) {
+                return 0;
+            }
+        }
+
+        // ─── Rendering ───────────────────────────────────────────────────
+        function render() {
+            ['news', 'product'].forEach(type => {
+                const tbody = document.getElementById(type + '-tbody');
+                const cats = categories[type] || [];
+
+                if (cats.length === 0) {
+                    tbody.innerHTML = `
+                        <tr><td colspan="6">
+                            <div class="empty-state">
+                                <i class="fas fa-folder-open" aria-hidden="true"></i>
+                                <p>No categories yet. Add one above.</p>
+                            </div>
+                        </td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = cats.map((c, i) => `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td><span class="category-name">${escapeHtml(c.name)}</span></td>
+                        <td><code class="category-slug">${escapeHtml(c.slug)}</code></td>
+                        <td>${escapeHtml(c.description || '—')}</td>
+                        <td style="text-align:center;">
+                            <span class="category-count">${countItems(type, c.slug, c.name)}</span>
+                        </td>
+                        <td>
+                            <div class="actions">
+                                <button class="btn-icon" onclick="editCategory('${type}', ${c.id})" title="Edit">
+                                    <i class="fas fa-edit" aria-hidden="true"></i>
+                                </button>
+                                <button class="btn-icon danger" onclick="deleteCategory('${type}', ${c.id})" title="Delete">
+                                    <i class="fas fa-trash" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            });
+        }
+
+        function escapeHtml(s) {
+            const div = document.createElement('div');
+            div.textContent = s || '';
+            return div.innerHTML;
+        }
+
+        function slugify(text) {
+            return (text || '')
+                .toLowerCase()
+                .trim()
+                .replace(/[^\w\s-]/g, '')
+                .replace(/[\s_-]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+        }
+
+        // ─── Actions ─────────────────────────────────────────────────────
+        function switchTab(type) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + type).classList.add('active');
+            document.getElementById('content-' + type).classList.add('active');
+        }
+
+        function addCategory(type) {
+            const name = document.getElementById(type + '-name').value.trim();
+            let slug   = document.getElementById(type + '-slug').value.trim();
+            const desc = document.getElementById(type + '-desc').value.trim();
+
+            if (!name) {
+                showToast('Category name is required', 'error');
+                return;
+            }
+            if (!slug) slug = slugify(name);
+            if (!/^[a-z0-9-]+$/.test(slug)) {
+                showToast('Slug must contain only lowercase letters, numbers and hyphens', 'error');
+                return;
+            }
+
+            // Check for duplicate slug
+            if ((categories[type] || []).some(c => c.slug === slug)) {
+                showToast(`Slug "${slug}" already exists`, 'error');
+                return;
+            }
+
+            const newId = Math.max(0, ...(categories[type] || []).map(c => c.id)) + 1;
+            categories[type] = (categories[type] || []).concat({
+                id: newId, name, slug, description: desc
+            });
+            saveCategories(categories);
+
+            // Clear inputs
+            document.getElementById(type + '-name').value = '';
+            document.getElementById(type + '-slug').value = '';
+            document.getElementById(type + '-desc').value = '';
+
+            if (typeof AdminCore !== 'undefined' && AdminCore.logAction) {
+                AdminCore.logAction('category_added', `Added ${type} category: ${name}`, { type, name, slug });
+            }
+            showToast(`Category "${name}" added`, 'success');
+            render();
+        }
+
+        function editCategory(type, id) {
+            const cat = (categories[type] || []).find(c => c.id === id);
+            if (!cat) return;
+
+            const newName = prompt('Category name:', cat.name);
+            if (newName === null) return;
+            if (!newName.trim()) {
+                showToast('Name cannot be empty', 'error');
+                return;
+            }
+
+            const newDesc = prompt('Description (optional):', cat.description || '');
+            if (newDesc === null) return;
+
+            // Note: we deliberately do NOT let users edit slug, because changing
+            // it would orphan all articles/products tagged with the old slug.
+            cat.name = newName.trim();
+            cat.description = newDesc.trim();
+            saveCategories(categories);
+
+            if (typeof AdminCore !== 'undefined' && AdminCore.logAction) {
+                AdminCore.logAction('category_edited', `Edited ${type} category: ${cat.name}`, { type, id });
+            }
+            showToast('Category updated', 'success');
+            render();
+        }
+
+        function deleteCategory(type, id) {
+            const cat = (categories[type] || []).find(c => c.id === id);
+            if (!cat) return;
+
+            const count = countItems(type, cat.slug, cat.name);
+            const warning = count > 0
+                ? `\n\n⚠ This category contains ${count} ${type === 'news' ? 'article(s)' : 'product(s)'}. They will become uncategorized.`
+                : '';
+
+            if (!confirm(`Delete category "${cat.name}"?${warning}`)) return;
+
+            categories[type] = categories[type].filter(c => c.id !== id);
+            saveCategories(categories);
+
+            if (typeof AdminCore !== 'undefined' && AdminCore.logAction) {
+                AdminCore.logAction('category_deleted', `Deleted ${type} category: ${cat.name}`, { type, id });
+            }
+            showToast(`Category "${cat.name}" deleted`, 'success');
+            render();
+        }
+
+        // Auto-fill slug from name
+        ['news', 'product'].forEach(type => {
+            document.getElementById(type + '-name').addEventListener('input', function() {
+                const slugField = document.getElementById(type + '-slug');
+                if (!slugField.dataset.touched) {
+                    slugField.value = slugify(this.value);
+                }
+            });
+            document.getElementById(type + '-slug').addEventListener('input', function() {
+                this.dataset.touched = '1';
+            });
+        });
+
+        function showToast(msg, type) {
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Pull the server copy before the initial render so a new browser never
+        // mistakes built-in category defaults for the currently published data.
+        (async function initCategories() {
+            if (window.WFX_CMS_SYNC && window.WFX_CMS_SYNC.pullAll) {
+                try { await window.WFX_CMS_SYNC.pullAll(); } catch (e) {}
+            }
+            categories = loadCategories();
+            render();
+        })();
+    </script>
+</body>
+</html>

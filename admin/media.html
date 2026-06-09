@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Library | WFX Admin</title>
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        .purpose-note { display:flex; gap:14px; align-items:flex-start; padding:16px 18px; margin-bottom:24px; border:1px solid #bfdbfe; border-radius:10px; background:#eff6ff; color:#1e3a8a; }
+        .purpose-note i { margin-top:2px; color:#2563eb; }
+        .upload-panel { display:grid; grid-template-columns:1fr 260px auto; gap:12px; align-items:end; }
+        .upload-panel input { width:100%; }
+        .filters { display:grid; grid-template-columns:1fr 220px 180px auto; gap:12px; margin:22px 0; }
+        .filters input, .filters select, .upload-panel input { padding:10px 12px; border:1px solid #cbd5e1; border-radius:8px; background:#fff; }
+        .media-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:18px; }
+        .media-card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; box-shadow:0 2px 9px rgba(15,23,42,.05); }
+        .media-preview { height:155px; display:flex; align-items:center; justify-content:center; background:#0f172a; overflow:hidden; color:#cbd5e1; }
+        .media-preview img, .media-preview video { width:100%; height:100%; object-fit:cover; }
+        .media-preview i { font-size:2.7rem; }
+        .media-body { padding:14px; }
+        .media-name { margin:0 0 5px; color:#0f172a; font-size:.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .media-meta { margin:0 0 11px; color:#64748b; font-size:.75rem; line-height:1.5; }
+        .media-actions { display:flex; gap:7px; }
+        .media-actions .btn { flex:1; justify-content:center; padding:7px 8px; font-size:.78rem; }
+        .empty { grid-column:1/-1; padding:45px; text-align:center; color:#64748b; border:2px dashed #cbd5e1; border-radius:12px; }
+        @media (max-width:900px) {
+            .upload-panel, .filters { grid-template-columns:1fr; }
+        }
+    </style>
+</head>
+<body>
+    <aside class="admin-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../images/logo.png" alt="WFX">
+            <h2 data-i18n="nav.panel_title">Admin Panel</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.main">Main</div>
+                <a href="dashboard.html" class="nav-item" data-i18n="nav.dashboard"><i class="fas fa-home" aria-hidden="true"></i> Dashboard</a>
+                <a href="quotes.html" class="nav-item" data-i18n="nav.quotes"><i class="fas fa-file-invoice-dollar" aria-hidden="true"></i> Quotes</a>
+                <a href="requests.html" class="nav-item" data-i18n="nav.requests"><i class="fas fa-inbox" aria-hidden="true"></i> Requests</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.content">Content Management</div>
+                <a href="videos.html" class="nav-item" data-i18n="nav.video_manager"><i class="fas fa-video" aria-hidden="true"></i> Video Manager</a>
+                <a href="pages.html" class="nav-item" data-i18n="nav.pages"><i class="fas fa-file-alt" aria-hidden="true"></i> Pages &amp; Text</a>
+                <a href="page-images.html" class="nav-item" data-i18n="nav.page_images"><i class="fas fa-image" aria-hidden="true"></i> Page Images</a>
+                <a href="collections.html" class="nav-item" data-i18n="nav.collections"><i class="fas fa-layer-group" aria-hidden="true"></i> Page Collections</a>
+                <a href="products.html" class="nav-item" data-i18n="nav.products"><i class="fas fa-boxes" aria-hidden="true"></i> Industry Products</a>
+                <a href="testimonials.html" class="nav-item" data-i18n="nav.testimonials"><i class="fas fa-quote-right" aria-hidden="true"></i> Testimonials</a>
+                <a href="categories.html" class="nav-item" data-i18n="nav.categories"><i class="fas fa-folder-open" aria-hidden="true"></i> Categories</a>
+                <a href="media.html" class="nav-item active" data-i18n="nav.media"><i class="fas fa-images" aria-hidden="true"></i> Media Library</a>
+                <a href="blog.html" class="nav-item" data-i18n="nav.blog"><i class="fas fa-file-lines" aria-hidden="true"></i> Articles</a>
+                <a href="news.html" class="nav-item" data-i18n="nav.news"><i class="fas fa-newspaper" aria-hidden="true"></i> News</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.system">System</div>
+                <a href="users.html" class="nav-item" data-i18n="nav.users"><i class="fas fa-users" aria-hidden="true"></i> User Management</a>
+                <a href="activity-log.html" class="nav-item" data-i18n="nav.activity_log"><i class="fas fa-history" aria-hidden="true"></i> Activity Log</a>
+                <a href="settings.html" class="nav-item" data-i18n="nav.settings"><i class="fas fa-cog" aria-hidden="true"></i> Settings</a>
+            </div>
+            <div class="nav-section">
+                <a href="../index.html" class="nav-item" target="_blank" data-i18n="nav.view_website"><i class="fas fa-external-link-alt" aria-hidden="true"></i> View Website</a>
+                <a href="#" class="nav-item" onclick="AdminCore.logout()" data-i18n="nav.logout"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout</a>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <div class="header-left">
+                <h1><i class="fas fa-images" aria-hidden="true"></i> <span data-i18n="page.media">Media Library</span></h1>
+                <p style="margin:5px 0 0;color:#64748b;">Uploaded asset storage</p>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-secondary" id="refresh-btn"><i class="fas fa-rotate" aria-hidden="true"></i> Refresh</button>
+            </div>
+        </header>
+
+        <div class="admin-content">
+            <div id="alert-container"></div>
+            <div class="purpose-note">
+                <i class="fas fa-circle-info" aria-hidden="true"></i>
+                <div><strong>This page stores files only.</strong> Use <a href="page-images.html">Page Images</a> to assign images to pages and <a href="videos.html">Video Manager</a> to assign videos. This avoids duplicate settings.</div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><h3><i class="fas fa-cloud-arrow-up" aria-hidden="true"></i> Upload Asset</h3></div>
+                <div class="card-body">
+                    <div class="upload-panel">
+                        <div>
+                            <label class="form-label" for="media-file">File</label>
+                            <input id="media-file" type="file" accept=".jpg,.jpeg,.png,.gif,.webp,.mp4,.webm,.mov,.m4v,.pdf">
+                        </div>
+                        <div>
+                            <label class="form-label" for="media-folder">Folder</label>
+                            <input id="media-folder" type="text" value="general" placeholder="general or pages/about/hero">
+                        </div>
+                        <button class="btn btn-primary" id="upload-btn"><i class="fas fa-upload" aria-hidden="true"></i> Upload</button>
+                    </div>
+                    <div id="upload-status" style="margin-top:10px;color:#64748b;font-size:.85rem;"></div>
+                </div>
+            </div>
+
+            <div class="filters">
+                <input id="search" type="search" placeholder="Search filename or folder">
+                <select id="folder-filter"><option value="">All folders</option></select>
+                <select id="type-filter">
+                    <option value="">All file types</option>
+                    <option value="image">Images</option>
+                    <option value="video">Videos</option>
+                    <option value="document">Documents</option>
+                </select>
+                <span id="count" style="align-self:center;color:#64748b;text-align:right;">0 files</span>
+            </div>
+            <div class="media-grid" id="media-grid"></div>
+        </div>
+    </main>
+
+    <script src="js/cms-sync.js?v=20260609c"></script>
+    <script src="js/admin-core.js?v=20260609c"></script>
+    <script>
+    (function () {
+        if (!AdminCore.checkAuth()) return;
+        let items = [];
+
+        function csrf() {
+            return window.WFX_CSRF_TOKEN || localStorage.getItem('wfx_csrf_token') || '';
+        }
+
+        function typeOf(filename) {
+            const ext = String(filename).split('.').pop().toLowerCase();
+            if (['jpg','jpeg','png','gif','webp'].includes(ext)) return 'image';
+            if (['mp4','webm','mov','m4v'].includes(ext)) return 'video';
+            return 'document';
+        }
+
+        function sizeOf(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+        }
+
+        function showAlert(message, type) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-' + (type || 'success');
+            alert.textContent = message;
+            document.getElementById('alert-container').appendChild(alert);
+            setTimeout(() => alert.remove(), 5000);
+        }
+
+        function preview(item) {
+            const type = typeOf(item.filename);
+            const host = document.createElement('div');
+            host.className = 'media-preview';
+            if (type === 'image') {
+                const img = document.createElement('img');
+                img.src = item.url;
+                img.alt = item.filename;
+                host.appendChild(img);
+            } else if (type === 'video') {
+                const video = document.createElement('video');
+                video.src = item.url;
+                video.muted = true;
+                video.preload = 'metadata';
+                host.appendChild(video);
+            } else {
+                host.innerHTML = '<i class="fas fa-file-pdf" aria-hidden="true"></i>';
+            }
+            return host;
+        }
+
+        function render() {
+            const search = document.getElementById('search').value.trim().toLowerCase();
+            const folder = document.getElementById('folder-filter').value;
+            const type = document.getElementById('type-filter').value;
+            const filtered = items.filter(item => {
+                if (folder && item.folder !== folder) return false;
+                if (type && typeOf(item.filename) !== type) return false;
+                return !search || (item.filename + ' ' + item.folder).toLowerCase().includes(search);
+            });
+            document.getElementById('count').textContent = filtered.length + ' files';
+            const grid = document.getElementById('media-grid');
+            grid.innerHTML = '';
+            if (!filtered.length) {
+                grid.innerHTML = '<div class="empty">No media files match this view.</div>';
+                return;
+            }
+            filtered.forEach(item => {
+                const card = document.createElement('article');
+                card.className = 'media-card';
+                card.appendChild(preview(item));
+                const body = document.createElement('div');
+                body.className = 'media-body';
+                const name = document.createElement('h3');
+                name.className = 'media-name';
+                name.title = item.filename;
+                name.textContent = item.filename;
+                const meta = document.createElement('p');
+                meta.className = 'media-meta';
+                meta.textContent = item.folder + ' | ' + sizeOf(item.size);
+                const actions = document.createElement('div');
+                actions.className = 'media-actions';
+                const copy = document.createElement('button');
+                copy.className = 'btn btn-secondary';
+                copy.innerHTML = '<i class="fas fa-copy" aria-hidden="true"></i> Copy URL';
+                copy.addEventListener('click', async () => {
+                    await navigator.clipboard.writeText(item.url);
+                    showAlert('URL copied: ' + item.url);
+                });
+                const remove = document.createElement('button');
+                remove.className = 'btn btn-danger';
+                remove.innerHTML = '<i class="fas fa-trash" aria-hidden="true"></i> Delete';
+                remove.addEventListener('click', () => deleteItem(item));
+                actions.append(copy, remove);
+                body.append(name, meta, actions);
+                card.appendChild(body);
+                grid.appendChild(card);
+            });
+        }
+
+        function updateFolders() {
+            const select = document.getElementById('folder-filter');
+            const selected = select.value;
+            select.innerHTML = '<option value="">All folders</option>';
+            [...new Set(items.map(item => item.folder))].sort().forEach(folder => {
+                const option = document.createElement('option');
+                option.value = folder;
+                option.textContent = folder;
+                select.appendChild(option);
+            });
+            select.value = selected;
+        }
+
+        async function load() {
+            const grid = document.getElementById('media-grid');
+            grid.innerHTML = '<div class="empty">Loading media files...</div>';
+            try {
+                const response = await fetch('/api/media', { credentials: 'same-origin' });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok || !result.ok) throw new Error(result.error || 'Could not load media');
+                items = result.items || [];
+                updateFolders();
+                render();
+            } catch (error) {
+                grid.innerHTML = '<div class="empty">' + escapeHtml(error.message) + '</div>';
+            }
+        }
+
+        async function upload() {
+            const fileInput = document.getElementById('media-file');
+            const folderInput = document.getElementById('media-folder');
+            const status = document.getElementById('upload-status');
+            const file = fileInput.files[0];
+            if (!file) {
+                status.textContent = 'Choose a file first.';
+                return;
+            }
+            status.textContent = 'Uploading...';
+            const form = new FormData();
+            form.append('file', file);
+            form.append('folder', folderInput.value.trim() || 'general');
+            try {
+                const response = await fetch('/api/media', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'X-CSRF-Token': csrf() },
+                    body: form
+                });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok || !result.ok) throw new Error(result.error || 'Upload failed');
+                status.textContent = 'Uploaded: ' + result.url;
+                fileInput.value = '';
+                await load();
+            } catch (error) {
+                status.textContent = error.message;
+            }
+        }
+
+        async function deleteItem(item) {
+            if (!confirm('Delete ' + item.filename + '? Pages using this URL may show a broken image.')) return;
+            const path = item.folder.split('/').map(encodeURIComponent).join('/') + '/' + encodeURIComponent(item.filename);
+            try {
+                const response = await fetch('/api/media/' + path, {
+                    method: 'DELETE',
+                    credentials: 'same-origin',
+                    headers: { 'X-CSRF-Token': csrf() }
+                });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok || !result.ok) throw new Error(result.error || 'Delete failed');
+                showAlert('Media file deleted.');
+                await load();
+            } catch (error) {
+                showAlert(error.message, 'danger');
+            }
+        }
+
+        document.getElementById('upload-btn').addEventListener('click', upload);
+        document.getElementById('refresh-btn').addEventListener('click', load);
+        document.getElementById('search').addEventListener('input', render);
+        document.getElementById('folder-filter').addEventListener('change', render);
+        document.getElementById('type-filter').addEventListener('change', render);
+        load();
+    })();
+    </script>
+</body>
+</html>

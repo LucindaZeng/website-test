@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Images | WFX Admin</title>
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        .page-filter { min-width:230px; padding:10px 13px; border:1px solid #cbd5e1; border-radius:8px; background:#fff; }
+        .image-section { margin-bottom:32px; }
+        .image-section h2 { margin:0 0 14px; font-size:1.2rem; color:#0f172a; }
+        .image-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:18px; }
+        .image-card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; box-shadow:0 2px 9px rgba(15,23,42,.05); }
+        .image-card img { width:100%; height:155px; object-fit:cover; display:block; background:#f1f5f9; }
+        .image-card-body { padding:14px; }
+        .image-card h3 { margin:0 0 5px; color:#0f172a; font-size:.98rem; }
+        .image-card p { min-height:34px; margin:0 0 12px; color:#64748b; font-size:.8rem; line-height:1.4; }
+        .image-card .btn { width:100%; justify-content:center; }
+        .dirty { color:#b45309; font-size:.86rem; margin-right:12px; display:none; }
+        .modal-preview { width:100%; height:220px; object-fit:contain; background:#f8fafc; border:1px solid #e2e8f0; border-radius:9px; margin-bottom:18px; }
+        .upload-row { display:grid; grid-template-columns:1fr auto; gap:9px; }
+        .upload-row input { min-width:0; }
+        .status { min-height:20px; margin-top:7px; color:#64748b; font-size:.82rem; }
+    </style>
+</head>
+<body>
+    <aside class="admin-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../images/logo.png" alt="WFX">
+            <h2 data-i18n="nav.panel_title">Admin Panel</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.main">Main</div>
+                <a href="dashboard.html" class="nav-item" data-i18n="nav.dashboard"><i class="fas fa-home" aria-hidden="true"></i> Dashboard</a>
+                <a href="quotes.html" class="nav-item" data-i18n="nav.quotes"><i class="fas fa-file-invoice-dollar" aria-hidden="true"></i> Quotes</a>
+                <a href="requests.html" class="nav-item" data-i18n="nav.requests"><i class="fas fa-inbox" aria-hidden="true"></i> Requests</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.content">Content Management</div>
+                <a href="videos.html" class="nav-item" data-i18n="nav.video_manager"><i class="fas fa-video" aria-hidden="true"></i> Video Manager</a>
+                <a href="pages.html" class="nav-item" data-i18n="nav.pages"><i class="fas fa-file-alt" aria-hidden="true"></i> Pages &amp; Text</a>
+                <a href="page-images.html" class="nav-item active" data-i18n="nav.page_images"><i class="fas fa-image" aria-hidden="true"></i> Page Images</a>
+                <a href="collections.html" class="nav-item" data-i18n="nav.collections"><i class="fas fa-layer-group" aria-hidden="true"></i> Page Collections</a>
+                <a href="products.html" class="nav-item" data-i18n="nav.products"><i class="fas fa-boxes" aria-hidden="true"></i> Industry Products</a>
+                <a href="testimonials.html" class="nav-item" data-i18n="nav.testimonials"><i class="fas fa-quote-right" aria-hidden="true"></i> Testimonials</a>
+                <a href="categories.html" class="nav-item" data-i18n="nav.categories"><i class="fas fa-folder-open" aria-hidden="true"></i> Categories</a>
+                <a href="media.html" class="nav-item" data-i18n="nav.media"><i class="fas fa-images" aria-hidden="true"></i> Media Library</a>
+                <a href="blog.html" class="nav-item" data-i18n="nav.blog"><i class="fas fa-file-lines" aria-hidden="true"></i> Articles</a>
+                <a href="news.html" class="nav-item" data-i18n="nav.news"><i class="fas fa-newspaper" aria-hidden="true"></i> News</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.system">System</div>
+                <a href="users.html" class="nav-item" data-i18n="nav.users"><i class="fas fa-users" aria-hidden="true"></i> User Management</a>
+                <a href="activity-log.html" class="nav-item" data-i18n="nav.activity_log"><i class="fas fa-history" aria-hidden="true"></i> Activity Log</a>
+                <a href="settings.html" class="nav-item" data-i18n="nav.settings"><i class="fas fa-cog" aria-hidden="true"></i> Settings</a>
+            </div>
+            <div class="nav-section">
+                <a href="../index.html" class="nav-item" target="_blank" data-i18n="nav.view_website"><i class="fas fa-external-link-alt" aria-hidden="true"></i> View Website</a>
+                <a href="#" class="nav-item" onclick="AdminCore.logout()" data-i18n="nav.logout"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout</a>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <div class="header-left">
+                <h1><i class="fas fa-image" aria-hidden="true"></i> <span data-i18n="page.page_images">Page Images</span></h1>
+                <p style="margin:5px 0 0;color:#64748b;">Replace images at verified website locations. Uploads are stored in Media Library.</p>
+            </div>
+            <div class="header-right">
+                <span class="dirty" id="dirty"><i class="fas fa-circle" aria-hidden="true"></i> Unsaved changes</span>
+                <button class="btn btn-primary" id="save-btn"><i class="fas fa-save" aria-hidden="true"></i> Save All Changes</button>
+            </div>
+        </header>
+
+        <div class="admin-content">
+            <div id="alert-container"></div>
+            <div style="display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:25px;">
+                <select class="page-filter" id="page-filter">
+                    <option value="all">All managed pages</option>
+                </select>
+                <p style="margin:0;color:#64748b;font-size:.85rem;">Case Study images are managed in <a href="collections.html?page=case-studies">Case Studies</a>.</p>
+            </div>
+            <div id="image-sections"></div>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="edit-modal">
+        <div class="modal" style="max-width:620px;">
+            <div class="modal-header">
+                <h3 id="modal-title">Edit Image</h3>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <img id="modal-preview" class="modal-preview" alt="Selected image preview">
+                <div class="form-group">
+                    <label class="form-label" for="image-url">Image URL</label>
+                    <input class="form-control" id="image-url" type="text" placeholder="/uploads/media/pages/...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Upload replacement</label>
+                    <div class="upload-row">
+                        <input class="form-control" id="image-file" type="file" accept=".jpg,.jpeg,.png,.webp,.gif">
+                        <button class="btn btn-secondary" id="upload-btn" type="button"><i class="fas fa-upload" aria-hidden="true"></i> Upload</button>
+                    </div>
+                    <div class="status" id="upload-status"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-btn">Cancel</button>
+                <button class="btn btn-primary" id="apply-btn">Apply to Page</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/cms-sync.js?v=20260609c"></script>
+    <script src="js/admin-core.js?v=20260609c"></script>
+    <script>
+    (function () {
+        if (!AdminCore.checkAuth()) return;
+
+        const PAGES = {
+            index: {
+                label: 'Homepage (index.html)',
+                images: {
+                    'hero-poster': ['Hero poster image', 'Homepage background shown before/without video', '/images/hero-video-poster.jpg'],
+                    'service-milling': ['CNC Milling service card', 'Homepage / Services', '/images/content/CNC_Milling_800x600.webp'],
+                    'service-turning': ['CNC Turning service card', 'Homepage / Services', '/images/content/CNC_Turning_800x600.webp'],
+                    'service-5axis': ['5-Axis service card', 'Homepage / Services', '/images/content/5-Axis_Machining_800x600.webp'],
+                    'service-inspection': ['Precision Inspection card', 'Homepage / Services', '/images/content/Precision_Inspection_800x600.webp'],
+                    'industry-aerospace': ['Aerospace card', 'Homepage / Industries', '/images/content/Aerospace_Parts_800x600.webp'],
+                    'industry-liquid-cooling': ['Liquid Cooling card', 'Homepage / Industries', '/images/content/Liquid_Cooling_Parts_800x600.webp'],
+                    'industry-medical': ['Medical card', 'Homepage / Industries', '/images/content/Medical_Devices_800x600.webp'],
+                    'industry-electronics': ['Electronics card', 'Homepage / Industries', '/images/content/Electronics_Semiconductors_800x600.webp'],
+                    'industry-robotics': ['Robotics card', 'Homepage / Industries', '/images/content/Robotics_Automation_800x600.webp'],
+                    'industry-industrial': ['Industrial card', 'Homepage / Industries', '/images/content/Industrial_Equipment_800x600.webp'],
+                    'news-1': ['News card 1', 'Homepage / What is New', '/images/content/5-Axis_Machining_800x600.webp'],
+                    'news-2': ['News card 2', 'Homepage / What is New', '/images/content/Quality_Assurance_800x600.webp'],
+                    'news-3': ['News card 3', 'Homepage / What is New', '/images/content/Manufacturing_Headquarters_800x600.webp']
+                }
+            },
+            about: {
+                label: 'About Us',
+                images: {
+                    'tour-poster': ['Factory tour poster', 'about.html / 360 degree tour', '/images/hero-video-poster.jpg']
+                }
+            },
+            'cnc-milling': {
+                label: 'CNC Milling',
+                images: {
+                    hero: ['Hero image', 'cnc-milling.html / Hero', '/images/content/Aerospace_Parts_800x600.webp'],
+                    'gallery-1': ['Gallery image 1', 'CNC Milled Parts Gallery', '/images/content/metals-alloys-card-800x600.webp'],
+                    'gallery-2': ['Gallery image 2', 'CNC Milled Parts Gallery', '/images/content/Medical_Devices_800x600.webp'],
+                    'gallery-3': ['Gallery image 3', 'CNC Milled Parts Gallery', '/images/content/Aerospace_Parts_800x600.webp'],
+                    'gallery-4': ['Gallery image 4', 'CNC Milled Parts Gallery', '/images/content/Electronics_Semiconductors_800x600.webp']
+                }
+            },
+            industries: {
+                label: 'Industries Overview',
+                images: {
+                    aerospace: ['Aerospace', 'industries.html / Card 1', '/images/content/Aerospace_Parts_800x600.webp'],
+                    'liquid-cooling': ['Liquid Cooling', 'industries.html / Card 2', '/images/content/Liquid_Cooling_Parts_800x600.webp'],
+                    medical: ['Medical', 'industries.html / Card 3', '/images/content/Medical_Devices_800x600.webp'],
+                    electronics: ['Electronics', 'industries.html / Card 4', '/images/content/Electronics_Semiconductors_800x600.webp'],
+                    industrial: ['Industrial', 'industries.html / Card 5', '/images/content/Industrial_Equipment_800x600.webp'],
+                    robotics: ['Robotics', 'industries.html / Card 6', '/images/content/Robotics_Automation_800x600.webp']
+                }
+            },
+            contact: {
+                label: 'Contact',
+                images: {
+                    'facility-1': ['Manufacturing headquarters', 'contact.html / Location card 1', '/images/content/Manufacturing_Headquarters_800x600.webp'],
+                    'facility-2': ['Production facility', 'contact.html / Location card 2', '/images/content/facility-image-800x600.webp'],
+                    'facility-3': ['Quality assurance', 'contact.html / Location card 3', '/images/content/Quality_Assurance_800x600.webp']
+                }
+            },
+            resources: {
+                label: 'Resources',
+                images: {
+                    featured: ['Featured resource', 'resources.html / Featured guide', '/images/content/CNC_Milling_800x600.webp']
+                }
+            },
+            blog: {
+                label: 'Articles Page Fallback',
+                images: {
+                    'fallback-1': ['Fallback article 1', 'Used only when no CMS articles exist', '/images/content/5-Axis_Machining_800x600.webp'],
+                    'fallback-2': ['Fallback article 2', 'Used only when no CMS articles exist', '/images/content/Quality_Assurance_800x600.webp'],
+                    'fallback-3': ['Fallback article 3', 'Used only when no CMS articles exist', '/images/content/Manufacturing_Headquarters_800x600.webp'],
+                    'fallback-4': ['Fallback article 4', 'Used only when no CMS articles exist', '/images/content/CNC_Milling_800x600.webp'],
+                    'fallback-5': ['Fallback article 5', 'Used only when no CMS articles exist', '/images/content/metals-alloys-card-800x600.webp'],
+                    'fallback-6': ['Fallback article 6', 'Used only when no CMS articles exist', '/images/content/Quality_Assurance_800x600.webp']
+                }
+            }
+        };
+
+        let values = {};
+        let version = null;
+        let current = null;
+        let dirty = false;
+
+        function csrf() {
+            return window.WFX_CSRF_TOKEN || localStorage.getItem('wfx_csrf_token') || '';
+        }
+
+        function setDirty(value) {
+            dirty = value;
+            document.getElementById('dirty').style.display = value ? 'inline' : 'none';
+        }
+
+        function imageUrl(page, key) {
+            return values[page] && values[page][key] ? values[page][key] : PAGES[page].images[key][2];
+        }
+
+        function showAlert(message, type) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-' + (type || 'success');
+            alert.textContent = message;
+            document.getElementById('alert-container').appendChild(alert);
+            setTimeout(() => alert.remove(), 5000);
+        }
+
+        function render() {
+            const selected = document.getElementById('page-filter').value;
+            const host = document.getElementById('image-sections');
+            host.innerHTML = '';
+            Object.keys(PAGES).forEach(page => {
+                if (selected !== 'all' && selected !== page) return;
+                const section = document.createElement('section');
+                section.className = 'image-section';
+                const heading = document.createElement('h2');
+                heading.textContent = PAGES[page].label;
+                section.appendChild(heading);
+                const grid = document.createElement('div');
+                grid.className = 'image-grid';
+                Object.keys(PAGES[page].images).forEach(key => {
+                    const definition = PAGES[page].images[key];
+                    const card = document.createElement('article');
+                    card.className = 'image-card';
+                    const img = document.createElement('img');
+                    img.src = imageUrl(page, key);
+                    img.alt = definition[0];
+                    const body = document.createElement('div');
+                    body.className = 'image-card-body';
+                    const title = document.createElement('h3');
+                    title.textContent = definition[0];
+                    const location = document.createElement('p');
+                    location.textContent = definition[1];
+                    const button = document.createElement('button');
+                    button.className = 'btn btn-secondary';
+                    button.innerHTML = '<i class="fas fa-edit" aria-hidden="true"></i> Replace Image';
+                    button.addEventListener('click', () => openEditor(page, key));
+                    body.append(title, location, button);
+                    card.append(img, body);
+                    grid.appendChild(card);
+                });
+                section.appendChild(grid);
+                host.appendChild(section);
+            });
+        }
+
+        function openEditor(page, key) {
+            current = { page, key };
+            const definition = PAGES[page].images[key];
+            document.getElementById('modal-title').textContent = 'Edit: ' + definition[0];
+            document.getElementById('image-url').value = imageUrl(page, key);
+            document.getElementById('modal-preview').src = imageUrl(page, key);
+            document.getElementById('upload-status').textContent = '';
+            document.getElementById('image-file').value = '';
+            document.getElementById('edit-modal').classList.add('active');
+        }
+
+        function closeEditor() {
+            document.getElementById('edit-modal').classList.remove('active');
+            current = null;
+        }
+
+        async function upload() {
+            if (!current) return;
+            const fileInput = document.getElementById('image-file');
+            const status = document.getElementById('upload-status');
+            const file = fileInput.files[0];
+            if (!file) {
+                status.textContent = 'Choose an image first.';
+                return;
+            }
+            status.textContent = 'Uploading...';
+            const form = new FormData();
+            form.append('file', file);
+            form.append('folder', 'pages/' + current.page + '/' + current.key);
+            try {
+                const response = await fetch('/api/media', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'X-CSRF-Token': csrf() },
+                    body: form
+                });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok || !result.ok) throw new Error(result.error || 'Upload failed');
+                document.getElementById('image-url').value = result.url;
+                document.getElementById('modal-preview').src = result.url;
+                status.textContent = 'Uploaded: ' + result.url;
+                fileInput.value = '';
+            } catch (error) {
+                status.textContent = error.message;
+            }
+        }
+
+        function applyChange() {
+            if (!current) return;
+            const url = document.getElementById('image-url').value.trim();
+            if (!url) {
+                showAlert('Image URL is required.', 'danger');
+                return;
+            }
+            values[current.page] = values[current.page] || {};
+            values[current.page][current.key] = url;
+            setDirty(true);
+            render();
+            closeEditor();
+        }
+
+        async function load() {
+            try {
+                const response = await fetch('/api/cms/content/page_images', { credentials: 'same-origin' });
+                const result = await response.json();
+                values = result.value && typeof result.value === 'object' ? result.value : {};
+                version = result.version == null ? null : result.version;
+            } catch (error) {
+                showAlert('Could not load saved image settings. Showing website defaults.', 'danger');
+            }
+            render();
+        }
+
+        async function save() {
+            const button = document.getElementById('save-btn');
+            button.disabled = true;
+            try {
+                const response = await fetch('/api/cms/content/page_images', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf() },
+                    body: JSON.stringify({ value: values, expected_version: version })
+                });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok || !result.ok) throw new Error(result.message || result.error || 'Save failed');
+                version = result.version;
+                setDirty(false);
+                showAlert('Page images saved. Reload the public page to verify the change.');
+            } catch (error) {
+                showAlert(error.message, 'danger');
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        const filter = document.getElementById('page-filter');
+        Object.keys(PAGES).forEach(page => {
+            const option = document.createElement('option');
+            option.value = page;
+            option.textContent = PAGES[page].label;
+            filter.appendChild(option);
+        });
+        filter.addEventListener('change', render);
+        document.getElementById('image-url').addEventListener('input', event => {
+            document.getElementById('modal-preview').src = event.target.value;
+        });
+        document.getElementById('upload-btn').addEventListener('click', upload);
+        document.getElementById('apply-btn').addEventListener('click', applyChange);
+        document.getElementById('save-btn').addEventListener('click', save);
+        document.getElementById('modal-close').addEventListener('click', closeEditor);
+        document.getElementById('cancel-btn').addEventListener('click', closeEditor);
+        window.addEventListener('beforeunload', event => {
+            if (dirty) {
+                event.preventDefault();
+                event.returnValue = '';
+            }
+        });
+        load();
+    })();
+    </script>
+</body>
+</html>

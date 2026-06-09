@@ -1,0 +1,48 @@
+# WFX Admin Directory — Access Restrictions
+# Requires Apache mod_authn_file. For nginx see notes below.
+
+# ===== Recommended: IP whitelist =====
+# Uncomment and add your office/VPN IP
+# <RequireAll>
+#     Require ip 192.168.1.0/24
+#     Require ip 203.0.113.42
+# </RequireAll>
+
+# ===== Alternative: HTTP Basic Authentication =====
+# 1. Generate password file:  htpasswd -c /etc/apache2/.htpasswd-wfx admin
+# 2. Uncomment the four lines below:
+#
+# AuthType Basic
+# AuthName "WFX Admin Area"
+# AuthUserFile /etc/apache2/.htpasswd-wfx
+# Require valid-user
+
+# ===== Always-on protections =====
+
+# Block search engines
+<IfModule mod_headers.c>
+    Header always set X-Robots-Tag "noindex, nofollow, noarchive, nosnippet"
+</IfModule>
+
+# Disable directory browsing
+Options -Indexes
+
+# Block backup/config files
+<FilesMatch "\.(bak|backup|swp|old|orig|save|log|sql)$">
+    Require all denied
+</FilesMatch>
+
+# ===== Nginx equivalent =====
+#
+#   location /admin/ {
+#       allow 192.168.1.0/24;
+#       deny all;
+#       add_header X-Robots-Tag "noindex, nofollow, noarchive, nosnippet" always;
+#   }
+#
+#   # Or with auth:
+#   location /admin/ {
+#       auth_basic "WFX Admin Area";
+#       auth_basic_user_file /etc/nginx/.htpasswd-wfx;
+#       add_header X-Robots-Tag "noindex, nofollow, noarchive, nosnippet" always;
+#   }

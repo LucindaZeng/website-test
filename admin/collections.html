@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Collections | WFX Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        .pick-row { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:24px; }
+        .pick-row select { padding:10px 14px; border:2px solid #e5e7eb; border-radius:10px; font-size:0.95rem; min-width:200px; background:#fff; }
+        .item-card { border:2px solid #e5e7eb; border-radius:12px; padding:18px; margin-bottom:16px; background:#fff; }
+        .item-card.dragging { opacity:.5; }
+        .item-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+        .item-head .idx { font-weight:600; color:#0052CC; }
+        .item-actions button { background:none; border:none; cursor:pointer; font-size:1rem; color:#64748b; padding:6px 8px; }
+        .item-actions button:hover { color:#0f172a; }
+        .item-actions .del:hover { color:#dc2626; }
+        .field { margin-bottom:12px; }
+        .field label { display:block; font-size:.82rem; font-weight:600; color:#475569; margin-bottom:5px; }
+        .field input, .field textarea { width:100%; padding:9px 12px; border:2px solid #e5e7eb; border-radius:8px; font-size:.92rem; font-family:inherit; }
+        .field textarea { min-height:90px; resize:vertical; }
+        .field .img-row { display:flex; gap:8px; align-items:center; }
+        .field .img-row img { width:48px; height:48px; object-fit:cover; border-radius:6px; border:1px solid #e5e7eb; }
+        .empty-hint { color:#94a3b8; padding:30px; text-align:center; border:2px dashed #e5e7eb; border-radius:12px; }
+        .save-bar { position:sticky; bottom:0; background:#fff; border-top:1px solid #e5e7eb; padding:16px 0; display:flex; gap:12px; align-items:center; }
+        .dirty-dot { color:#f59e0b; font-size:.85rem; }
+    </style>
+</head>
+<body>
+    <aside class="admin-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../images/logo.png" alt="WFX">
+            <h2 data-i18n="nav.panel_title">Admin Panel</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="quotes.html" class="nav-item"><i class="fas fa-file-invoice-dollar"></i> Quotes</a>
+                <a href="requests.html" class="nav-item"><i class="fas fa-inbox"></i> Requests</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Content Management</div>
+                <a href="pages.html" class="nav-item"><i class="fas fa-file-alt"></i> Pages &amp; Text</a>
+                <a href="page-images.html" class="nav-item"><i class="fas fa-image"></i> Page Images</a>
+                <a href="collections.html" class="nav-item active"><i class="fas fa-layer-group"></i> Page Collections</a>
+                <a href="products.html" class="nav-item"><i class="fas fa-boxes"></i> Industry Products</a>
+                <a href="media.html" class="nav-item"><i class="fas fa-images"></i> Media Library</a>
+                <a href="blog.html" class="nav-item"><i class="fas fa-blog"></i> Articles</a>
+                <a href="news.html" class="nav-item"><i class="fas fa-newspaper"></i> News</a>
+            </div>
+            <div class="nav-section">
+                <a href="../index.html" class="nav-item" target="_blank"><i class="fas fa-external-link-alt"></i> View Website</a>
+                <a href="#" class="nav-item" onclick="AdminCore.logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <div class="header-left">
+                <h1><i class="fas fa-layer-group" style="margin-right:10px; color:#0052CC;"></i> Page Collections</h1>
+                <p style="margin:5px 0 0; color:#666; font-size:.9rem;">Add, edit, remove and reorder the lists shown on each page (equipment, materials, …)</p>
+            </div>
+        </header>
+
+        <div class="admin-content" style="padding:24px;">
+            <div id="alert-container"></div>
+
+            <div class="pick-row">
+                <select id="page-select"></select>
+                <select id="collection-select"></select>
+            </div>
+
+            <div id="items-area"><div class="empty-hint">Select a page and collection to begin.</div></div>
+
+            <div class="save-bar" id="save-bar" style="display:none;">
+                <button class="btn btn-primary" id="add-btn"><i class="fas fa-plus"></i> Add item</button>
+                <span style="flex:1;"></span>
+                <span id="dirty" class="dirty-dot" style="display:none;"><i class="fas fa-circle"></i> Unsaved changes</span>
+                <button class="btn btn-primary" id="save-btn"><i class="fas fa-save"></i> Save changes</button>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/admin-core.js?v=20260609c"></script>
+    <script src="js/page-schemas.js?v=20260609"></script>
+    <script>
+    (function () {
+        const SCHEMAS = window.WFX_PAGE_SCHEMAS || {};
+        const pageSel = document.getElementById('page-select');
+        const collSel = document.getElementById('collection-select');
+        const area    = document.getElementById('items-area');
+        const saveBar = document.getElementById('save-bar');
+        const dirtyEl = document.getElementById('dirty');
+
+        let current = { page: null, collection: null, schema: null, items: [], dirty: false };
+
+        function alertMsg(type, text) {
+            const c = document.getElementById('alert-container');
+            c.innerHTML = '<div class="alert alert-' + type + '" style="padding:12px 16px;border-radius:8px;margin-bottom:16px;background:' +
+                (type === 'success' ? '#dcfce7;color:#166534' : type === 'error' ? '#fee2e2;color:#991b1b' : '#dbeafe;color:#1e40af') + '">' +
+                text + '</div>';
+            if (type === 'success') setTimeout(() => { c.innerHTML = ''; }, 3000);
+        }
+
+        function authHeaders() {
+            const csrf = window.WFX_CSRF_TOKEN || localStorage.getItem('wfx_csrf_token') || '';
+            const h = { 'Content-Type': 'application/json' };
+            if (csrf) h['X-CSRF-Token'] = csrf;
+            return h;
+        }
+
+        function setDirty(v) {
+            current.dirty = v;
+            dirtyEl.style.display = v ? 'inline' : 'none';
+        }
+
+        // ── Populate page + collection selectors from the schema ──
+        function initSelectors() {
+            pageSel.innerHTML = '<option value="">— Select page —</option>';
+            Object.keys(SCHEMAS).forEach(p => {
+                const o = document.createElement('option');
+                o.value = p; o.textContent = SCHEMAS[p].label || p;
+                pageSel.appendChild(o);
+            });
+            collSel.innerHTML = '';
+            collSel.disabled = true;
+
+            const params = new URLSearchParams(window.location.search);
+            const requestedPage = params.get('page');
+            if (requestedPage && SCHEMAS[requestedPage]) {
+                pageSel.value = requestedPage;
+                pageSel.dispatchEvent(new Event('change'));
+                const firstCollection = Object.keys(SCHEMAS[requestedPage].collections || {})[0];
+                if (firstCollection) {
+                    collSel.value = firstCollection;
+                    collSel.dispatchEvent(new Event('change'));
+                }
+            }
+        }
+
+        pageSel.addEventListener('change', () => {
+            const p = pageSel.value;
+            collSel.innerHTML = '';
+            if (!p || !SCHEMAS[p]) { collSel.disabled = true; clearArea(); return; }
+            const cols = SCHEMAS[p].collections || {};
+            collSel.disabled = false;
+            collSel.innerHTML = '<option value="">— Select collection —</option>';
+            Object.keys(cols).forEach(c => {
+                const o = document.createElement('option');
+                o.value = c; o.textContent = cols[c].label || c;
+                collSel.appendChild(o);
+            });
+            clearArea();
+        });
+
+        collSel.addEventListener('change', () => {
+            if (current.dirty && !confirm('Discard unsaved changes?')) {
+                // revert select to previous — simplest: reload current
+                return;
+            }
+            const p = pageSel.value, c = collSel.value;
+            if (!p || !c) { clearArea(); return; }
+            load(p, c);
+        });
+
+        function clearArea() {
+            area.innerHTML = '<div class="empty-hint">Select a page and collection to begin.</div>';
+            saveBar.style.display = 'none';
+            setDirty(false);
+        }
+
+        // ── Load existing items from the server ──
+        function load(page, collection) {
+            current = { page, collection, schema: SCHEMAS[page].collections[collection], items: [], dirty: false };
+            area.innerHTML = '<div class="empty-hint">Loading…</div>';
+            fetch('/api/cms/collections/' + encodeURIComponent(page) + '/' + encodeURIComponent(collection), { credentials: 'same-origin' })
+                .then(r => r.json())
+                .then(d => {
+                    current.items = (d && d.rows ? d.rows : []).map(stripMeta);
+                    render();
+                })
+                .catch(() => { alertMsg('error', 'Failed to load items.'); render(); });
+        }
+
+        function stripMeta(row) {
+            const o = {}; const skip = { id:1, page:1, collection:1, sort_order:1 };
+            Object.keys(row).forEach(k => { if (!skip[k]) o[k] = row[k]; });
+            return o;
+        }
+
+        // ── Render the editable item cards ──
+        function render() {
+            saveBar.style.display = 'flex';
+            if (!current.items.length) {
+                area.innerHTML = '<div class="empty-hint">No items yet. Click “Add item” to create the first one.<br><small>After you save an empty list, this collection is hidden on the public page.</small></div>';
+                return;
+            }
+            area.innerHTML = '';
+            current.items.forEach((item, i) => area.appendChild(card(item, i)));
+        }
+
+        function card(item, i) {
+            const c = document.createElement('div');
+            c.className = 'item-card'; c.draggable = true; c.dataset.idx = i;
+            const head = document.createElement('div');
+            head.className = 'item-head';
+            head.innerHTML = '<span class="idx"><i class="fas fa-grip-vertical" style="color:#cbd5e1;margin-right:8px;cursor:grab;"></i>' +
+                (current.schema.itemLabel || 'Item') + ' ' + (i + 1) + '</span>';
+            const actions = document.createElement('div');
+            actions.className = 'item-actions';
+            actions.innerHTML =
+                '<button title="Move up" data-act="up"><i class="fas fa-arrow-up"></i></button>' +
+                '<button title="Move down" data-act="down"><i class="fas fa-arrow-down"></i></button>' +
+                '<button title="Remove" class="del" data-act="del"><i class="fas fa-trash"></i></button>';
+            actions.addEventListener('click', e => {
+                const b = e.target.closest('button'); if (!b) return;
+                const act = b.dataset.act;
+                if (act === 'del') { if (confirm('Remove this item?')) { current.items.splice(i, 1); setDirty(true); render(); } }
+                else if (act === 'up' && i > 0) { swap(i, i - 1); }
+                else if (act === 'down' && i < current.items.length - 1) { swap(i, i + 1); }
+            });
+            head.appendChild(actions);
+            c.appendChild(head);
+
+            current.schema.fields.forEach(f => c.appendChild(fieldEl(f, item, i)));
+
+            // drag reorder
+            c.addEventListener('dragstart', () => c.classList.add('dragging'));
+            c.addEventListener('dragend', () => c.classList.remove('dragging'));
+            c.addEventListener('dragover', e => {
+                e.preventDefault();
+                const dragging = area.querySelector('.dragging');
+                if (!dragging || dragging === c) return;
+                const from = +dragging.dataset.idx, to = +c.dataset.idx;
+                if (from === to) return;
+                move(from, to);
+            });
+            return c;
+        }
+
+        function fieldEl(f, item, i) {
+            const wrap = document.createElement('div');
+            wrap.className = 'field';
+            const lab = document.createElement('label');
+            lab.textContent = f.label + (f.required ? ' *' : '');
+            wrap.appendChild(lab);
+
+            if (f.type === 'textarea') {
+                const ta = document.createElement('textarea');
+                ta.value = item[f.key] || '';
+                ta.addEventListener('input', () => { current.items[i][f.key] = ta.value; setDirty(true); });
+                wrap.appendChild(ta);
+            } else if (f.type === 'image') {
+                const row = document.createElement('div'); row.className = 'img-row';
+                const img = document.createElement('img'); img.src = item[f.key] || ''; img.alt = '';
+                const inp = document.createElement('input'); inp.type = 'text';
+                inp.placeholder = '/uploads/media/pages/...'; inp.value = item[f.key] || '';
+                inp.addEventListener('input', () => { current.items[i][f.key] = inp.value; img.src = inp.value; setDirty(true); });
+                row.appendChild(img); row.appendChild(inp);
+                wrap.appendChild(row);
+            } else {
+                const inp = document.createElement('input'); inp.type = 'text';
+                inp.value = item[f.key] || '';
+                inp.addEventListener('input', () => { current.items[i][f.key] = inp.value; setDirty(true); });
+                wrap.appendChild(inp);
+            }
+            return wrap;
+        }
+
+        function swap(a, b) { const t = current.items[a]; current.items[a] = current.items[b]; current.items[b] = t; setDirty(true); render(); }
+        function move(from, to) {
+            const it = current.items.splice(from, 1)[0];
+            current.items.splice(to, 0, it); setDirty(true); render();
+        }
+
+        // ── Add + Save ──
+        document.getElementById('add-btn').addEventListener('click', () => {
+            const blank = {}; current.schema.fields.forEach(f => blank[f.key] = '');
+            current.items.push(blank); setDirty(true); render();
+            area.lastElementChild && area.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+
+        document.getElementById('save-btn').addEventListener('click', () => {
+            // validate required fields
+            for (let i = 0; i < current.items.length; i++) {
+                for (const f of current.schema.fields) {
+                    if (f.required && !String(current.items[i][f.key] || '').trim()) {
+                        alertMsg('error', 'Item ' + (i + 1) + ': “' + f.label + '” is required.');
+                        return;
+                    }
+                }
+            }
+            const btn = document.getElementById('save-btn');
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+            fetch('/api/cms/collections/' + encodeURIComponent(current.page) + '/' + encodeURIComponent(current.collection), {
+                method: 'POST', credentials: 'same-origin', headers: authHeaders(),
+                body: JSON.stringify({ items: current.items })
+            })
+            .then(r => r.json().then(d => ({ status: r.status, d })))
+            .then(({ status, d }) => {
+                if (status === 200 && d.ok) {
+                    setDirty(false);
+                    alertMsg('success', 'Saved. The page will show the updated list.');
+                    if (typeof AdminCore !== 'undefined' && AdminCore.logActivity) {
+                        AdminCore.logActivity('Collection Updated', current.page + '/' + current.collection);
+                    }
+                } else if (status === 403) {
+                    alertMsg('error', d.error || 'Permission denied (your role cannot edit collections).');
+                } else {
+                    alertMsg('error', d.error || 'Save failed.');
+                }
+            })
+            .catch(() => alertMsg('error', 'Network error while saving.'))
+            .finally(() => { btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Save changes'; });
+        });
+
+        window.addEventListener('beforeunload', e => { if (current.dirty) { e.preventDefault(); e.returnValue = ''; } });
+
+        initSelectors();
+    })();
+    </script>
+</body>
+</html>

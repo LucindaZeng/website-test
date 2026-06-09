@@ -1,0 +1,1307 @@
+{
+  "cnc-milling": {
+    "equipment": [
+      {
+        "name": "Mazak I-600 5-Axis Machining",
+        "description": "Our Mazak I-600 5-axis machining centers handle complex contoured geometry — impellers, turbine components, and multi-face aerospace brackets — in a single setup. Five-axis simultaneous motion eliminates repositioning error and holds ±0.01mm on critical features, making the Mazak I-600 our go-to for aerospace and medical parts that demand positional accuracy across multiple datums."
+      },
+      {
+        "name": "DMG MORI 60EVO 5-Axis Machining",
+        "description": "The DMG MORI 60EVO complements our 5-axis capacity with a 600 × 550 × 500mm work envelope, ideal for medium-sized precision housings and structural components. Its rigid construction and high-speed spindle deliver excellent surface finish on aluminum and titanium, reducing the need for secondary polishing."
+      },
+      {
+        "name": "FANUC & Brother High-Speed 3-Axis Milling",
+        "description": "For fast-turnaround precision parts and higher-volume runs, our FANUC a-D14MIA and Brother TC-S2DZ high-speed milling machines deliver rapid cycle times without sacrificing accuracy. These machines excel at small-to-medium aluminum and steel components — electronics enclosures, connectors, and brackets — where throughput and repeatability matter. With 70 Renishaw in-machine probes across the fleet, dimensions are verified during machining, not just after."
+      }
+    ]
+  },
+  "metals-alloys": {
+    "materials": [
+      {
+        "name": "1050 Aluminum",
+        "category": "1xxx Series (Pure Al)",
+        "density": "2.71",
+        "machinability": "Excellent",
+        "strength": "Low",
+        "corrosion": "Excellent",
+        "applications": "Chemical equipment, reflectors, heat exchangers",
+        "family": "aluminum"
+      },
+      {
+        "name": "1060 Aluminum",
+        "category": "1xxx Series (Pure Al)",
+        "density": "2.70",
+        "machinability": "Excellent",
+        "strength": "Low",
+        "corrosion": "Excellent",
+        "applications": "Electrical conductors, lighting, decorative trim",
+        "family": "aluminum"
+      },
+      {
+        "name": "1100 Aluminum",
+        "category": "1xxx Series (Pure Al)",
+        "density": "2.71",
+        "machinability": "Excellent",
+        "strength": "Low",
+        "corrosion": "Excellent",
+        "applications": "Food containers, heat exchangers, nameplates",
+        "family": "aluminum"
+      },
+      {
+        "name": "1200 Aluminum",
+        "category": "1xxx Series (Pure Al)",
+        "density": "2.70",
+        "machinability": "Excellent",
+        "strength": "Low",
+        "corrosion": "Excellent",
+        "applications": "General sheet metal, fin stock, chemical equipment",
+        "family": "aluminum"
+      },
+      {
+        "name": "2011 Aluminum",
+        "category": "2xxx Series (Al-Cu)",
+        "density": "2.83",
+        "machinability": "Excellent",
+        "strength": "High",
+        "corrosion": "Poor",
+        "applications": "Screw machine products, fittings, connectors",
+        "family": "aluminum"
+      },
+      {
+        "name": "2017 Aluminum",
+        "category": "2xxx Series (Al-Cu)",
+        "density": "2.79",
+        "machinability": "Good",
+        "strength": "High",
+        "corrosion": "Poor",
+        "applications": "Rivets, screw machine products, general machining",
+        "family": "aluminum"
+      },
+      {
+        "name": "2024-T3/T4 Aluminum",
+        "category": "2xxx Series (Al-Cu)",
+        "density": "2.78",
+        "machinability": "Good",
+        "strength": "Very High",
+        "corrosion": "Poor",
+        "applications": "Aircraft structures, fuselage, truck wheels",
+        "family": "aluminum"
+      },
+      {
+        "name": "2A12 Aluminum",
+        "category": "2xxx Series (Al-Cu)",
+        "density": "2.78",
+        "machinability": "Good",
+        "strength": "Very High",
+        "corrosion": "Poor",
+        "applications": "Aerospace, high-load structural parts",
+        "family": "aluminum"
+      },
+      {
+        "name": "2014 Aluminum",
+        "category": "2xxx Series (Al-Cu)",
+        "density": "2.80",
+        "machinability": "Good",
+        "strength": "Very High",
+        "corrosion": "Poor",
+        "applications": "Heavy-duty forgings, aircraft fittings, truck frames",
+        "family": "aluminum"
+      },
+      {
+        "name": "3003 Aluminum",
+        "category": "3xxx Series (Al-Mn)",
+        "density": "2.73",
+        "machinability": "Excellent",
+        "strength": "Medium",
+        "corrosion": "Excellent",
+        "applications": "Heat exchangers, cooking utensils, storage tanks",
+        "family": "aluminum"
+      },
+      {
+        "name": "3004 Aluminum",
+        "category": "3xxx Series (Al-Mn)",
+        "density": "2.72",
+        "machinability": "Good",
+        "strength": "Medium",
+        "corrosion": "Excellent",
+        "applications": "Beverage cans, roofing, color-coated aluminum",
+        "family": "aluminum"
+      },
+      {
+        "name": "3105 Aluminum",
+        "category": "3xxx Series (Al-Mn)",
+        "density": "2.72",
+        "machinability": "Good",
+        "strength": "Medium",
+        "corrosion": "Good",
+        "applications": "Building products, caps, closures, sheet metal",
+        "family": "aluminum"
+      },
+      {
+        "name": "3A21 Aluminum",
+        "category": "3xxx Series (Al-Mn)",
+        "density": "2.73",
+        "machinability": "Excellent",
+        "strength": "Medium",
+        "corrosion": "Excellent",
+        "applications": "Tank trucks, pressure vessels, aircraft fuel tanks",
+        "family": "aluminum"
+      },
+      {
+        "name": "4032 Aluminum",
+        "category": "4xxx Series (Al-Si)",
+        "density": "2.68",
+        "machinability": "Fair",
+        "strength": "High",
+        "corrosion": "Good",
+        "applications": "Pistons, engine components, wear-resistant parts",
+        "family": "aluminum"
+      },
+      {
+        "name": "4043 Aluminum",
+        "category": "4xxx Series (Al-Si)",
+        "density": "2.69",
+        "machinability": "Good",
+        "strength": "Medium",
+        "corrosion": "Good",
+        "applications": "Welding wire, brazing, automotive components",
+        "family": "aluminum"
+      },
+      {
+        "name": "4047 Aluminum",
+        "category": "4xxx Series (Al-Si)",
+        "density": "2.66",
+        "machinability": "Good",
+        "strength": "Medium",
+        "corrosion": "Good",
+        "applications": "Laser welding filler, semiconductor packaging",
+        "family": "aluminum"
+      },
+      {
+        "name": "4A01 Aluminum",
+        "category": "4xxx Series (Al-Si)",
+        "density": "2.69",
+        "machinability": "Good",
+        "strength": "Medium",
+        "corrosion": "Good",
+        "applications": "Building panels, welding electrodes, brazing sheet",
+        "family": "aluminum"
+      },
+      {
+        "name": "5052 Aluminum",
+        "category": "5xxx Series (Al-Mg)",
+        "density": "2.68",
+        "machinability": "Good",
+        "strength": "Medium",
+        "corrosion": "Excellent",
+        "applications": "Marine, fuel tanks, sheet metal work",
+        "family": "aluminum"
+      },
+      {
+        "name": "5083 Aluminum",
+        "category": "5xxx Series (Al-Mg)",
+        "density": "2.66",
+        "machinability": "Good",
+        "strength": "High",
+        "corrosion": "Excellent",
+        "applications": "Ship hulls, pressure vessels, cryogenic tanks",
+        "family": "aluminum"
+      },
+      {
+        "name": "5086 Aluminum",
+        "category": "5xxx Series (Al-Mg)",
+        "density": "2.66",
+        "machinability": "Good",
+        "strength": "High",
+        "corrosion": "Excellent",
+        "applications": "Marine applications, armor plate, unfired vessels",
+        "family": "aluminum"
+      },
+      {
+        "name": "5754 Aluminum",
+        "category": "5xxx Series (Al-Mg)",
+        "density": "2.67",
+        "machinability": "Good",
+        "strength": "Medium",
+        "corrosion": "Excellent",
+        "applications": "Automotive body panels, welded structures",
+        "family": "aluminum"
+      },
+      {
+        "name": "5A06 Aluminum",
+        "category": "5xxx Series (Al-Mg)",
+        "density": "2.64",
+        "machinability": "Good",
+        "strength": "High",
+        "corrosion": "Excellent",
+        "applications": "Welded structures, pressure vessels, ship building",
+        "family": "aluminum"
+      },
+      {
+        "name": "5A02 Aluminum",
+        "category": "5xxx Series (Al-Mg)",
+        "density": "2.68",
+        "machinability": "Good",
+        "strength": "Medium",
+        "corrosion": "Excellent",
+        "applications": "Aircraft fuel tanks, pipework, general welding",
+        "family": "aluminum"
+      },
+      {
+        "name": "6061-T6 Aluminum",
+        "category": "6xxx Series (Al-Mg-Si)",
+        "density": "2.70",
+        "machinability": "Excellent",
+        "strength": "Medium",
+        "corrosion": "Good",
+        "applications": "General purpose, fixtures, electronics housings",
+        "family": "aluminum"
+      },
+      {
+        "name": "6063-T5 Aluminum",
+        "category": "6xxx Series (Al-Mg-Si)",
+        "density": "2.70",
+        "machinability": "Excellent",
+        "strength": "Medium",
+        "corrosion": "Good",
+        "applications": "Architectural extrusions, window frames, pipes",
+        "family": "aluminum"
+      },
+      {
+        "name": "6082-T6 Aluminum",
+        "category": "6xxx Series (Al-Mg-Si)",
+        "density": "2.71",
+        "machinability": "Good",
+        "strength": "High",
+        "corrosion": "Good",
+        "applications": "Structural applications, bridges, trusses",
+        "family": "aluminum"
+      },
+      {
+        "name": "6005 Aluminum",
+        "category": "6xxx Series (Al-Mg-Si)",
+        "density": "2.70",
+        "machinability": "Good",
+        "strength": "Medium",
+        "corrosion": "Good",
+        "applications": "Ladders, scaffolding, structural profiles",
+        "family": "aluminum"
+      },
+      {
+        "name": "6101 Aluminum",
+        "category": "6xxx Series (Al-Mg-Si)",
+        "density": "2.70",
+        "machinability": "Excellent",
+        "strength": "Medium",
+        "corrosion": "Good",
+        "applications": "Electrical conductors, bus bars, high conductivity",
+        "family": "aluminum"
+      },
+      {
+        "name": "7050-T7451 Aluminum",
+        "category": "7xxx Series (Al-Zn)",
+        "density": "2.83",
+        "machinability": "Good",
+        "strength": "Very High",
+        "corrosion": "Fair",
+        "applications": "Aircraft bulkheads, fuselage frames",
+        "family": "aluminum"
+      },
+      {
+        "name": "7075-T6 Aluminum",
+        "category": "7xxx Series (Al-Zn)",
+        "density": "2.81",
+        "machinability": "Good",
+        "strength": "Very High",
+        "corrosion": "Fair",
+        "applications": "Aerospace, high-stress structural parts",
+        "family": "aluminum"
+      },
+      {
+        "name": "7A04 Aluminum",
+        "category": "7xxx Series (Al-Zn)",
+        "density": "2.78",
+        "machinability": "Fair",
+        "strength": "Very High",
+        "corrosion": "Poor",
+        "applications": "Aircraft beams, landing gear, military applications",
+        "family": "aluminum"
+      },
+      {
+        "name": "7A09 Aluminum",
+        "category": "7xxx Series (Al-Zn)",
+        "density": "2.87",
+        "machinability": "Fair",
+        "strength": "Very High",
+        "corrosion": "Poor",
+        "applications": "High strength forgings, aerospace, die forgings",
+        "family": "aluminum"
+      },
+      {
+        "name": "Magnesium AZ31B",
+        "category": "Mg Wrought Alloy",
+        "density": "1.77",
+        "machinability": "Excellent",
+        "strength": "Medium",
+        "corrosion": "Poor",
+        "applications": "Ultra-lightweight parts, consumer electronics, aircraft",
+        "family": "magnesium"
+      },
+      {
+        "name": "Magnesium AZ61A",
+        "category": "Mg Wrought Alloy",
+        "density": "1.80",
+        "machinability": "Excellent",
+        "strength": "High",
+        "corrosion": "Poor",
+        "applications": "Extrusions, forgings, high strength wrought parts",
+        "family": "magnesium"
+      },
+      {
+        "name": "Magnesium AZ80A",
+        "category": "Mg Wrought Alloy",
+        "density": "1.80",
+        "machinability": "Good",
+        "strength": "High",
+        "corrosion": "Poor",
+        "applications": "High strength forgings, aerospace components",
+        "family": "magnesium"
+      },
+      {
+        "name": "Magnesium AZ91D",
+        "category": "Mg Cast Alloy",
+        "density": "1.81",
+        "machinability": "Excellent",
+        "strength": "Medium",
+        "corrosion": "Fair",
+        "applications": "Die cast housings, automotive parts, power tools",
+        "family": "magnesium"
+      },
+      {
+        "name": "Magnesium AZ91C",
+        "category": "Mg Cast Alloy",
+        "density": "1.81",
+        "machinability": "Excellent",
+        "strength": "Medium",
+        "corrosion": "Fair",
+        "applications": "Sand castings, general purpose cast parts",
+        "family": "magnesium"
+      },
+      {
+        "name": "Magnesium AM60B",
+        "category": "Mg Cast Alloy",
+        "density": "1.80",
+        "machinability": "Excellent",
+        "strength": "Medium",
+        "corrosion": "Fair",
+        "applications": "Automotive, high ductility & energy absorption",
+        "family": "magnesium"
+      },
+      {
+        "name": "Magnesium AM50A",
+        "category": "Mg Cast Alloy",
+        "density": "1.77",
+        "machinability": "Excellent",
+        "strength": "Medium",
+        "corrosion": "Fair",
+        "applications": "Steering wheels, seat frames, instrument panels",
+        "family": "magnesium"
+      },
+      {
+        "name": "Magnesium WE43",
+        "category": "Mg Rare Earth Alloy",
+        "density": "1.84",
+        "machinability": "Fair",
+        "strength": "High",
+        "corrosion": "Good",
+        "applications": "Aerospace, biomedical implants, high temp apps",
+        "family": "magnesium"
+      },
+      {
+        "name": "Magnesium ZK60A",
+        "category": "Mg High Strength Alloy",
+        "density": "1.83",
+        "machinability": "Good",
+        "strength": "Very High",
+        "corrosion": "Poor",
+        "applications": "High strength forgings, bicycle parts, aerospace",
+        "family": "magnesium"
+      },
+      {
+        "name": "Stainless Steel 303",
+        "category": "Austenitic SS",
+        "density": "8.03",
+        "machinability": "Good",
+        "strength": "High",
+        "corrosion": "Good",
+        "applications": "Screw machine parts, fittings, gears, shafts",
+        "family": "stainless"
+      },
+      {
+        "name": "Stainless Steel 304",
+        "category": "Austenitic SS",
+        "density": "8.00",
+        "machinability": "Fair",
+        "strength": "High",
+        "corrosion": "Excellent",
+        "applications": "Food grade, kitchen equipment, chemical processing",
+        "family": "stainless"
+      },
+      {
+        "name": "Stainless Steel 304L",
+        "category": "Austenitic SS",
+        "density": "8.00",
+        "machinability": "Fair",
+        "strength": "Medium",
+        "corrosion": "Excellent",
+        "applications": "Welded structures, tanks, low-carbon applications",
+        "family": "stainless"
+      },
+      {
+        "name": "Stainless Steel 316",
+        "category": "Austenitic SS",
+        "density": "8.00",
+        "machinability": "Fair",
+        "strength": "High",
+        "corrosion": "Excellent",
+        "applications": "Marine, surgical implants, pharmaceutical equipment",
+        "family": "stainless"
+      },
+      {
+        "name": "Stainless Steel 316L",
+        "category": "Austenitic SS",
+        "density": "8.00",
+        "machinability": "Fair",
+        "strength": "Medium",
+        "corrosion": "Excellent",
+        "applications": "Medical devices, welded chemical equipment",
+        "family": "stainless"
+      },
+      {
+        "name": "Stainless Steel 420",
+        "category": "Martensitic SS",
+        "density": "7.74",
+        "machinability": "Fair",
+        "strength": "High",
+        "corrosion": "Fair",
+        "applications": "Cutlery, surgical instruments, valve parts",
+        "family": "stainless"
+      },
+      {
+        "name": "Stainless Steel 430",
+        "category": "Ferritic SS",
+        "density": "7.70",
+        "machinability": "Good",
+        "strength": "Medium",
+        "corrosion": "Good",
+        "applications": "Automotive trim, appliances, kitchen sinks",
+        "family": "stainless"
+      },
+      {
+        "name": "Stainless Steel 630 (17-4 PH)",
+        "category": "Precipitation Hardening SS",
+        "density": "7.78",
+        "machinability": "Fair",
+        "strength": "Very High",
+        "corrosion": "Good",
+        "applications": "Aerospace, valves, turbine blades, nuclear",
+        "family": "stainless"
+      },
+      {
+        "name": "Stainless Steel 321",
+        "category": "Austenitic SS",
+        "density": "8.03",
+        "machinability": "Fair",
+        "strength": "High",
+        "corrosion": "Excellent",
+        "applications": "Aircraft exhaust, high temperature applications",
+        "family": "stainless"
+      },
+      {
+        "name": "Stainless Steel 310S",
+        "category": "Austenitic SS",
+        "density": "7.98",
+        "machinability": "Fair",
+        "strength": "High",
+        "corrosion": "Excellent",
+        "applications": "Heat treatment fixtures, furnace parts",
+        "family": "stainless"
+      },
+      {
+        "name": "Stainless Steel 410",
+        "category": "Martensitic SS",
+        "density": "7.74",
+        "machinability": "Good",
+        "strength": "Medium",
+        "corrosion": "Fair",
+        "applications": "Cutlery, valves, fasteners, shafts",
+        "family": "stainless"
+      },
+      {
+        "name": "Stainless Steel 430Ti",
+        "category": "Ferritic SS",
+        "density": "7.70",
+        "machinability": "Good",
+        "strength": "Medium",
+        "corrosion": "Good",
+        "applications": "Welded construction, exhaust systems",
+        "family": "stainless"
+      },
+      {
+        "name": "Stainless Steel 434",
+        "category": "Ferritic SS",
+        "density": "7.70",
+        "machinability": "Good",
+        "strength": "Medium",
+        "corrosion": "Good",
+        "applications": "Automotive trim, moldings",
+        "family": "stainless"
+      },
+      {
+        "name": "Stainless Steel 440A",
+        "category": "Martensitic SS",
+        "density": "7.74",
+        "machinability": "Fair",
+        "strength": "High",
+        "corrosion": "Fair",
+        "applications": "Bearings, knife blades, measuring instruments",
+        "family": "stainless"
+      },
+      {
+        "name": "Stainless Steel 440C",
+        "category": "Martensitic SS",
+        "density": "7.75",
+        "machinability": "Difficult",
+        "strength": "Very High",
+        "corrosion": "Fair",
+        "applications": "Bearings, knife blades, highest hardness",
+        "family": "stainless"
+      },
+      {
+        "name": "Stainless Steel 15-5 PH",
+        "category": "Precipitation Hardening SS",
+        "density": "7.78",
+        "machinability": "Fair",
+        "strength": "Very High",
+        "corrosion": "Good",
+        "applications": "Aerospace valves, high strength fasteners",
+        "family": "stainless"
+      },
+      {
+        "name": "Stainless Steel 17-7 PH",
+        "category": "Precipitation Hardening SS",
+        "density": "7.80",
+        "machinability": "Fair",
+        "strength": "High",
+        "corrosion": "Good",
+        "applications": "Springs, diaphragms, clips, aircraft parts",
+        "family": "stainless"
+      },
+      {
+        "name": "Stainless Steel 2205 Duplex",
+        "category": "Duplex SS",
+        "density": "7.82",
+        "machinability": "Fair",
+        "strength": "Very High",
+        "corrosion": "Excellent",
+        "applications": "Chemical processing, offshore, desalination",
+        "family": "stainless"
+      },
+      {
+        "name": "Stainless Steel 2507 Super Duplex",
+        "category": "Super Duplex SS",
+        "density": "7.85",
+        "machinability": "Difficult",
+        "strength": "Very High",
+        "corrosion": "Excellent",
+        "applications": "Oil & gas, seawater, high pressure applications",
+        "family": "stainless"
+      },
+      {
+        "name": "Q235 Steel",
+        "category": "Carbon Steel",
+        "density": "7.85",
+        "machinability": "Excellent",
+        "strength": "Medium",
+        "corrosion": "Poor",
+        "applications": "Structural steel, bridges, general construction",
+        "family": "steel"
+      },
+      {
+        "name": "20# Steel (AISI 1020)",
+        "category": "Carbon Steel",
+        "density": "7.85",
+        "machinability": "Excellent",
+        "strength": "Medium",
+        "corrosion": "Poor",
+        "applications": "Case hardening, carburizing, pins, gears",
+        "family": "steel"
+      },
+      {
+        "name": "45# Steel (AISI 1045)",
+        "category": "Carbon Steel",
+        "density": "7.85",
+        "machinability": "Good",
+        "strength": "High",
+        "corrosion": "Poor",
+        "applications": "Shafts, axles, bolts, gears, connecting rods",
+        "family": "steel"
+      },
+      {
+        "name": "1215 Steel (Free-cutting)",
+        "category": "Free-cutting Steel",
+        "density": "7.87",
+        "machinability": "Excellent",
+        "strength": "Medium",
+        "corrosion": "Poor",
+        "applications": "High-speed automatic screw machine parts",
+        "family": "steel"
+      },
+      {
+        "name": "40Cr Steel (AISI 5140)",
+        "category": "Alloy Steel",
+        "density": "7.85",
+        "machinability": "Good",
+        "strength": "Very High",
+        "corrosion": "Poor",
+        "applications": "Gears, shafts, spindles, high-strength fasteners",
+        "family": "steel"
+      },
+      {
+        "name": "20Cr Steel (AISI 5120)",
+        "category": "Alloy Steel",
+        "density": "7.85",
+        "machinability": "Good",
+        "strength": "High",
+        "corrosion": "Poor",
+        "applications": "Case-hardened gears, piston pins, cam shafts",
+        "family": "steel"
+      },
+      {
+        "name": "35CrMo Steel (AISI 4135)",
+        "category": "Alloy Steel",
+        "density": "7.85",
+        "machinability": "Good",
+        "strength": "Very High",
+        "corrosion": "Poor",
+        "applications": "High strength shafts, fasteners, pressure vessels",
+        "family": "steel"
+      },
+      {
+        "name": "4140 Steel (42CrMo4)",
+        "category": "Alloy Steel",
+        "density": "7.85",
+        "machinability": "Good",
+        "strength": "Very High",
+        "corrosion": "Poor",
+        "applications": "High strength shafts, gears, tooling, crankshafts",
+        "family": "steel"
+      },
+      {
+        "name": "4340 Steel (40CrNiMoA)",
+        "category": "Alloy Steel",
+        "density": "7.85",
+        "machinability": "Fair",
+        "strength": "Very High",
+        "corrosion": "Poor",
+        "applications": "Aircraft landing gear, high fatigue resistance",
+        "family": "steel"
+      },
+      {
+        "name": "8620 Steel (20CrMnTi)",
+        "category": "Alloy Steel",
+        "density": "7.85",
+        "machinability": "Good",
+        "strength": "High",
+        "corrosion": "Poor",
+        "applications": "Gears, carburizing, high wear resistance parts",
+        "family": "steel"
+      },
+      {
+        "name": "T2 Copper (C11000)",
+        "category": "Pure Copper",
+        "density": "8.94",
+        "machinability": "Good",
+        "strength": "Low",
+        "corrosion": "Excellent",
+        "applications": "Electrical conductors, busbars, heat exchangers",
+        "family": "copper"
+      },
+      {
+        "name": "TU0 Copper (C10100)",
+        "category": "Oxygen-Free Copper",
+        "density": "8.94",
+        "machinability": "Good",
+        "strength": "Low",
+        "corrosion": "Excellent",
+        "applications": "Electronics, vacuum tubes, superconductors",
+        "family": "copper"
+      },
+      {
+        "name": "TU1 Copper (C10200)",
+        "category": "Oxygen-Free Copper",
+        "density": "8.94",
+        "machinability": "Good",
+        "strength": "Low",
+        "corrosion": "Excellent",
+        "applications": "Waveguides, lead frames, high-purity applications",
+        "family": "copper"
+      },
+      {
+        "name": "TU2 Copper (C10300)",
+        "category": "Oxygen-Free Copper",
+        "density": "8.94",
+        "machinability": "Good",
+        "strength": "Low",
+        "corrosion": "Excellent",
+        "applications": "Electrical conductors, semiconductor equipment",
+        "family": "copper"
+      },
+      {
+        "name": "C1020 Copper (OFC)",
+        "category": "Oxygen-Free Copper",
+        "density": "8.94",
+        "machinability": "Good",
+        "strength": "Low",
+        "corrosion": "Excellent",
+        "applications": "Audio equipment, precision electronics, busbars",
+        "family": "copper"
+      },
+      {
+        "name": "C1100 Copper (ETP)",
+        "category": "Electrolytic Copper",
+        "density": "8.94",
+        "machinability": "Good",
+        "strength": "Low",
+        "corrosion": "Excellent",
+        "applications": "Heat sinks, electrical connectors, busbars",
+        "family": "copper"
+      },
+      {
+        "name": "H62 Brass (C28000)",
+        "category": "Brass (Cu-Zn)",
+        "density": "8.43",
+        "machinability": "Excellent",
+        "strength": "Medium",
+        "corrosion": "Good",
+        "applications": "Hardware, plumbing, decorative parts",
+        "family": "copper"
+      },
+      {
+        "name": "H59 Brass (C38500)",
+        "category": "Brass (Cu-Zn)",
+        "density": "8.40",
+        "machinability": "Excellent",
+        "strength": "Medium",
+        "corrosion": "Good",
+        "applications": "Valves, fittings, forged hardware",
+        "family": "copper"
+      },
+      {
+        "name": "H65 Brass (C27000)",
+        "category": "Brass (Cu-Zn)",
+        "density": "8.47",
+        "machinability": "Excellent",
+        "strength": "Medium",
+        "corrosion": "Good",
+        "applications": "Hardware, plumbing fittings, radiator fins",
+        "family": "copper"
+      },
+      {
+        "name": "H68 Brass (C26800)",
+        "category": "Brass (Cu-Zn)",
+        "density": "8.47",
+        "machinability": "Excellent",
+        "strength": "Medium",
+        "corrosion": "Good",
+        "applications": "Radiator cores, lamp fixtures, automotive parts",
+        "family": "copper"
+      },
+      {
+        "name": "H70 Brass (C26000)",
+        "category": "Cartridge Brass",
+        "density": "8.53",
+        "machinability": "Excellent",
+        "strength": "Medium",
+        "corrosion": "Good",
+        "applications": "Deep drawing, ammunition, springs, connectors",
+        "family": "copper"
+      },
+      {
+        "name": "H80 Brass (C24000)",
+        "category": "Low Brass",
+        "density": "8.67",
+        "machinability": "Excellent",
+        "strength": "Low",
+        "corrosion": "Good",
+        "applications": "Musical instruments, flexible hose, ornamental",
+        "family": "copper"
+      },
+      {
+        "name": "C360 Brass (Free-cutting)",
+        "category": "Free-cutting Brass",
+        "density": "8.50",
+        "machinability": "Excellent",
+        "strength": "Medium",
+        "corrosion": "Good",
+        "applications": "Precision screw machine parts, connectors",
+        "family": "copper"
+      },
+      {
+        "name": "Titanium Grade 2",
+        "category": "Pure Titanium",
+        "density": "4.51",
+        "machinability": "Fair",
+        "strength": "Medium",
+        "corrosion": "Excellent",
+        "applications": "Medical implants, marine, chemical processing",
+        "family": "titanium"
+      },
+      {
+        "name": "Titanium Grade 5 (Ti-6Al-4V)",
+        "category": "Titanium Alloy",
+        "density": "4.43",
+        "machinability": "Difficult",
+        "strength": "Very High",
+        "corrosion": "Excellent",
+        "applications": "Aerospace structures, medical implants",
+        "family": "titanium"
+      }
+    ]
+  },
+  "services": {
+    "cards": [
+      {
+        "title": "CNC Milling",
+        "description": "3-axis to 5-axis CNC milling on DMG MORI, Mazak, and Hermle. Tolerances to ±0.005mm on aluminum, steel, titanium, and engineering plastics.",
+        "link": "cnc-milling.html",
+        "icon": "fas fa-cog"
+      },
+      {
+        "title": "CNC Turning",
+        "description": "Swiss-type and conventional CNC lathes for shafts, bushings, connectors, and precision turned parts. Live tooling for milled features.",
+        "link": "cnc-turning.html",
+        "icon": "fas fa-sync-alt"
+      },
+      {
+        "title": "5-Axis Machining",
+        "description": "Simultaneous 5-axis on DMG MORI DMU 50 and Mazak Variaxis. Impellers, turbine blades, complex aerospace and medical geometries in one setup.",
+        "link": "5-axis.html",
+        "icon": "fas fa-cube"
+      },
+      {
+        "title": "Die Casting",
+        "description": "High-pressure die casting in aluminum (A380, ADC12) and zinc alloys. From prototype tooling to high-volume production runs.",
+        "link": "die-casting.html",
+        "icon": "fas fa-fire"
+      },
+      {
+        "title": "Investment Casting",
+        "description": "Lost-wax investment casting in stainless steel, carbon steel, and copper alloys. Near-net shapes with excellent surface finish.",
+        "link": "investment-casting.html",
+        "icon": "fas fa-snowflake"
+      },
+      {
+        "title": "Forging",
+        "description": "Open-die and closed-die forging for high-strength structural components. Grain flow optimization for fatigue-critical parts.",
+        "link": "forging.html",
+        "icon": "fas fa-hammer"
+      },
+      {
+        "title": "Sheet Metal",
+        "description": "Laser cutting, CNC bending, welding, and finishing. Enclosures, brackets, chassis, and structural sheet metal assemblies.",
+        "link": "sheet-metal.html",
+        "icon": "fas fa-layer-group"
+      },
+      {
+        "title": "Stamping",
+        "description": "Progressive die and compound die stamping. High-volume contacts, brackets, shields, and electrical components.",
+        "link": "stamping.html",
+        "icon": "fas fa-stamp"
+      },
+      {
+        "title": "Surface Finishing",
+        "description": "Anodizing (Type II/III), powder coating, electroplating, passivation, polishing, sandblasting, and laser engraving — full in-house capability.",
+        "link": "finishing.html",
+        "icon": "fas fa-paint-roller"
+      },
+      {
+        "title": "Assembly",
+        "description": "Sub-assembly and full product assembly with bonded, fastened, and welded joining. Functional testing before shipment.",
+        "link": "assembly.html",
+        "icon": "fas fa-tools"
+      },
+      {
+        "title": "Production Runs",
+        "description": "Low- to mid-volume production with consistent quality and on-time delivery. PPAP documentation available for automotive and medical.",
+        "link": "production.html",
+        "icon": "fas fa-industry"
+      },
+      {
+        "title": "Precision Inspection",
+        "description": "Zeiss and Hexagon CMM inspection, optical measurement, surface roughness verification. Full First Article Inspection reports.",
+        "link": "precision-inspection.html",
+        "icon": "fas fa-search"
+      }
+    ]
+  },
+  "industries": {
+    "cards": [
+      {
+        "title": "Aerospace Parts",
+        "description": "ISO9001 & IATF16949 certified manufacturing for flight-critical components. We deliver precision parts for commercial aviation, defense, and space applications with rigorous quality standards.",
+        "link": "aerospace.html",
+        "image": "images/content/Aerospace_Parts_800x600.webp",
+        "icon": "fas fa-plane"
+      },
+      {
+        "title": "Liquid Cooling Parts",
+        "description": "High-precision thermal management components for data centers, EVs, and high-performance computing. Expert in complex cooling channel machining and heat sink manufacturing.",
+        "link": "liquid-cooling.html",
+        "image": "images/content/Liquid_Cooling_Parts_800x600.webp",
+        "icon": "fas fa-tint"
+      },
+      {
+        "title": "Medical Devices",
+        "description": "Precision manufacturing for surgical instruments, implants, and diagnostic equipment. Cleanroom-compatible processes with full traceability documentation.",
+        "link": "medical.html",
+        "image": "images/content/Medical_Devices_800x600.webp",
+        "icon": "fas fa-heartbeat"
+      },
+      {
+        "title": "Electronics",
+        "description": "Precision enclosures, heat sinks, and mechanical components for consumer electronics, telecommunications, and semiconductor equipment manufacturing.",
+        "link": "electronics.html",
+        "image": "images/content/Electronics_Semiconductors_800x600.webp",
+        "icon": "fas fa-microchip"
+      },
+      {
+        "title": "Industrial Equipment",
+        "description": "Heavy-duty components for manufacturing machinery, pumps, valves, and industrial automation systems. Built for durability and performance in demanding environments.",
+        "link": "industrial.html",
+        "image": "images/content/Industrial_Equipment_800x600.webp",
+        "icon": "fas fa-cogs"
+      },
+      {
+        "title": "Robotics & Automation",
+        "description": "High-precision components for robotic arms, actuators, and automated systems. Supporting the next generation of manufacturing and service robotics.",
+        "link": "robotics.html",
+        "image": "images/content/Robotics_Automation_800x600.webp",
+        "icon": "fas fa-robot"
+      }
+    ]
+  },
+  "faq": {
+    "general": [
+      {
+        "question": "What file formats do you accept?",
+        "answer": "We accept all major CAD formats including STEP (.STEP/.STP), IGES (.IGES/.IGS), STL, SolidWorks (.SLDPRT), Parasolid (.X_T), ACIS (.SAT), AutoCAD (.DWG/.DXF), PDF drawings, and ZIP archives with multiple files. If you have a different format, please contact us."
+      },
+      {
+        "question": "What is your typical lead time?",
+        "answer": "Standard lead time is 7–10 business days. Expedited service is available at 10–15 days, and extended timelines (15–25 days) offer the most competitive pricing. Complex parts may require additional time."
+      },
+      {
+        "question": "Is there a minimum order quantity?",
+        "answer": "No minimum order required. We handle everything from single prototypes to production runs of 100,000+ parts. Our pricing is competitive at any volume."
+      }
+    ],
+    "technical": [
+      {
+        "question": "What tolerances can you achieve?",
+        "answer": "Standard tolerances are ±0.005\" (0.127mm). Precision tolerances to ±0.005mm (±0.0002\") are available for critical features. Tighter tolerances may be possible depending on geometry."
+      },
+      {
+        "question": "What materials do you work with?",
+        "answer": "We machine 50+ materials including aluminum alloys, stainless steel, steel, titanium, brass, copper, engineering plastics (Delrin, PEEK, Ultem, Nylon), and exotic alloys (Inconel, Hastelloy)."
+      },
+      {
+        "question": "What certifications do you hold?",
+        "answer": "We are ISO9001 and IATF16949 certified. We provide complete quality documentation including inspection reports, material certifications, and certificates of conformance."
+      }
+    ],
+    "ordering": [
+      {
+        "question": "Do you offer finishing services?",
+        "answer": "Yes, we offer anodizing (Type II & III), powder coating, plating, passivation, bead blasting, electropolishing, and more. All finishing is done in-house for quality control."
+      },
+      {
+        "question": "Do you ship internationally?",
+        "answer": "Yes, we ship worldwide. We have experience with international shipping and can handle export documentation. DHL, FedEx, and UPS options are available."
+      }
+    ]
+  },
+  "tolerances": {
+    "standards": [
+      {
+        "process": "CNC Milling",
+        "standard": "±0.05 mm (±0.002\")",
+        "precision": "±0.01 mm (±0.0004\")",
+        "best": "±0.005 mm (±0.0002\")",
+        "inspection": "CMM"
+      },
+      {
+        "process": "CNC Turning",
+        "standard": "±0.05 mm (±0.002\")",
+        "precision": "±0.01 mm (±0.0004\")",
+        "best": "±0.005 mm (±0.0002\")",
+        "inspection": "CMM"
+      },
+      {
+        "process": "5-Axis Machining",
+        "standard": "±0.03 mm (±0.0012\")",
+        "precision": "±0.01 mm (±0.0004\")",
+        "best": "±0.005 mm (±0.0002\")",
+        "inspection": "CMM"
+      },
+      {
+        "process": "Precision Grinding",
+        "standard": "±0.01 mm (±0.0004\")",
+        "precision": "±0.005 mm (±0.0002\")",
+        "best": "±0.002 mm (±0.00008\")",
+        "inspection": "CMM"
+      },
+      {
+        "process": "Surface Finish (Ra)",
+        "standard": "Ra 1.6 μm",
+        "precision": "Ra 0.8 μm",
+        "best": "Ra 0.4 μm",
+        "inspection": "Profilometer"
+      }
+    ]
+  },
+  "case-studies": {
+    "cases": [
+      {
+        "industry": "Aerospace",
+        "title": "Titanium Turbine Component",
+        "image": "",
+        "icon": "fas fa-plane",
+        "description": "An aerospace OEM required complex titanium components for a new turbine design. The parts featured thin walls, tight tolerances, and demanding surface finish requirements.",
+        "challenge": "Titanium machining with ±0.005mm tolerances and Ra 16 μin surface finish",
+        "solution": "5-axis simultaneous machining with specialized tooling and coolant strategies",
+        "stat1_value": "40%",
+        "stat1_label": "Cost Reduction",
+        "stat2_value": "100%",
+        "stat2_label": "First Pass Yield",
+        "stat3_value": "3 Weeks",
+        "stat3_label": "Lead Time"
+      },
+      {
+        "industry": "Medical",
+        "title": "Surgical Instrument Components",
+        "image": "",
+        "icon": "fas fa-heartbeat",
+        "description": "A medical device company needed high-volume production of stainless steel surgical instrument components with full traceability and documentation.",
+        "challenge": "316L stainless with mirror finish and complete lot traceability",
+        "solution": "Automated production cells with integrated inspection and barcode tracking",
+        "stat1_value": "50K+",
+        "stat1_label": "Parts/Month",
+        "stat2_value": "0.02%",
+        "stat2_label": "Defect Rate",
+        "stat3_value": "100%",
+        "stat3_label": "Traceability"
+      },
+      {
+        "industry": "Electronics",
+        "title": "Liquid Cooling Heat Sink",
+        "image": "",
+        "icon": "fas fa-microchip",
+        "description": "A data center equipment manufacturer required high-performance liquid cooling heat sinks with complex internal channels for server cooling applications.",
+        "challenge": "Complex internal cooling channels with leak-proof brazed assembly",
+        "solution": "Multi-piece CNC machining with vacuum brazing and 100% pressure testing",
+        "stat1_value": "30%",
+        "stat1_label": "Better Cooling",
+        "stat2_value": "0",
+        "stat2_label": "Leak Failures",
+        "stat3_value": "2 Years",
+        "stat3_label": "Partnership"
+      },
+      {
+        "industry": "Robotics",
+        "title": "Robotic Arm Joint Assembly",
+        "image": "",
+        "icon": "fas fa-robot",
+        "description": "A robotics startup needed precision aluminum components for their new collaborative robot arm, with fast iteration cycles during development.",
+        "challenge": "Rapid prototyping with design iterations and smooth transition to production",
+        "solution": "Agile manufacturing with DFM feedback and scalable production processes",
+        "stat1_value": "15",
+        "stat1_label": "Iterations",
+        "stat2_value": "5 Days",
+        "stat2_label": "Avg. Turnaround",
+        "stat3_value": "Scale-up",
+        "stat3_label": "To Production"
+      }
+    ]
+  },
+  "finishing": {
+    "electroplating": [
+      {
+        "title": "Zinc Plating",
+        "icon": "fas fa-shield-alt",
+        "description": "Electrochemical process that deposits a protective zinc layer on steel and iron parts, providing excellent corrosion resistance through sacrificial protection.",
+        "features": "Excellent corrosion resistance\nCost-effective protection\nVarious finishes: clear, yellow, black\nRoHS compliant options available",
+        "applications": "Fasteners, brackets, automotive parts, hardware"
+      },
+      {
+        "title": "Nickel Plating",
+        "icon": "fas fa-gem",
+        "description": "Creates a hard, lustrous coating that provides excellent wear resistance and decorative appeal. Available in bright, satin, and electroless variants.",
+        "features": "High wear resistance\nAttractive bright or satin finish\nGood corrosion protection\nExcellent base for other coatings",
+        "applications": "Electronics, decorative parts, industrial components"
+      },
+      {
+        "title": "Chrome Plating",
+        "icon": "fas fa-star",
+        "description": "Deposits a hard chromium layer providing superior hardness, excellent wear resistance, and a brilliant decorative finish with low friction coefficient.",
+        "features": "Extremely high hardness (HV 800-1000)\nSuperior wear resistance\nBrilliant decorative appearance\nLow coefficient of friction",
+        "applications": "Hydraulic cylinders, molds, decorative trim, tools"
+      },
+      {
+        "title": "Copper Plating",
+        "icon": "fas fa-plug",
+        "description": "Deposits a copper layer that provides excellent electrical conductivity, often used as a base layer for subsequent plating or for its conductive properties.",
+        "features": "Excellent electrical conductivity\nGood heat conductivity\nIdeal undercoat for multi-layer plating\nImproves adhesion of top coats",
+        "applications": "Electronics, EMI shielding, decorative base layer"
+      }
+    ],
+    "chemical-treatment": [
+      {
+        "title": "Blackening / Black Oxide",
+        "icon": "fas fa-moon",
+        "description": "Chemical conversion process that produces a black magnetite (Fe3O4) layer on steel and iron parts, providing rust prevention and aesthetic appeal.",
+        "features": "Rust prevention for ferrous metals\nMinimal dimensional change\nAttractive matte black finish\nReduces light reflection",
+        "applications": "Tools, fasteners, machine components, firearms"
+      },
+      {
+        "title": "Phosphating",
+        "icon": "fas fa-layer-group",
+        "description": "Creates a crystalline phosphate conversion coating that enhances paint adhesion, provides moderate corrosion protection, and improves lubricity.",
+        "features": "Excellent paint adhesion\nCorrosion protection\nImproved lubricant retention\nTypes: zinc, manganese, iron phosphate",
+        "applications": "Automotive bodies, appliances, pre-paint treatment"
+      },
+      {
+        "title": "Passivation",
+        "icon": "fas fa-shield-virus",
+        "description": "Chemical treatment for stainless steel that removes free iron and enhances the natural chromium oxide layer, maximizing corrosion resistance.",
+        "features": "Enhances corrosion resistance\nRemoves surface contaminants\nNo dimensional change\nASTM A967 / AMS2700 compliant",
+        "applications": "Medical devices, food equipment, aerospace parts"
+      },
+      {
+        "title": "Electroless Nickel Plating",
+        "icon": "fas fa-atom",
+        "description": "Autocatalytic chemical process that deposits uniform nickel-phosphorus alloy without external electrical current, ideal for complex geometries.",
+        "features": "Uniform thickness on complex shapes\nExcellent corrosion resistance\nNo edge buildup\nCan plate non-conductive substrates",
+        "applications": "Valves, pumps, electronics, oil & gas equipment"
+      }
+    ],
+    "anodizing": [
+      {
+        "title": "Type II Anodizing (Decorative)",
+        "icon": "fas fa-palette",
+        "description": "Standard sulfuric acid anodizing that creates a porous oxide layer suitable for dyeing. Provides good corrosion resistance and aesthetic appeal.",
+        "features": "Thickness: 8-25μm\nWide range of colors available\nGood corrosion resistance\nModerate wear resistance",
+        "applications": "Consumer electronics, architectural, automotive trim"
+      },
+      {
+        "title": "Type III Anodizing (Hard Coat)",
+        "icon": "fas fa-hammer",
+        "description": "Hard anodizing process that produces a much thicker, harder, and more wear-resistant oxide layer for demanding applications.",
+        "features": "Thickness: 25-100μm\nSuperior hardness (60-70 HRC equivalent)\nExcellent wear resistance\nNatural gray-black color",
+        "applications": "Military, aerospace, hydraulic components, firearms"
+      }
+    ],
+    "heat-treatment": [
+      {
+        "title": "Carburizing",
+        "icon": "fas fa-temperature-high",
+        "description": "Diffuses carbon into the surface of low-carbon steel at high temperature, creating a hard, wear-resistant case while maintaining a tough, ductile core.",
+        "features": "Case depth: 0.5-2.0mm typical\nSurface hardness: 58-62 HRC\nExcellent fatigue resistance\nMaintains core toughness",
+        "applications": "Gears, shafts, bearings, camshafts"
+      },
+      {
+        "title": "Nitriding",
+        "icon": "fas fa-wind",
+        "description": "Diffuses nitrogen into the surface at lower temperatures than carburizing, creating extremely hard surface layer with excellent wear and fatigue resistance.",
+        "features": "Surface hardness: 65-70 HRC equivalent\nMinimal distortion (low temperature)\nNo quenching required\nExcellent corrosion resistance",
+        "applications": "Molds, dies, crankshafts, valve components"
+      },
+      {
+        "title": "Induction Hardening",
+        "icon": "fas fa-broadcast-tower",
+        "description": "Rapid localized heat treatment using high-frequency electromagnetic induction, followed by quenching to harden specific surface areas while minimizing distortion.",
+        "features": "Precise, localized hardening\nFast process cycle\nMinimal distortion\nSelective area treatment",
+        "applications": "Shafts, gears, spindles, bearing races"
+      }
+    ],
+    "mechanical": [
+      {
+        "title": "Polishing",
+        "icon": "fas fa-star",
+        "description": "Progressive abrasive process to achieve mirror-like surface finishes with extremely low roughness values. Includes mechanical, chemical, and electropolishing methods.",
+        "features": "Mirror finish (Ra < 0.1μm possible)\nManual or automated processes\nElectropolishing available\nRemoves surface imperfections",
+        "applications": "Medical devices, optics, decorative parts, molds"
+      },
+      {
+        "title": "Sandblasting / Bead Blasting",
+        "icon": "fas fa-cloud",
+        "description": "High-pressure abrasive media treatment to create uniform matte textures, remove burrs, clean surfaces, and prepare for subsequent finishing processes.",
+        "features": "Uniform matte finish\nEffective deburring\nSurface preparation\nVarious grit sizes available",
+        "applications": "Consumer electronics, enclosures, pre-anodizing treatment"
+      },
+      {
+        "title": "Brushing / Hairline Finish",
+        "icon": "fas fa-align-left",
+        "description": "Creates directional linear texture (hairline pattern) on metal surfaces using abrasive belts or brushes, providing distinctive metallic appearance.",
+        "features": "Distinctive linear texture\nHides fingerprints and scratches\nVarious grain patterns\nProfessional metallic appearance",
+        "applications": "Appliances, consumer electronics, architectural panels"
+      }
+    ],
+    "marking-printing": [
+      {
+        "title": "Laser Engraving",
+        "icon": "fas fa-crosshairs",
+        "description": "Uses focused laser beam to ablate material surface, creating permanent high-precision marks. Non-contact process ideal for delicate parts and high-volume production.",
+        "features": "High precision marking\nPermanent, wear-resistant\nNo contact with workpiece\nFast cycle time for batch production\nVariable depth control",
+        "applications": "Logos, serial numbers, QR codes, button markings, traceability"
+      },
+      {
+        "title": "Screen Printing (Silk Screen)",
+        "icon": "fas fa-print",
+        "description": "Transfers ink through a fine mesh screen onto the workpiece surface. Cost-effective for large batches with vibrant colors and good ink coverage.",
+        "features": "Cost-effective for high volumes\nVibrant colors available\nMulti-color printing possible\nThick ink layer, good coverage\nOn-site capability at our facility",
+        "applications": "Control panels, button text, decorative patterns, labels"
+      },
+      {
+        "title": "Pad Printing",
+        "icon": "fas fa-stamp",
+        "description": "Indirect offset printing using silicone pad to transfer ink from etched plate to irregular or curved surfaces not suitable for screen printing.",
+        "features": "Prints on curved surfaces\nFine detail reproduction\nMulti-color capability\nHandles complex geometries",
+        "applications": "Medical devices, electronics, promotional products"
+      }
+    ],
+    "other-specialty": [
+      {
+        "title": "Dacromet",
+        "icon": "fas fa-leaf",
+        "description": "Chrome-free, environmentally friendly anti-corrosion coating using zinc and aluminum flakes in an inorganic binder. Provides excellent corrosion protection without hexavalent chromium.",
+        "features": "Chrome-free, RoHS compliant\nExcellent corrosion resistance\nNo hydrogen embrittlement\nHeat resistant to 300°C\nEnvironmentally friendly",
+        "applications": "Automotive fasteners, brake components, wind turbine bolts"
+      },
+      {
+        "title": "Teflon / PTFE Coating",
+        "icon": "fas fa-shield-alt",
+        "description": "Fluoropolymer coating providing extremely low friction coefficient, chemical resistance, and non-stick properties for demanding applications.",
+        "features": "Lowest friction coefficient\nNon-stick surface\nChemical resistance\nWide temperature range",
+        "applications": "Molds, food processing, medical, bearings"
+      },
+      {
+        "title": "Chromate Conversion",
+        "icon": "fas fa-palette",
+        "description": "Chemical treatment for aluminum that provides corrosion protection and improves paint adhesion. Available in clear (RoHS) and yellow/iridescent versions.",
+        "features": "Corrosion protection for aluminum\nExcellent paint adhesion\nConductive surface maintained\nRoHS compliant options",
+        "applications": "Aerospace, electronics, military, pre-paint treatment"
+      }
+    ]
+  }
+}

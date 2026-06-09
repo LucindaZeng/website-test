@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/apple-touch-icon.png">
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pages & Text (Bilingual) | WFX Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        .bilingual-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .bilingual-group .lang-field {
+            position: relative;
+        }
+        .bilingual-group .lang-label {
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            background: #fff;
+            padding: 0 8px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 4px;
+        }
+        .bilingual-group .lang-label.en {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        .bilingual-group .lang-label.cn {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .bilingual-group .form-control {
+            border: 2px solid #e0e0e0;
+        }
+        .bilingual-group .lang-field.en .form-control {
+            border-color: #bbdefb;
+        }
+        .bilingual-group .lang-field.cn .form-control {
+            border-color: #ffcdd2;
+        }
+        .section-divider {
+            margin: 30px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--admin-light-gray);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-divider i {
+            color: var(--admin-primary);
+        }
+        .lang-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .lang-tab {
+            padding: 8px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .lang-tab.active {
+            background: var(--admin-primary);
+            color: white;
+            border-color: var(--admin-primary);
+        }
+        .bilingual-notice {
+            background: linear-gradient(135deg, #e3f2fd 0%, #ffebee 100%);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .bilingual-notice i {
+            font-size: 24px;
+            color: #1976d2;
+        }
+        .bilingual-notice p {
+            margin: 0;
+            color: #333;
+        }
+        @media (max-width: 992px) {
+            .bilingual-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../images/logo.png" alt="WFX">
+            <h2 data-i18n="nav.panel_title">Admin Panel</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.main">Main</div>
+                <a href="dashboard.html" class="nav-item" data-i18n="nav.dashboard">
+                    <i class="fas fa-home" aria-hidden="true"></i> Dashboard
+                </a>
+                <a href="quotes.html" class="nav-item" data-i18n="nav.quotes">
+                    <i class="fas fa-file-invoice-dollar" aria-hidden="true"></i> Quotes
+                </a>
+                <a href="requests.html" class="nav-item" data-i18n="nav.requests">
+                    <i class="fas fa-inbox" aria-hidden="true"></i> Requests
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.content">Content Management</div>
+                <a href="videos.html" class="nav-item" data-i18n="nav.video_manager">
+                    <i class="fas fa-video" aria-hidden="true"></i> Video Manager
+                </a>
+                <a href="pages.html" class="nav-item active" data-i18n="nav.pages">
+                    <i class="fas fa-file-alt" aria-hidden="true"></i> Pages & Text
+                </a>
+                <a href="page-images.html" class="nav-item" data-i18n="nav.page_images">
+                    <i class="fas fa-image" aria-hidden="true"></i> Page Images
+                </a>
+                <a href="collections.html" class="nav-item" data-i18n="nav.collections">
+                    <i class="fas fa-layer-group" aria-hidden="true"></i> Page Collections
+                </a>
+                <a href="products.html" class="nav-item" data-i18n="nav.products">
+                    <i class="fas fa-boxes" aria-hidden="true"></i> Industry Products
+                </a>
+                <a href="testimonials.html" class="nav-item" data-i18n="nav.testimonials">
+                    <i class="fas fa-quote-right" aria-hidden="true"></i> Testimonials
+                </a>
+                <a href="categories.html" class="nav-item" data-i18n="nav.categories">
+                    <i class="fas fa-folder-open" aria-hidden="true"></i> Categories
+                </a>
+                <a href="media.html" class="nav-item" data-i18n="nav.media">
+                    <i class="fas fa-images" aria-hidden="true"></i> Media Library
+                </a>
+                <a href="blog.html" class="nav-item" data-i18n="nav.blog">
+                    <i class="fas fa-blog" aria-hidden="true"></i> Articles
+                </a>
+                <a href="news.html" class="nav-item" data-i18n="nav.news">
+                    <i class="fas fa-newspaper" aria-hidden="true"></i> News
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.system">System</div>
+                <a href="users.html" class="nav-item" data-i18n="nav.users">
+                    <i class="fas fa-users" aria-hidden="true"></i> User Management
+                </a>
+                <a href="blocklist.html" class="nav-item" data-i18n="nav.blocklist">
+                    <i class="fas fa-ban" aria-hidden="true"></i> IP Blocklist
+                </a>
+                <a href="activity-log.html" class="nav-item" data-i18n="nav.activity_log">
+                    <i class="fas fa-history" aria-hidden="true"></i> Activity Log
+                </a>
+                <a href="settings.html" class="nav-item" data-i18n="nav.settings">
+                    <i class="fas fa-cog" aria-hidden="true"></i> Settings
+                </a>
+                <a href="change-password.html" class="nav-item" data-i18n="nav.change_password">
+                    <i class="fas fa-key" aria-hidden="true"></i> Change Password
+                </a>
+            </div>
+            <div class="nav-section">
+                <a href="../index.html" class="nav-item" target="_blank" data-i18n="nav.view_website">
+                    <i class="fas fa-external-link-alt" aria-hidden="true"></i> View Website
+                </a>
+                <a href="#" class="nav-item" onclick="AdminCore.logout()" data-i18n="nav.logout">
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <header class="admin-header">
+            <div class="header-left">
+                <h1><i class="fas fa-language" aria-hidden="true"></i> <span data-i18n="page.pages">Bilingual Content Editor</span></h1>
+            </div>
+            <div class="header-right">
+                <div class="user-menu">
+                    <div class="user-avatar" id="user-avatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="user-name">Admin</div>
+                        <div class="user-role" id="user-role">Administrator</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="admin-content">
+            <div id="alert-container"></div>
+
+            <!-- Bilingual Notice -->
+            <div class="bilingual-notice">
+                <i class="fas fa-globe" aria-hidden="true"></i>
+                <p><strong>Public content:</strong> These English fields update the customer-facing website. Chinese is limited to the admin interface.</p>
+            </div>
+
+            <!-- Page Selector -->
+            <div class="card" style="margin-bottom: 25px;">
+                <div class="card-body">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Select Page to Edit</label>
+                        <select class="form-control" id="page-selector" style="max-width: 400px;">
+                            <option value="homepage">Homepage</option>
+                            <option value="about">About Us</option>
+                            <option value="contact">Contact</option>
+                            <option value="services">Services</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Homepage Content (Bilingual) -->
+            <div id="page-homepage" class="page-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-home" aria-hidden="true"></i> Homepage Content</h3>
+                        <button class="btn btn-primary" onclick="savePageContent('homepage')">
+                            <i class="fas fa-save" aria-hidden="true"></i> Save All Changes
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        
+                        <!-- Hero Section -->
+                        <div class="section-divider">
+                            <i class="fas fa-star" aria-hidden="true"></i>
+                            <h4>Hero Section</h4>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Hero Badge</label>
+                            <div class="bilingual-group">
+                                <div class="lang-field en">
+                                    <input type="text" class="form-control" id="hero-badge-en" value="ISO9001 & IATF16949 Certified">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Hero Title Line 1</label>
+                            <div class="bilingual-group">
+                                <div class="lang-field en">
+                                    <input type="text" class="form-control" id="hero-title1-en" value="Precision CNC Machining">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Hero Title Line 2 (Gradient Text)</label>
+                            <div class="bilingual-group">
+                                <div class="lang-field en">
+                                    <input type="text" class="form-control" id="hero-title2-en" value="From Prototype to Production">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Hero Description</label>
+                            <div class="bilingual-group">
+                                <div class="lang-field en">
+                                    <textarea class="form-control" id="hero-desc-en" rows="3">Industry-leading CNC machining services with tolerances down to ±0.005mm. Get instant quotes, rapid turnaround, and expert engineering support for your most demanding projects.</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Primary Button Text</label>
+                            <div class="bilingual-group">
+                                <div class="lang-field en">
+                                    <input type="text" class="form-control" id="hero-btn1-en" value="Upload CAD & Get Quote">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Secondary Button Text</label>
+                            <div class="bilingual-group">
+                                <div class="lang-field en">
+                                    <input type="text" class="form-control" id="hero-btn2-en" value="Explore Services">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Statistics -->
+                        <div class="section-divider">
+                            <i class="fas fa-chart-bar" aria-hidden="true"></i>
+                            <h4>Statistics (Numbers are shared, labels are bilingual)</h4>
+                        </div>
+
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Stat 1 - Number</label>
+                                <input type="text" class="form-control" id="stat1-num" value="7">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Stat 1 - Label</label>
+                                <div class="bilingual-group">
+                                    <div class="lang-field en">
+                                    <input type="text" class="form-control" id="stat1-label-en" value="Days Minimum">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Stat 2 - Number</label>
+                                <input type="text" class="form-control" id="stat2-num" value="±0.005mm">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Stat 2 - Label</label>
+                                <div class="bilingual-group">
+                                    <div class="lang-field en">
+                                    <input type="text" class="form-control" id="stat2-label-en" value="Tight Tolerances">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Stat 3 - Number</label>
+                                <input type="text" class="form-control" id="stat3-num" value="50+">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Stat 3 - Label</label>
+                                <div class="bilingual-group">
+                                    <div class="lang-field en">
+                                    <input type="text" class="form-control" id="stat3-label-en" value="Materials">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Stat 4 - Number</label>
+                                <input type="text" class="form-control" id="stat4-num" value="24/7">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Stat 4 - Label</label>
+                                <div class="bilingual-group">
+                                    <div class="lang-field en">
+                                    <input type="text" class="form-control" id="stat4-label-en" value="Production">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Info -->
+                        <div class="section-divider">
+                            <i class="fas fa-address-card" aria-hidden="true"></i>
+                            <h4>Contact Information (Shared across site)</h4>
+                        </div>
+
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Phone Number</label>
+                                <input type="text" class="form-control" id="contact-phone" value="+86 13431451998">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="contact-email" value="lucindaz@wanfuxin.com">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Address</label>
+                            <div class="bilingual-group">
+                                <div class="lang-field en">
+                                    <input type="text" class="form-control" id="address-en" value="3 Fuxin West Road, Qingxi Town, Dongguan City, Guangdong, China">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Business Hours</label>
+                            <div class="bilingual-group">
+                                <div class="lang-field en">
+                                    <input type="text" class="form-control" id="hours-en" value="Mon - Sat: 8:00 AM - 12:00 PM, 1:30 PM - 5:30 PM (China Time)">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Page Content (Bilingual) -->
+            <div id="page-about" class="page-content" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-info-circle" aria-hidden="true"></i> About Us Content</h3>
+                        <button class="btn btn-primary" onclick="savePageContent('about')">
+                            <i class="fas fa-save" aria-hidden="true"></i> Save All Changes
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        
+                        <div class="form-group">
+                            <label class="form-label">Page Title</label>
+                            <div class="bilingual-group">
+                                <div class="lang-field en">
+                                    <input type="text" class="form-control" id="about-title-en" value="About WFX Wanfuxin">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Page Subtitle</label>
+                            <div class="bilingual-group">
+                                <div class="lang-field en">
+                                    <input type="text" class="form-control" id="about-subtitle-en" value="Professional CNC precision machining manufacturer from Dongguan, China">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Company Story</label>
+                            <div class="bilingual-group">
+                                <div class="lang-field en">
+                                    <textarea class="form-control" id="about-story-en" rows="4">WFX Wanfuxin is a professional CNC precision machining manufacturer located in Qingxi Town, Dongguan City, Guangdong Province, China. We specialize in providing high-quality CNC machining services for customers worldwide.</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Intro Section Heading</label>
+                            <div class="bilingual-group">
+                                <div class="lang-field en">
+                                    <textarea class="form-control" id="about-mission-en" rows="2">19+ Years of Precision Manufacturing Excellence</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Page Content -->
+            <div id="page-contact" class="page-content" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-address-book" aria-hidden="true"></i> Contact Page Content</h3>
+                        <button class="btn btn-primary" onclick="savePageContent('contact')">
+                            <i class="fas fa-save" aria-hidden="true"></i> Save All Changes
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        
+                        <div class="form-group">
+                            <label class="form-label">Page Title</label>
+                            <div class="bilingual-group">
+                                <div class="lang-field en">
+                                    <input type="text" class="form-control" id="contact-title-en" value="Get in Touch">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Page Description</label>
+                            <div class="bilingual-group">
+                                <div class="lang-field en">
+                                    <textarea class="form-control" id="contact-desc-en" rows="2">Have questions about our CNC machining services? Our team is ready to help you with your next project.</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-divider">
+                            <i class="fas fa-building" aria-hidden="true"></i>
+                            <h4>Company Information</h4>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Contact Section Heading</label>
+                            <div class="bilingual-group">
+                                <div class="lang-field en">
+                                    <input type="text" class="form-control" id="company-name-en" value="Let's Start a Conversation">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services Page Content -->
+            <div id="page-services" class="page-content" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-cogs" aria-hidden="true"></i> Services Content</h3>
+                        <button class="btn btn-primary" onclick="savePageContent('services')">
+                            <i class="fas fa-save" aria-hidden="true"></i> Save All Changes
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        
+                        <div class="form-group">
+                            <label class="form-label">Page Title</label>
+                            <div class="bilingual-group">
+                                <div class="lang-field en">
+                                    <input type="text" class="form-control" id="services-title-en" value="Precision Manufacturing Services">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-divider">
+                            <i class="fas fa-cube" aria-hidden="true"></i>
+                            <h4>Page Introduction</h4>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Page Description</label>
+                            <div class="bilingual-group">
+                                <div class="lang-field en">
+                                    <textarea class="form-control" id="milling-desc-en" rows="3">End-to-end precision manufacturing under one roof — from 5-axis CNC machining of titanium aerospace brackets to high-volume die casting and full assembly. All ISO 9001 and IATF 16949 certified.</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-divider">
+                            <i class="fas fa-sync-alt" aria-hidden="true"></i>
+                            <h4>Call to Action</h4>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">CTA Description</label>
+                            <div class="bilingual-group">
+                                <div class="lang-field en">
+                                    <textarea class="form-control" id="turning-desc-en" rows="2">Upload your CAD file and get an engineering quote within 24 hours.</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="js/cms-sync.js?v=20260609c"></script>
+    <script src="js/admin-core.js?v=20260609c"></script>
+    <script>
+        // Page Selector
+        document.getElementById('page-selector').addEventListener('change', function() {
+            document.querySelectorAll('.page-content').forEach(el => el.style.display = 'none');
+            document.getElementById('page-' + this.value).style.display = 'block';
+        });
+
+        let pageContent = {};
+        let contentVersion = null;
+
+        function csrf() {
+            return window.WFX_CSRF_TOKEN || localStorage.getItem('wfx_csrf_token') || '';
+        }
+
+        function showAlert(message, type) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-' + (type || 'success');
+            alert.textContent = message;
+            document.getElementById('alert-container').appendChild(alert);
+            setTimeout(() => alert.remove(), 5000);
+        }
+
+        function getPath(path, fallback) {
+            const value = path.split('.').reduce((current, key) => current && current[key], pageContent);
+            return value == null ? fallback : value;
+        }
+
+        function setPath(target, path, value) {
+            const keys = path.split('.');
+            let current = target;
+            keys.slice(0, -1).forEach(key => {
+                if (!current[key] || typeof current[key] !== 'object') current[key] = {};
+                current = current[key];
+            });
+            current[keys[keys.length - 1]] = value;
+        }
+
+        function setInput(id, value) {
+            const input = document.getElementById(id);
+            if (input && value != null) input.value = value;
+        }
+
+        function loadFields() {
+            setInput('hero-badge-en', getPath('index.hero.badge', 'ISO9001 & IATF16949 Certified'));
+            setInput('hero-title1-en', getPath('index.hero.title', 'Precision CNC Machining'));
+            setInput('hero-title2-en', getPath('index.hero.subtitle', 'From Prototype to Production'));
+            setInput('hero-desc-en', getPath('index.hero.description', ''));
+            setInput('hero-btn1-en', getPath('index.hero.primaryButtonText', 'Upload CAD & Get Quote'));
+            setInput('hero-btn2-en', getPath('index.hero.secondaryButtonText', 'Explore Services'));
+
+            const stats = getPath('index.stats', []);
+            for (let i = 0; i < 4; i++) {
+                if (stats[i]) {
+                    setInput('stat' + (i + 1) + '-num', stats[i].value);
+                    setInput('stat' + (i + 1) + '-label-en', stats[i].label);
+                }
+            }
+
+            setInput('contact-phone', getPath('index.contact.phone', '+86 13431451998'));
+            setInput('contact-email', getPath('index.contact.email', 'lucindaz@wanfuxin.com'));
+            setInput('address-en', getPath('index.contact.address', '3 Fuxin West Road, Qingxi Town, Dongguan City, Guangdong, China'));
+            setInput('hours-en', getPath('index.contact.hours', 'Mon - Sat: 8:00 AM - 12:00 PM, 1:30 PM - 5:30 PM (China Time)'));
+
+            setInput('about-title-en', getPath('about.hero.title', 'About WFX Wanfuxin'));
+            setInput('about-subtitle-en', getPath('about.hero.description', ''));
+            setInput('about-story-en', getPath('about.intro.content', ''));
+            setInput('about-mission-en', getPath('about.intro.title', '19+ Years of Precision Manufacturing Excellence'));
+
+            setInput('contact-title-en', getPath('contact.hero.title', 'Get in Touch'));
+            setInput('contact-desc-en', getPath('contact.hero.description', ''));
+            setInput('company-name-en', getPath('contact.intro.title', "Let's Start a Conversation"));
+
+            setInput('services-title-en', getPath('services.hero.title', 'Precision Manufacturing Services'));
+            setInput('milling-desc-en', getPath('services.hero.description', ''));
+            setInput('turning-desc-en', getPath('services.cta.description', 'Upload your CAD file and get an engineering quote within 24 hours.'));
+        }
+
+        async function loadPageContent() {
+            try {
+                const response = await fetch('/api/cms/content/page_content', { credentials: 'same-origin' });
+                const result = await response.json();
+                if (response.ok && result.ok) {
+                    pageContent = result.value && typeof result.value === 'object' ? result.value : {};
+                    contentVersion = result.version == null ? null : result.version;
+                }
+            } catch (error) {
+                showAlert('Could not load live page content. Showing built-in defaults.', 'danger');
+            }
+            loadFields();
+        }
+
+        async function savePageContent(page) {
+            const next = JSON.parse(JSON.stringify(pageContent || {}));
+            if (page === 'homepage') {
+                setPath(next, 'index.hero.badge', document.getElementById('hero-badge-en').value.trim());
+                setPath(next, 'index.hero.title', document.getElementById('hero-title1-en').value.trim());
+                setPath(next, 'index.hero.subtitle', document.getElementById('hero-title2-en').value.trim());
+                setPath(next, 'index.hero.description', document.getElementById('hero-desc-en').value.trim());
+                setPath(next, 'index.hero.primaryButtonText', document.getElementById('hero-btn1-en').value.trim());
+                setPath(next, 'index.hero.secondaryButtonText', document.getElementById('hero-btn2-en').value.trim());
+                setPath(next, 'index.stats', [1, 2, 3, 4].map(number => ({
+                    value: document.getElementById('stat' + number + '-num').value.trim(),
+                    label: document.getElementById('stat' + number + '-label-en').value.trim()
+                })));
+                setPath(next, 'index.contact.phone', document.getElementById('contact-phone').value.trim());
+                setPath(next, 'index.contact.email', document.getElementById('contact-email').value.trim());
+                setPath(next, 'index.contact.address', document.getElementById('address-en').value.trim());
+                setPath(next, 'index.contact.hours', document.getElementById('hours-en').value.trim());
+            } else if (page === 'about') {
+                setPath(next, 'about.hero.title', document.getElementById('about-title-en').value.trim());
+                setPath(next, 'about.hero.description', document.getElementById('about-subtitle-en').value.trim());
+                setPath(next, 'about.intro.content', document.getElementById('about-story-en').value.trim());
+                setPath(next, 'about.intro.title', document.getElementById('about-mission-en').value.trim());
+            } else if (page === 'contact') {
+                setPath(next, 'contact.hero.title', document.getElementById('contact-title-en').value.trim());
+                setPath(next, 'contact.hero.description', document.getElementById('contact-desc-en').value.trim());
+                setPath(next, 'contact.intro.title', document.getElementById('company-name-en').value.trim());
+            } else if (page === 'services') {
+                setPath(next, 'services.hero.title', document.getElementById('services-title-en').value.trim());
+                setPath(next, 'services.hero.description', document.getElementById('milling-desc-en').value.trim());
+                setPath(next, 'services.cta.description', document.getElementById('turning-desc-en').value.trim());
+            }
+
+            try {
+                const response = await fetch('/api/cms/content/page_content', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf() },
+                    body: JSON.stringify({ value: next, expected_version: contentVersion })
+                });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok || !result.ok) throw new Error(result.message || result.error || 'Save failed');
+                pageContent = next;
+                contentVersion = result.version;
+                showAlert('Content saved. Reload the public page to verify the update.');
+                AdminCore.logActivity('Page Content Updated', page);
+            } catch (error) {
+                showAlert(error.message, 'danger');
+            }
+        }
+
+        loadPageContent();
+    </script>
+</body>
+</html>

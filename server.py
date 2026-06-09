@@ -1481,6 +1481,21 @@ def cms_delete(key):
 
 def cms_list_industry_products(industry=None):
     """Get industry products. If industry is None, returns all grouped by industry."""
+    full_products = cms_get('industry_products', None)
+    if isinstance(full_products, list):
+        normalized = []
+        for index, product in enumerate(full_products):
+            if not isinstance(product, dict):
+                continue
+            item = dict(product)
+            if item.get('industry') == 'automotive':
+                item['industry'] = 'liquid-cooling'
+            item.setdefault('sort_order', index)
+            item.setdefault('image_url', item.get('image', ''))
+            if industry is None or item.get('industry') == industry:
+                normalized.append(item)
+        return normalized
+
     conn = get_db_connection()
     if not conn:
         return []
@@ -1535,10 +1550,76 @@ def cms_replace_industry_products(industry, products):
         conn.close()
 
 
+def cms_replace_all_industry_products(products):
+    """Store the complete product records, including fields absent from the legacy table."""
+    if not isinstance(products, list):
+        return False
+    normalized = []
+    grouped = defaultdict(list)
+    for index, product in enumerate(products):
+        if not isinstance(product, dict):
+            continue
+        item = dict(product)
+        if item.get('industry') == 'automotive':
+            item['industry'] = 'liquid-cooling'
+        item['sort_order'] = item.get('sort_order', index)
+        item['image'] = item.get('image') or item.get('image_url', '')
+        normalized.append(item)
+        grouped[item.get('industry') or 'general'].append(item)
+
+    if not cms_set('industry_products', normalized):
+        return False
+
+    # Keep the legacy table populated for older deployments and tooling.
+    for industry, industry_products in grouped.items():
+        cms_replace_industry_products(industry, industry_products)
+    return True
+
+
 # ─── Generic per-page collections (equipment, materials, anything) ──────────────
 # Mirrors the industry-products pattern, but stores arbitrary item fields as JSON
 # so any page can have add/remove lists without new columns. The page's schema
 # (defined in the admin) decides which fields each item has.
+
+COLLECTION_DEFAULTS_FILE = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    'migrations',
+    'collection-defaults.json',
+)
+
+
+def _load_collection_defaults():
+    """Load content extracted from the public HTML for unseeded collections."""
+    try:
+        with open(COLLECTION_DEFAULTS_FILE, encoding='utf-8') as f:
+            data = json.load(f)
+            return data if isinstance(data, dict) else {}
+    except (OSError, ValueError, TypeError):
+        return {}
+
+
+def _default_collection_rows(page, collection=None):
+    page_data = _load_collection_defaults().get(page, {})
+    if not isinstance(page_data, dict):
+        return []
+    names = [collection] if collection else sorted(page_data)
+    rows = []
+    for collection_name in names:
+        items = page_data.get(collection_name, [])
+        if not isinstance(items, list):
+            continue
+        for index, fields in enumerate(items):
+            if not isinstance(fields, dict):
+                continue
+            rows.append({
+                'id': None,
+                'page': page,
+                'collection': collection_name,
+                'sort_order': index,
+                **fields,
+            })
+    return rows
+
 
 def cms_list_collection(page, collection=None):
     """List items for page[/collection]. Returns rows with item fields flattened.
@@ -1549,7 +1630,7 @@ def cms_list_collection(page, collection=None):
     """
     conn = get_db_connection()
     if not conn:
-        return []
+        return _default_collection_rows(page, collection)
     try:
         cursor = conn.cursor(dictionary=True)
         if collection:
@@ -1568,6 +1649,7 @@ def cms_list_collection(page, collection=None):
             """, (page,))
         rows = cursor.fetchall()
         out = []
+        has_saved_state = bool(rows)
         for r in rows:
             raw = r.get('item_data')
             try:
@@ -1576,6 +1658,8 @@ def cms_list_collection(page, collection=None):
                 fields = {}
             if not isinstance(fields, dict):
                 fields = {}
+            if fields.get('__wfx_empty__') is True:
+                continue
             out.append({
                 'id': r['id'],
                 'page': r['page'],
@@ -1583,10 +1667,10 @@ def cms_list_collection(page, collection=None):
                 'sort_order': r['sort_order'],
                 **fields,
             })
-        return out
+        return out if has_saved_state else _default_collection_rows(page, collection)
     except mysql.connector.Error as e:
         print(f"  ✗  list collection failed: {e}")
-        return []
+        return _default_collection_rows(page, collection)
     finally:
         conn.close()
 
@@ -1596,9 +1680,23 @@ def cms_list_all_collections():
 
     Used by the injection bundle so public pages get their lists on first paint.
     """
+    defaults = _load_collection_defaults()
+    grouped = {
+        page: {
+            collection: [
+                {'id': None, 'sort_order': index, **item}
+                for index, item in enumerate(items)
+                if isinstance(item, dict)
+            ]
+            for collection, items in collections.items()
+            if isinstance(items, list)
+        }
+        for page, collections in defaults.items()
+        if isinstance(collections, dict)
+    }
     conn = get_db_connection()
     if not conn:
-        return {}
+        return grouped
     try:
         cursor = conn.cursor(dictionary=True)
         cursor.execute("""
@@ -1606,7 +1704,7 @@ def cms_list_all_collections():
             FROM cms_collections
             ORDER BY page, collection, sort_order, id
         """)
-        grouped = {}
+        database_collections = set()
         for r in cursor.fetchall():
             raw = r.get('item_data')
             try:
@@ -1615,6 +1713,12 @@ def cms_list_all_collections():
                 fields = {}
             if not isinstance(fields, dict):
                 fields = {}
+            key = (r['page'], r['collection'])
+            if key not in database_collections:
+                grouped.setdefault(r['page'], {})[r['collection']] = []
+                database_collections.add(key)
+            if fields.get('__wfx_empty__') is True:
+                continue
             grouped.setdefault(r['page'], {}).setdefault(r['collection'], []).append({
                 'id': r['id'],
                 'sort_order': r['sort_order'],
@@ -1623,7 +1727,7 @@ def cms_list_all_collections():
         return grouped
     except mysql.connector.Error as e:
         print(f"  ✗  list all collections failed: {e}")
-        return {}
+        return grouped
     finally:
         conn.close()
 
@@ -1648,9 +1752,13 @@ def cms_replace_collection(page, collection, items):
             "DELETE FROM cms_collections WHERE page = %s AND collection = %s",
             (page, collection),
         )
-        for i, item in enumerate(items or []):
-            if not isinstance(item, dict):
-                continue
+        valid_items = [item for item in (items or []) if isinstance(item, dict)]
+        if not valid_items:
+            cursor.execute("""
+                INSERT INTO cms_collections (page, collection, item_data, sort_order)
+                VALUES (%s, %s, %s, %s)
+            """, (page, collection, json.dumps({'__wfx_empty__': True}), 0))
+        for i, item in enumerate(valid_items):
             fields = {k: v for k, v in item.items() if k not in _COLLECTION_RESERVED}
             sort_order = item.get('sort_order', i)
             cursor.execute("""
@@ -1670,8 +1778,75 @@ def cms_replace_collection(page, collection, items):
         conn.close()
 
 
+def _normalize_news_row(row, news_type='news'):
+    item = dict(row or {})
+    for key, value in list(item.items()):
+        if isinstance(value, datetime):
+            item[key] = value.isoformat()
+
+    status = str(item.get('status') or '').strip().lower()
+    if status in ('draft', 'published'):
+        # The admin's current status choice is authoritative. This also allows
+        # a previously published item to be moved back to draft.
+        published = status == 'published'
+    else:
+        published = item.get('is_published')
+        if published is None:
+            published = True
+    published_at = (
+        item.get('published_at') or item.get('publishedAt') or
+        item.get('created_at') or item.get('createdAt')
+    )
+    created_at = item.get('created_at') or item.get('createdAt') or published_at
+    updated_at = item.get('updated_at') or item.get('updatedAt') or created_at
+    image_url = item.get('image_url') or item.get('featuredImage') or item.get('image') or ''
+
+    item.update({
+        'type': item.get('type') or news_type,
+        'image_url': image_url,
+        'featuredImage': image_url,
+        'published_at': published_at,
+        'publishedAt': published_at,
+        'created_at': created_at,
+        'createdAt': created_at,
+        'updated_at': updated_at,
+        'updatedAt': updated_at,
+        'is_published': 1 if published else 0,
+        'status': 'published' if published else 'draft',
+        'is_pinned': bool(item.get('is_pinned', False)),
+    })
+    return item
+
+
+def _mysql_datetime(value):
+    if isinstance(value, datetime):
+        return value.replace(tzinfo=None)
+    if isinstance(value, str) and value.strip():
+        try:
+            parsed = datetime.fromisoformat(value.strip().replace('Z', '+00:00'))
+            return parsed.replace(tzinfo=None)
+        except ValueError:
+            pass
+    return datetime.now()
+
+
 def cms_list_news(news_type='news', published_only=True, limit=100):
-    """Fetch news/blog posts."""
+    """Fetch news/blog posts with public and admin field aliases."""
+    full_items = cms_get(f'{news_type}_items', None)
+    if isinstance(full_items, list):
+        rows = [_normalize_news_row(row, news_type) for row in full_items if isinstance(row, dict)]
+        if published_only:
+            rows = [row for row in rows if row.get('is_published')]
+        rows.sort(
+            key=lambda row: (
+                bool(row.get('is_pinned')),
+                str(row.get('published_at') or ''),
+                int(row.get('id') or 0),
+            ),
+            reverse=True,
+        )
+        return rows[:limit]
+
     conn = get_db_connection()
     if not conn:
         return []
@@ -1685,11 +1860,7 @@ def cms_list_news(news_type='news', published_only=True, limit=100):
         params.append(limit)
         cursor.execute(sql, params)
         rows = cursor.fetchall()
-        for row in rows:
-            for k, v in row.items():
-                if isinstance(v, datetime):
-                    row[k] = v.isoformat()
-        return rows
+        return [_normalize_news_row(row, news_type) for row in rows]
     except mysql.connector.Error as e:
         print(f"  ✗  list news failed: {e}")
         return []
@@ -1716,38 +1887,21 @@ def cms_get_homepage_news():
         if isinstance(t, str) and t.strip() and t not in seen:
             seen.add(t); clean.append(t)
     clean = clean[:3]
-    if not clean:
-        return []
-    conn = get_db_connection()
-    if not conn:
-        return []
-    try:
-        cursor = conn.cursor(dictionary=True)
-        fmt = ','.join(['%s'] * len(clean))
-        cursor.execute(
-            f"SELECT * FROM cms_news WHERE title IN ({fmt}) AND is_published = 1",
-            clean,
-        )
-        by_title = {}
-        for row in cursor.fetchall():
-            for k, v in row.items():
-                if isinstance(v, datetime):
-                    row[k] = v.isoformat()
-            by_title[row['title']] = row   # if duplicate titles, last wins
-        out = []
-        for t in clean:
-            row = by_title.get(t)
-            if not row:
-                continue  # renamed / unpublished / deleted → silently skip
-            row = dict(row)
-            row['featured'] = (len(out) == 0)  # first surviving item is the big card
-            out.append(row)
-        return out
-    except mysql.connector.Error as e:
-        print(f"  \u2717  homepage news resolve failed: {e}")
-        return []
-    finally:
-        conn.close()
+    available = cms_list_news('news', published_only=True, limit=100)
+    available += cms_list_news('blog', published_only=True, limit=100)
+
+    if clean:
+        by_title = {row.get('title'): row for row in available}
+        selected = [by_title[title] for title in clean if title in by_title]
+    else:
+        selected = [row for row in available if row.get('is_pinned')][:3]
+
+    out = []
+    for row in selected[:3]:
+        item = dict(row)
+        item['featured'] = not out
+        out.append(item)
+    return out
 
 
 def cms_replace_news(news_type, posts):
@@ -1758,9 +1912,12 @@ def cms_replace_news(news_type, posts):
     try:
         cursor = conn.cursor()
         cursor.execute("DELETE FROM cms_news WHERE type = %s", (news_type,))
-        for p in posts or []:
+        normalized_posts = []
+        for index, p in enumerate(posts or []):
+            p = _normalize_news_row(p, news_type)
+            normalized_posts.append(p)
             slug = p.get('slug') or (p.get('title') or '').lower().replace(' ', '-')[:300] or f"post-{p.get('id', '')}"
-            published_at = p.get('published_at') or p.get('date') or p.get('created_at')
+            published_at = _mysql_datetime(p.get('published_at'))
             cursor.execute("""
                 INSERT INTO cms_news (type, title, slug, category, excerpt, content,
                                       image_url, author, published_at, is_published, is_pinned)
@@ -1772,14 +1929,14 @@ def cms_replace_news(news_type, posts):
                 (p.get('category') or '')[:100],
                 p.get('excerpt', ''),
                 p.get('content', ''),
-                p.get('image', '') or p.get('image_url', ''),
+                p.get('image_url', ''),
                 (p.get('author') or '')[:100],
                 published_at,
-                1 if p.get('is_published', True) else 0,
+                1 if p.get('is_published') else 0,
                 1 if p.get('is_pinned', False) else 0,
             ))
         conn.commit()
-        return True
+        return cms_set(f'{news_type}_items', normalized_posts)
     except mysql.connector.Error as e:
         print(f"  ✗  replace news failed: {e}")
         return False
@@ -1795,15 +1952,26 @@ def cms_load_all_for_injection():
     return {
         'page_content':       cms_get('page_content', {}),
         'homepage_media':     cms_get('homepage_media', {}),
+        'page_images':        cms_get('page_images', {}),
         'site_settings':      cms_get('site_settings', {}),
         'industry_products':  cms_list_industry_products(),
         'collections':        cms_list_all_collections(),
-        'news':               cms_list_news('news',  limit=20),
-        'blog':               cms_list_news('blog',  limit=20),
+        'news':               cms_list_news('news',  limit=500),
+        'blog':               cms_list_news('blog',  limit=500),
         'homepage_news':      cms_get_homepage_news(),
+        'homepage_news_titles': cms_get('homepage_news_titles', []),
         'branding':           cms_get('branding', {}),
         'categories':         cms_get('categories', {}),
+        'testimonials':       cms_get('testimonials', None),
     }
+
+
+def cms_load_all_for_admin():
+    """Return the CMS bundle used by admin editors, including drafts."""
+    data = cms_load_all_for_injection()
+    data['news'] = cms_list_news('news', published_only=False, limit=1000)
+    data['blog'] = cms_list_news('blog', published_only=False, limit=1000)
+    return data
 
 
 # ─── Threaded Server ────────────────────────────────────────────────────────────
@@ -1900,6 +2068,9 @@ class WFXHandler(SimpleHTTPRequestHandler):
 
     def do_PUT(self):
         path = urlparse(self.path).path
+        if path == '/api/auth/profile':
+            self._handle_profile_update()
+            return
         # /api/users/<id>
         if path.startswith('/api/users/'):
             try:
@@ -2312,9 +2483,30 @@ class WFXHandler(SimpleHTTPRequestHandler):
         self.send_header('Set-Cookie', 'wfx_session=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0')
 
     def _get_current_user(self):
-        """Return user dict from session cookie, or None."""
+        """Return the current, active account represented by the session cookie."""
         token = self._get_cookie('wfx_session')
-        return verify_session_token(token) if token else None
+        session_user = verify_session_token(token) if token else None
+        if not session_user:
+            return None
+
+        account = next(
+            (item for item in load_admin_users() if item.get('id') == session_user.get('uid')),
+            None
+        )
+        if not account or not account.get('is_active', True):
+            return None
+
+        return {
+            'uid': account['id'],
+            'id': account['id'],
+            'name': account['username'],
+            'username': account['username'],
+            'role': account.get('role', 'viewer'),
+            'email': account.get('email', ''),
+            'full_name': account.get('full_name', ''),
+            'must_change_password': account.get('must_change_password', False),
+            'last_login_at': account.get('last_login_at'),
+        }
 
     def _check_admin_auth(self):
         """
@@ -2344,7 +2536,12 @@ class WFXHandler(SimpleHTTPRequestHandler):
 
         # Fallback: legacy X-Admin-Token header (for non-browser scripts/CI)
         legacy_token = self.headers.get('X-Admin-Token', '')
-        if legacy_token and ADMIN_API_TOKEN and hmac.compare_digest(legacy_token, ADMIN_API_TOKEN):
+        legacy_token_enabled = (
+            bool(ADMIN_API_TOKEN)
+            and ADMIN_API_TOKEN != 'change-me'
+            and 'replace' not in ADMIN_API_TOKEN.lower()
+        )
+        if legacy_token and legacy_token_enabled and hmac.compare_digest(legacy_token, ADMIN_API_TOKEN):
             self._current_user = {'uid': 0, 'name': 'api-token'}
             return True
 
@@ -2422,6 +2619,7 @@ class WFXHandler(SimpleHTTPRequestHandler):
                   resource_type='auth', ip=self._client_ip())
 
     def _handle_logout(self):
+        user = self._get_current_user()
         self.send_response(200)
         self.send_header('Content-Type', 'application/json; charset=utf-8')
         self._clear_session_cookie()
@@ -2430,6 +2628,8 @@ class WFXHandler(SimpleHTTPRequestHandler):
         self.send_header('Content-Length', str(len(body)))
         self.end_headers()
         self.wfile.write(body)
+        if user:
+            audit_log(user, 'logout', resource_type='auth', ip=self._client_ip())
 
     def _handle_whoami(self):
         user = self._get_current_user()
@@ -2437,6 +2637,52 @@ class WFXHandler(SimpleHTTPRequestHandler):
             self._send_json(401, {'ok': False, 'error': 'Not authenticated'})
             return
         self._send_json(200, {'ok': True, 'user': user})
+
+    def _handle_profile_update(self):
+        """PUT /api/auth/profile — update the current account's own profile."""
+        if not self._check_admin_auth():
+            return
+        user = getattr(self, '_current_user', None)
+        if not user or not user.get('uid'):
+            self._send_json(403, {'ok': False, 'error': 'A user session is required'})
+            return
+
+        data = self._read_json_body(max_bytes=4096)
+        if data is None:
+            return
+        full_name = str(data.get('full_name') or '').strip()
+        email = str(data.get('email') or '').strip().lower()
+        if len(full_name) > 200 or len(email) > 200:
+            self._send_json(400, {'ok': False, 'error': 'Profile fields are too long'})
+            return
+        if email and ('@' not in email or email.startswith('@') or email.endswith('@')):
+            self._send_json(400, {'ok': False, 'error': 'Enter a valid email address'})
+            return
+
+        users = load_admin_users()
+        if email and any(
+            item.get('id') != user['uid'] and str(item.get('email') or '').lower() == email
+            for item in users
+        ):
+            self._send_json(409, {'ok': False, 'error': 'That email address is already in use'})
+            return
+
+        updates = {'full_name': full_name, 'email': email}
+        if not update_admin_user(user['uid'], updates, actor_id=user['uid']):
+            self._send_json(404, {'ok': False, 'error': 'User account not found'})
+            return
+        audit_log(user, 'profile_updated', resource_type='user', resource_id=user['uid'],
+                  detail={'full_name': full_name, 'email': email}, ip=self._client_ip())
+        self._send_json(200, {
+            'ok': True,
+            'user': {
+                'id': user['uid'],
+                'username': user['username'],
+                'full_name': full_name,
+                'email': email,
+                'role': user['role'],
+            }
+        })
 
     def _handle_csrf_get(self):
         # Anyone can request a CSRF token; only admins can use it
@@ -2614,10 +2860,6 @@ class WFXHandler(SimpleHTTPRequestHandler):
 
     def _handle_cms_read(self, path):
         """GET handlers — public read access (anyone can see content)."""
-        if not (DB_CONFIG and MYSQL_AVAILABLE):
-            self._send_json(503, {'ok': False, 'error': 'Database not configured'})
-            return
-
         parts = path.strip('/').split('/')
         # ['api', 'cms', resource, ...id]
         if len(parts) < 3:
@@ -2626,7 +2868,17 @@ class WFXHandler(SimpleHTTPRequestHandler):
         resource = parts[2]
 
         if resource == 'all':
-            self._send_json(200, {'ok': True, 'data': cms_load_all_for_injection()})
+            is_admin = bool(self._get_current_user())
+            legacy_token = self.headers.get('X-Admin-Token', '')
+            legacy_token_enabled = (
+                bool(ADMIN_API_TOKEN)
+                and ADMIN_API_TOKEN != 'change-me'
+                and 'replace' not in ADMIN_API_TOKEN.lower()
+            )
+            if not is_admin and legacy_token and legacy_token_enabled:
+                is_admin = hmac.compare_digest(legacy_token, ADMIN_API_TOKEN)
+            data = cms_load_all_for_admin() if is_admin else cms_load_all_for_injection()
+            self._send_json(200, {'ok': True, 'data': data})
             return
 
         if resource == 'content' and len(parts) == 4:
@@ -2724,6 +2976,15 @@ class WFXHandler(SimpleHTTPRequestHandler):
             audit_log(user, 'content_update', resource_type='content', resource_id=parts[3],
                       ip=self._client_ip())
             self._send_json(200 if ok else 500, {'ok': ok, 'version': new_version})
+            return
+
+        if resource == 'products' and len(parts) == 3:
+            products = body.get('products', [])
+            ok = cms_replace_all_industry_products(products)
+            audit_log(user, 'products_update', resource_type='products',
+                      resource_id='all', detail=f'{len(products)} items',
+                      ip=self._client_ip())
+            self._send_json(200 if ok else 500, {'ok': ok})
             return
 
         if resource == 'products' and len(parts) == 4:
@@ -3234,7 +3495,7 @@ class WFXHandler(SimpleHTTPRequestHandler):
                        detail, ip_address, created_at
                 FROM admin_audit_log
                 ORDER BY created_at DESC
-                LIMIT 200
+                LIMIT 1000
             """)
             rows = cursor.fetchall()
             for row in rows:

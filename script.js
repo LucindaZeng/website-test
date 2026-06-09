@@ -30,6 +30,14 @@ document.addEventListener('DOMContentLoaded', function() {
 function initHeroVideo() {
     const container = document.getElementById('hero-video');
     if (!container) return;
+    const cmsVideo = window.__WFX_CMS__ &&
+        window.__WFX_CMS__.page_content &&
+        window.__WFX_CMS__.page_content.index &&
+        window.__WFX_CMS__.page_content.index.hero &&
+        window.__WFX_CMS__.page_content.index.hero.videoUrl;
+    if (cmsVideo) {
+        container.dataset.videoWebm = cmsVideo;
+    }
 
     function shouldPlayVideo() {
         // 1. Viewport width — mobile sees the poster only
@@ -55,14 +63,14 @@ function initHeroVideo() {
         video.loop = true;
         video.playsInline = true;
         video.preload = 'auto';
-        video.poster = '/images/hero-video-poster.jpg';
+        video.poster = container.dataset.posterImage || '/images/hero-video-poster.jpg';
         video.setAttribute('muted', '');
         video.setAttribute('playsinline', '');
         video.setAttribute('aria-hidden', 'true');
         video.setAttribute('tabindex', '-1');
         const source = document.createElement('source');
         source.src = src;
-        source.type = 'video/webm';
+        source.type = /\.mp4(?:$|[?#])/i.test(src) ? 'video/mp4' : 'video/webm';
         video.appendChild(source);
         container.appendChild(video);
         const p = video.play();
@@ -826,31 +834,10 @@ console.log(
    Homepage Media Configuration Loader
    ========================================== */
 function loadHomepageMedia() {
-    // Default media configuration
-    const defaultMedia = {
-        heroVideo: 'hero-video.mp4',
-        companyVideo: 'company-video.mp4',
-        companyVideoPoster: '/images/company-video-poster.jpg',
-        services: {
-            cncMilling: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&h=300&fit=crop',
-            cncTurning: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=400&h=300&fit=crop',
-            fiveAxis: 'https://images.unsplash.com/photo-1581091226817-a6a2a5aee158?w=400&h=300&fit=crop',
-            precisionInspection: 'https://images.unsplash.com/photo-1537462715879-360eeb61a0ad?w=400&h=300&fit=crop'
-        },
-        industries: {
-            aerospace: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=300&fit=crop',
-            automotive: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400&h=300&fit=crop',
-            medical: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop',
-            electronics: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop',
-            robotics: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&h=300&fit=crop',
-            industrial: 'https://images.unsplash.com/photo-1581091226817-a6a2a5aee158?w=400&h=300&fit=crop'
-        }
-    };
-
-    // Try to load from localStorage
-    let media = defaultMedia;
+    // Legacy homepage_media remains supported, but Page Images is authoritative.
+    let media = (window.__WFX_CMS__ && window.__WFX_CMS__.homepage_media) || null;
     try {
-        const stored = localStorage.getItem('wfx_homepage_media');
+        const stored = !media && localStorage.getItem('wfx_homepage_media');
         if (stored) {
             media = JSON.parse(stored);
             // Migration: if stored config has the OLD stale vase URL as the company
@@ -863,8 +850,12 @@ function loadHomepageMedia() {
             }
         }
     } catch (e) {
-        console.log('Using default media configuration');
+        media = null;
     }
+    if (!media) return;
+
+    const managed = (window.__WFX_CMS__ && window.__WFX_CMS__.page_images &&
+        window.__WFX_CMS__.page_images.index) || {};
 
     // Hero background is a self-hosted WebM (see initHeroVideo). To change it,
     // replace images/hero-video-optimized.webm (and the poster), or update the
@@ -895,7 +886,13 @@ function loadHomepageMedia() {
         };
         
         Object.entries(serviceImages).forEach(([key, img]) => {
-            if (img && media.services[key]) {
+            const managedKey = {
+                cncMilling: 'service-milling',
+                cncTurning: 'service-turning',
+                fiveAxis: 'service-5axis',
+                precisionInspection: 'service-inspection'
+            }[key];
+            if (img && media.services[key] && !managed[managedKey]) {
                 img.src = media.services[key];
             }
         });
@@ -905,7 +902,7 @@ function loadHomepageMedia() {
     if (media.industries) {
         const industryImages = {
             aerospace: document.querySelector('[data-industry="aerospace"] img'),
-            automotive: document.querySelector('[data-industry="automotive"] img'),
+            liquidCooling: document.querySelector('[data-industry="liquid-cooling"] img'),
             medical: document.querySelector('[data-industry="medical"] img'),
             electronics: document.querySelector('[data-industry="electronics"] img'),
             robotics: document.querySelector('[data-industry="robotics"] img'),
@@ -913,8 +910,12 @@ function loadHomepageMedia() {
         };
         
         Object.entries(industryImages).forEach(([key, img]) => {
-            if (img && media.industries[key]) {
-                img.src = media.industries[key];
+            const mediaValue = key === 'liquidCooling'
+                ? (media.industries.liquidCooling || media.industries.automotive)
+                : media.industries[key];
+            const managedKey = 'industry-' + (key === 'liquidCooling' ? 'liquid-cooling' : key);
+            if (img && mediaValue && !managed[managedKey]) {
+                img.src = mediaValue;
             }
         });
     }
@@ -1182,7 +1183,9 @@ window.WFX_renderIndustryProducts = function(galleryId, industryKey) {
     const all = (window.__WFX_CMS__ && window.__WFX_CMS__.industry_products)
         ? window.__WFX_CMS__.industry_products
         : JSON.parse(localStorage.getItem('wfx_industry_products') || '[]');
-    const products = all.filter(p => p.industry === industryKey);
+    const products = all
+        .filter(p => p.industry === industryKey)
+        .sort((a, b) => Number(!!b.featured) - Number(!!a.featured));
     if (products.length === 0) {
         return;  // keep static crawlable fallback HTML
     }
@@ -1198,6 +1201,7 @@ window.WFX_renderIndustryProducts = function(galleryId, industryKey) {
         if (/^[a-z][a-z0-9+.-]*:/i.test(trimmed) && !/^https?:/i.test(trimmed)) {
             return 'https://via.placeholder.com/400x250?text=Product';
         }
+        if (/^https?:\/\//i.test(trimmed)) return trimmed;
         return trimmed.charAt(0) === '/' ? trimmed : '/' + trimmed;
     }
 
@@ -1248,6 +1252,7 @@ window.WFX_renderIndustryProducts = function(galleryId, industryKey) {
         addBadge(product.material,  '#e0f2fe', '#0369a1');
         addBadge(product.tolerance, '#dcfce7', '#166534');
         addBadge(product.process,   '#fef3c7', '#92400e');
+        addBadge(product.finish,    '#f3e8ff', '#7e22ce');
         body.appendChild(badgeRow);
 
         card.appendChild(body);

@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/apple-touch-icon.png">
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Industry Products | WFX Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        .industry-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .industry-tab {
+            padding: 12px 24px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .industry-tab:hover {
+            border-color: #0052CC;
+            color: #0052CC;
+        }
+        .industry-tab.active {
+            background: #0052CC;
+            border-color: #0052CC;
+            color: white;
+        }
+        .industry-tab .count {
+            background: rgba(0,0,0,0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+        .industry-tab.active .count {
+            background: rgba(255,255,255,0.2);
+        }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        .product-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: #f5f7fa;
+        }
+        .product-info {
+            padding: 20px;
+        }
+        .product-info h4 {
+            margin: 0 0 8px;
+            font-size: 1.1rem;
+            color: #1a1a2e;
+        }
+        .product-info p {
+            margin: 0 0 15px;
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.5;
+        }
+        .product-meta {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .product-tag {
+            padding: 4px 10px;
+            background: #e0f2fe;
+            color: #0369a1;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .product-actions .btn {
+            flex: 1;
+            padding: 10px;
+            font-size: 0.85rem;
+        }
+        .add-product-card {
+            background: #f8fafc;
+            border: 2px dashed #d1d5db;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 320px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .add-product-card:hover {
+            border-color: #0052CC;
+            background: #f0f7ff;
+        }
+        .add-product-card i {
+            font-size: 3rem;
+            color: #9ca3af;
+            margin-bottom: 15px;
+        }
+        .add-product-card:hover i {
+            color: #0052CC;
+        }
+        .add-product-card span {
+            color: #6b7280;
+            font-weight: 500;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            padding: 25px 30px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            line-height: 1;
+        }
+        .modal-body {
+            padding: 30px;
+        }
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+        .image-upload-zone {
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        .image-upload-zone:hover {
+            border-color: #0052CC;
+            background: #f0f7ff;
+        }
+        .image-upload-zone i {
+            font-size: 2.5rem;
+            color: #9ca3af;
+            margin-bottom: 10px;
+        }
+        .image-upload-zone p {
+            margin: 0;
+            color: #666;
+        }
+        .image-preview {
+            width: 100%;
+            max-height: 250px;
+            object-fit: contain;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .image-preview.show {
+            display: block;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0052CC;
+        }
+        .stat-card .label {
+            color: #666;
+            font-size: 0.85rem;
+        }
+        .industry-content {
+            display: none;
+        }
+        .industry-content.active {
+            display: block;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        .empty-state i {
+            font-size: 4rem;
+            color: #d1d5db;
+            margin-bottom: 20px;
+        }
+        .featured-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #fbbf24;
+            color: #78350f;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .product-card-wrapper {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../images/logo.png" alt="WFX">
+            <h2 data-i18n="nav.panel_title">Admin Panel</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.main">Main</div>
+                <a href="dashboard.html" class="nav-item" data-i18n="nav.dashboard">
+                    <i class="fas fa-home" aria-hidden="true"></i> Dashboard
+                </a>
+                <a href="quotes.html" class="nav-item" data-i18n="nav.quotes">
+                    <i class="fas fa-file-invoice-dollar" aria-hidden="true"></i> Quotes
+                </a>
+                <a href="requests.html" class="nav-item" data-i18n="nav.requests">
+                    <i class="fas fa-inbox" aria-hidden="true"></i> Requests
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.content">Content Management</div>
+                <a href="videos.html" class="nav-item" data-i18n="nav.video_manager">
+                    <i class="fas fa-video" aria-hidden="true"></i> Video Manager
+                </a>
+                <a href="pages.html" class="nav-item" data-i18n="nav.pages">
+                    <i class="fas fa-file-alt" aria-hidden="true"></i> Pages & Text
+                </a>
+                <a href="page-images.html" class="nav-item" data-i18n="nav.page_images">
+                    <i class="fas fa-image" aria-hidden="true"></i> Page Images
+                </a>
+                <a href="collections.html" class="nav-item" data-i18n="nav.collections">
+                    <i class="fas fa-layer-group" aria-hidden="true"></i> Page Collections
+                </a>
+                <a href="products.html" class="nav-item active" data-i18n="nav.products">
+                    <i class="fas fa-boxes" aria-hidden="true"></i> Industry Products
+                </a>
+                <a href="testimonials.html" class="nav-item" data-i18n="nav.testimonials">
+                    <i class="fas fa-quote-right" aria-hidden="true"></i> Testimonials
+                </a>
+                <a href="media.html" class="nav-item" data-i18n="nav.media">
+                    <i class="fas fa-images" aria-hidden="true"></i> Media Library
+                </a>
+                <a href="blog.html" class="nav-item" data-i18n="nav.blog">
+                    <i class="fas fa-blog" aria-hidden="true"></i> Articles
+                </a>
+                <a href="news.html" class="nav-item" data-i18n="nav.news">
+                    <i class="fas fa-newspaper" aria-hidden="true"></i> News
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.system">System</div>
+                <a href="users.html" class="nav-item" data-i18n="nav.users">
+                    <i class="fas fa-users" aria-hidden="true"></i> User Management
+                </a>
+                <a href="blocklist.html" class="nav-item" data-i18n="nav.blocklist">
+                    <i class="fas fa-ban" aria-hidden="true"></i> IP Blocklist
+                </a>
+                <a href="activity-log.html" class="nav-item" data-i18n="nav.activity_log">
+                    <i class="fas fa-history" aria-hidden="true"></i> Activity Log
+                </a>
+                <a href="settings.html" class="nav-item" data-i18n="nav.settings">
+                    <i class="fas fa-cog" aria-hidden="true"></i> Settings
+                </a>
+                <a href="change-password.html" class="nav-item" data-i18n="nav.change_password">
+                    <i class="fas fa-key" aria-hidden="true"></i> Change Password
+                </a>
+            </div>
+            <div class="nav-section">
+                <a href="../index.html" class="nav-item" target="_blank" data-i18n="nav.view_website">
+                    <i class="fas fa-external-link-alt" aria-hidden="true"></i> View Website
+                </a>
+                <a href="#" class="nav-item" onclick="AdminCore.logout()" data-i18n="nav.logout">
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <header class="admin-header">
+            <div class="header-left">
+                <h1><i class="fas fa-boxes" aria-hidden="true" style="margin-right: 10px; color: #0052CC;"></i> <span data-i18n="page.products">Industry Products</span></h1>
+                <p style="margin: 5px 0 0; color: #666; font-size: 0.9rem;">Manage products displayed on industry pages</p>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-primary" onclick="openAddModal()">
+                    <i class="fas fa-plus" aria-hidden="true"></i> Add Product
+                </button>
+            </div>
+        </header>
+
+        <div class="admin-content">
+            <div style="background: #eff6ff; border-left: 4px solid #0052CC; padding: 15px 20px; border-radius: 8px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong style="color: #1e40af;"><i class="fas fa-info-circle" aria-hidden="true"></i> Product Categories</strong>
+                    <p style="margin: 5px 0 0; color: #475569; font-size: 0.9rem;">
+                        Industry tabs below correspond to product categories. To add, rename, or remove categories,
+                        manage them in the Categories admin.
+                    </p>
+                </div>
+                <a href="categories.html" class="btn btn-outline" style="white-space: nowrap;">
+                    <i class="fas fa-folder-open" aria-hidden="true"></i> Manage Categories
+                </a>
+            </div>
+            <div id="alert-container"></div>
+
+            <!-- Stats Bar -->
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="number" id="total-products">0</div>
+                    <div class="label">Total Products</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="total-industries">6</div>
+                    <div class="label">Industries</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="featured-count">0</div>
+                    <div class="label">Featured</div>
+                </div>
+            </div>
+
+            <!-- Industry Tabs -->
+            <div class="industry-tabs">
+                <button class="industry-tab active" data-industry="aerospace" onclick="switchIndustry('aerospace')">
+                    <i class="fas fa-plane" aria-hidden="true"></i> Aerospace <span class="count" id="count-aerospace">0</span>
+                </button>
+                <button class="industry-tab" data-industry="liquid-cooling" onclick="switchIndustry('liquid-cooling')">
+                    <i class="fas fa-temperature-low" aria-hidden="true"></i> Liquid Cooling <span class="count" id="count-liquid-cooling">0</span>
+                </button>
+                <button class="industry-tab" data-industry="medical" onclick="switchIndustry('medical')">
+                    <i class="fas fa-heartbeat" aria-hidden="true"></i> Medical <span class="count" id="count-medical">0</span>
+                </button>
+                <button class="industry-tab" data-industry="electronics" onclick="switchIndustry('electronics')">
+                    <i class="fas fa-microchip" aria-hidden="true"></i> Electronics <span class="count" id="count-electronics">0</span>
+                </button>
+                <button class="industry-tab" data-industry="robotics" onclick="switchIndustry('robotics')">
+                    <i class="fas fa-robot" aria-hidden="true"></i> Robotics <span class="count" id="count-robotics">0</span>
+                </button>
+                <button class="industry-tab" data-industry="industrial" onclick="switchIndustry('industrial')">
+                    <i class="fas fa-industry" aria-hidden="true"></i> Industrial <span class="count" id="count-industrial">0</span>
+                </button>
+            </div>
+
+            <!-- Products Grid for Each Industry -->
+            <div id="products-container">
+                <!-- Aerospace -->
+                <div class="industry-content active" id="content-aerospace">
+                    <div class="products-grid" id="grid-aerospace">
+                        <div class="add-product-card" onclick="openAddModal('aerospace')">
+                            <i class="fas fa-plus-circle" aria-hidden="true"></i>
+                            <span>Add Aerospace Product</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Liquid Cooling -->
+                <div class="industry-content" id="content-liquid-cooling">
+                    <div class="products-grid" id="grid-liquid-cooling">
+                        <div class="add-product-card" onclick="openAddModal('liquid-cooling')">
+                            <i class="fas fa-plus-circle" aria-hidden="true"></i>
+                            <span>Add Liquid Cooling Product</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medical -->
+                <div class="industry-content" id="content-medical">
+                    <div class="products-grid" id="grid-medical">
+                        <div class="add-product-card" onclick="openAddModal('medical')">
+                            <i class="fas fa-plus-circle" aria-hidden="true"></i>
+                            <span>Add Medical Product</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Electronics -->
+                <div class="industry-content" id="content-electronics">
+                    <div class="products-grid" id="grid-electronics">
+                        <div class="add-product-card" onclick="openAddModal('electronics')">
+                            <i class="fas fa-plus-circle" aria-hidden="true"></i>
+                            <span>Add Electronics Product</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Robotics -->
+                <div class="industry-content" id="content-robotics">
+                    <div class="products-grid" id="grid-robotics">
+                        <div class="add-product-card" onclick="openAddModal('robotics')">
+                            <i class="fas fa-plus-circle" aria-hidden="true"></i>
+                            <span>Add Robotics Product</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Industrial -->
+                <div class="industry-content" id="content-industrial">
+                    <div class="products-grid" id="grid-industrial">
+                        <div class="add-product-card" onclick="openAddModal('industrial')">
+                            <i class="fas fa-plus-circle" aria-hidden="true"></i>
+                            <span>Add Industrial Product</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add/Edit Product Modal -->
+    <div class="modal" id="product-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Add New Product</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="product-form">
+                    <input type="hidden" id="product-id">
+                    
+                    <!-- Image Upload -->
+                    <img src="" alt="Preview" class="image-preview" id="image-preview">
+                    <div class="image-upload-zone" onclick="document.getElementById('product-image-input').click()">
+                        <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
+                        <p>Click to upload product image</p>
+                        <p style="font-size: 0.8rem; color: #9ca3af;">PNG, JPG, WebP up to 5MB</p>
+                    </div>
+                    <input type="file" id="product-image-input" accept="image/*" style="display: none;" onchange="handleImageUpload(this)">
+                    
+                    <div class="form-group">
+                        <label class="form-label">Or Enter Image URL</label>
+                        <input type="url" class="form-control" id="product-image-url" placeholder="https://example.com/image.jpg" onchange="previewImageUrl(this.value)">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Product Name *</label>
+                            <input type="text" class="form-control" id="product-name" required placeholder="e.g., Turbine Blade">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Industry *</label>
+                            <select class="form-control" id="product-industry" required>
+                                <option value="aerospace">Aerospace</option>
+                                <option value="liquid-cooling">Liquid Cooling</option>
+                                <option value="medical">Medical</option>
+                                <option value="electronics">Electronics</option>
+                                <option value="robotics">Robotics</option>
+                                <option value="industrial">Industrial</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" id="product-description" rows="3" placeholder="Brief description of the product..."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Material</label>
+                            <input type="text" class="form-control" id="product-material" placeholder="e.g., Aluminum 7075-T6">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Tolerance</label>
+                            <input type="text" class="form-control" id="product-tolerance" placeholder="e.g., ±0.01mm">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Surface Finish</label>
+                            <input type="text" class="form-control" id="product-finish" placeholder="e.g., Anodized">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Process</label>
+                            <input type="text" class="form-control" id="product-process" placeholder="e.g., 5-Axis CNC">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" id="product-featured" style="width: 18px; height: 18px;">
+                            <span>Featured Product (shown prominently on website)</span>
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveProduct()">
+                    <i class="fas fa-save" aria-hidden="true"></i> Save Product
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/cms-sync.js?v=20260609c"></script>
+    <script src="js/admin-core.js?v=20260609c"></script>
+    <script>
+        // Products data storage
+        let products = [];
+        let currentIndustry = 'aerospace';
+        let editingProductId = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async function() {
+            if (window.WFX_CMS_SYNC && window.WFX_CMS_SYNC.pullAll) {
+                try { await window.WFX_CMS_SYNC.pullAll(); } catch (e) {}
+            }
+            loadProducts();
+            updateStats();
+            renderAllProducts();
+        });
+
+        // Load products from localStorage
+        function loadProducts() {
+            const stored = localStorage.getItem('wfx_industry_products');
+            if (stored) {
+                products = JSON.parse(stored);
+                products.forEach(product => {
+                    if (product.industry === 'automotive') product.industry = 'liquid-cooling';
+                    if (!product.image && product.image_url) product.image = product.image_url;
+                });
+            } else {
+                // Initialize with some sample products
+                products = [
+                    {
+                        id: 1,
+                        name: 'Turbine Blade',
+                        industry: 'aerospace',
+                        description: 'High-precision turbine blade for jet engines with complex airfoil geometry.',
+                        material: 'Titanium Ti-6Al-4V',
+                        tolerance: '±0.005mm',
+                        finish: 'Polished',
+                        process: '5-Axis CNC',
+                        image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=300&fit=crop',
+                        featured: true
+                    },
+                    {
+                        id: 2,
+                        name: 'Liquid Cold Plate',
+                        industry: 'liquid-cooling',
+                        description: 'High-performance liquid cooling plate for EV battery thermal management.',
+                        material: 'Aluminum 6061-T6',
+                        tolerance: '±0.02mm',
+                        finish: 'Nickel Plated',
+                        process: 'CNC Milling',
+                        image: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400&h=300&fit=crop',
+                        featured: true
+                    },
+                    {
+                        id: 3,
+                        name: 'Surgical Instrument',
+                        industry: 'medical',
+                        description: 'Precision surgical instrument with biocompatible surface finish.',
+                        material: 'Stainless Steel 316L',
+                        tolerance: '±0.01mm',
+                        finish: 'Electropolished',
+                        process: 'Swiss Turning',
+                        image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop',
+                        featured: false
+                    },
+                    {
+                        id: 4,
+                        name: 'Heat Sink Assembly',
+                        industry: 'electronics',
+                        description: 'Custom heat sink for high-power electronics cooling applications.',
+                        material: 'Aluminum 6063-T5',
+                        tolerance: '±0.05mm',
+                        finish: 'Black Anodized',
+                        process: 'CNC Milling',
+                        image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop',
+                        featured: true
+                    },
+                    {
+                        id: 5,
+                        name: 'Robot Joint Housing',
+                        industry: 'robotics',
+                        description: 'Precision housing for robotic arm joint with integrated bearing seats.',
+                        material: 'Aluminum 7075-T6',
+                        tolerance: '±0.01mm',
+                        finish: 'Hard Anodized',
+                        process: '5-Axis CNC',
+                        image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&h=300&fit=crop',
+                        featured: false
+                    },
+                    {
+                        id: 6,
+                        name: 'Hydraulic Manifold',
+                        industry: 'industrial',
+                        description: 'Complex hydraulic manifold block with internal flow channels.',
+                        material: 'Steel 4140',
+                        tolerance: '±0.02mm',
+                        finish: 'Zinc Plated',
+                        process: 'CNC Milling',
+                        image: 'https://images.unsplash.com/photo-1581091226817-a6a2a5aee158?w=400&h=300&fit=crop',
+                        featured: false
+                    }
+                ];
+                saveProducts();
+            }
+        }
+
+        // Save products to localStorage
+        function saveProducts() {
+            localStorage.setItem('wfx_industry_products', JSON.stringify(products));
+        }
+
+        // Update statistics
+        function updateStats() {
+            document.getElementById('total-products').textContent = products.length;
+            document.getElementById('featured-count').textContent = products.filter(p => p.featured).length;
+
+            // Update counts per industry
+            const industries = ['aerospace', 'liquid-cooling', 'medical', 'electronics', 'robotics', 'industrial'];
+            industries.forEach(ind => {
+                const count = products.filter(p => p.industry === ind).length;
+                document.getElementById('count-' + ind).textContent = count;
+            });
+        }
+
+        // Switch industry tab
+        function switchIndustry(industry) {
+            currentIndustry = industry;
+            
+            // Update tabs
+            document.querySelectorAll('.industry-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.industry === industry);
+            });
+
+            // Update content
+            document.querySelectorAll('.industry-content').forEach(content => {
+                content.classList.toggle('active', content.id === 'content-' + industry);
+            });
+        }
+
+        // Render all products
+        function renderAllProducts() {
+            const industries = ['aerospace', 'liquid-cooling', 'medical', 'electronics', 'robotics', 'industrial'];
+            
+            industries.forEach(industry => {
+                const grid = document.getElementById('grid-' + industry);
+                const industryProducts = products.filter(p => p.industry === industry);
+                
+                // Clear existing products (keep add button)
+                const addButton = grid.querySelector('.add-product-card');
+                grid.innerHTML = '';
+                
+                // Add product cards
+                industryProducts.forEach(product => {
+                    grid.appendChild(createProductCard(product));
+                });
+                
+                // Re-add the add button at the end
+                grid.appendChild(addButton.cloneNode(true));
+            });
+
+            // Re-attach click handlers to add buttons
+            document.querySelectorAll('.add-product-card').forEach(btn => {
+                btn.onclick = function() {
+                    const industry = this.closest('.industry-content').id.replace('content-', '');
+                    openAddModal(industry);
+                };
+            });
+
+            updateStats();
+        }
+
+        // Create product card HTML
+        function createProductCard(product) {
+            const card = document.createElement('div');
+            card.className = 'product-card-wrapper';
+            card.innerHTML = `
+                <div class="product-card">
+                    ${product.featured ? '<span class="featured-badge"><i class="fas fa-star" aria-hidden="true"></i> Featured</span>' : ''}
+                    <img src="${product.image || product.image_url || 'https://via.placeholder.com/400x300?text=No+Image'}" alt="${product.name}" class="product-image">
+                    <div class="product-info">
+                        <h4>${product.name}</h4>
+                        <p>${product.description || 'No description'}</p>
+                        <div class="product-meta">
+                            ${product.material ? `<span class="product-tag">${product.material}</span>` : ''}
+                            ${product.process ? `<span class="product-tag">${product.process}</span>` : ''}
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-outline" onclick="editProduct(${product.id})">
+                                <i class="fas fa-edit" aria-hidden="true"></i> Edit
+                            </button>
+                            <button class="btn btn-outline" style="color: #dc2626; border-color: #dc2626;" onclick="deleteProduct(${product.id})">
+                                <i class="fas fa-trash" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        // Open add modal
+        function openAddModal(industry) {
+            editingProductId = null;
+            document.getElementById('modal-title').textContent = 'Add New Product';
+            document.getElementById('product-form').reset();
+            document.getElementById('product-industry').value = industry || currentIndustry;
+            document.getElementById('image-preview').classList.remove('show');
+            document.getElementById('product-modal').classList.add('active');
+        }
+
+        // Edit product
+        function editProduct(id) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+
+            editingProductId = id;
+            document.getElementById('modal-title').textContent = 'Edit Product';
+            document.getElementById('product-name').value = product.name;
+            document.getElementById('product-industry').value = product.industry;
+            document.getElementById('product-description').value = product.description || '';
+            document.getElementById('product-material').value = product.material || '';
+            document.getElementById('product-tolerance').value = product.tolerance || '';
+            document.getElementById('product-finish').value = product.finish || '';
+            document.getElementById('product-process').value = product.process || '';
+            document.getElementById('product-featured').checked = product.featured;
+            document.getElementById('product-image-url').value = product.image || product.image_url || '';
+            
+            if (product.image || product.image_url) {
+                document.getElementById('image-preview').src = product.image || product.image_url;
+                document.getElementById('image-preview').classList.add('show');
+            } else {
+                document.getElementById('image-preview').classList.remove('show');
+            }
+
+            document.getElementById('product-modal').classList.add('active');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('product-modal').classList.remove('active');
+            editingProductId = null;
+        }
+
+        // Handle image upload
+        async function handleImageUpload(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                if (file.size > 5 * 1024 * 1024) {
+                    showAlert('error', 'File size exceeds 5MB limit');
+                    return;
+                }
+
+                const form = new FormData();
+                form.append('file', file);
+                form.append('folder', 'products/' + (document.getElementById('product-industry').value || currentIndustry));
+                try {
+                    const csrf = window.WFX_CSRF_TOKEN || localStorage.getItem('wfx_csrf_token') || '';
+                    const response = await fetch('/api/media', {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: { 'X-CSRF-Token': csrf },
+                        body: form
+                    });
+                    const result = await response.json().catch(() => ({}));
+                    if (!response.ok || !result.ok) throw new Error(result.error || 'Upload failed');
+                    document.getElementById('image-preview').src = result.url;
+                    document.getElementById('image-preview').classList.add('show');
+                    document.getElementById('product-image-url').value = result.url;
+                } catch (error) {
+                    showAlert('error', error.message);
+                }
+            }
+        }
+
+        // Preview image URL
+        function previewImageUrl(url) {
+            if (url) {
+                document.getElementById('image-preview').src = url;
+                document.getElementById('image-preview').classList.add('show');
+            } else {
+                document.getElementById('image-preview').classList.remove('show');
+            }
+        }
+
+        // Save product
+        function saveProduct() {
+            const name = document.getElementById('product-name').value.trim();
+            const industry = document.getElementById('product-industry').value;
+            
+            if (!name) {
+                showAlert('error', 'Product name is required');
+                return;
+            }
+
+            const productData = {
+                name: name,
+                industry: industry,
+                description: document.getElementById('product-description').value.trim(),
+                material: document.getElementById('product-material').value.trim(),
+                tolerance: document.getElementById('product-tolerance').value.trim(),
+                finish: document.getElementById('product-finish').value.trim(),
+                process: document.getElementById('product-process').value.trim(),
+                featured: document.getElementById('product-featured').checked,
+                image: document.getElementById('product-image-url').value.trim()
+            };
+
+            if (editingProductId) {
+                // Update existing product
+                const index = products.findIndex(p => p.id === editingProductId);
+                if (index !== -1) {
+                    products[index] = { ...products[index], ...productData };
+                }
+                showAlert('success', 'Product updated successfully!');
+            } else {
+                // Add new product
+                productData.id = Date.now();
+                products.push(productData);
+                showAlert('success', 'Product added successfully!');
+            }
+
+            saveProducts();
+            renderAllProducts();
+            closeModal();
+
+            // Log activity
+            if (typeof AdminCore !== 'undefined' && AdminCore.logActivity) {
+                AdminCore.logActivity('Product ' + (editingProductId ? 'Updated' : 'Added'), productData.name);
+            }
+        }
+
+        // Delete product
+        function deleteProduct(id) {
+            if (!confirm('Are you sure you want to delete this product?')) return;
+
+            products = products.filter(p => p.id !== id);
+            saveProducts();
+            renderAllProducts();
+            showAlert('success', 'Product deleted successfully!');
+
+            if (typeof AdminCore !== 'undefined' && AdminCore.logActivity) {
+                AdminCore.logActivity('Product Deleted', 'ID: ' + id);
+            }
+        }
+
+        // Show alert
+        function showAlert(type, message) {
+            const container = document.getElementById('alert-container');
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-' + type;
+            alert.innerHTML = '<i class="fas fa-' + (type === 'success' ? 'check-circle' : 'exclamation-circle') + '" aria-hidden="true"></i> ' + message;
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

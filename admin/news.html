@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/apple-touch-icon.png">
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Management | WFX Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../images/logo.png" alt="WFX">
+            <h2 data-i18n="nav.panel_title">Admin Panel</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.main">Main</div>
+                <a href="dashboard.html" class="nav-item" data-i18n="nav.dashboard">
+                    <i class="fas fa-home" aria-hidden="true"></i> Dashboard
+                </a>
+                <a href="quotes.html" class="nav-item" data-i18n="nav.quotes">
+                    <i class="fas fa-file-invoice-dollar" aria-hidden="true"></i> Quotes
+                </a>
+                <a href="requests.html" class="nav-item" data-i18n="nav.requests">
+                    <i class="fas fa-inbox" aria-hidden="true"></i> Requests
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.content">Content Management</div>
+                <a href="videos.html" class="nav-item" data-i18n="nav.video_manager">
+                    <i class="fas fa-video" aria-hidden="true"></i> Video Manager
+                </a>
+                <a href="pages.html" class="nav-item" data-i18n="nav.pages">
+                    <i class="fas fa-file-alt" aria-hidden="true"></i> Pages & Text
+                </a>
+                <a href="page-images.html" class="nav-item" data-i18n="nav.page_images">
+                    <i class="fas fa-image" aria-hidden="true"></i> Page Images
+                </a>
+                <a href="collections.html" class="nav-item" data-i18n="nav.collections">
+                    <i class="fas fa-layer-group" aria-hidden="true"></i> Page Collections
+                </a>
+                <a href="products.html" class="nav-item" data-i18n="nav.products">
+                    <i class="fas fa-boxes" aria-hidden="true"></i> Industry Products
+                </a>
+                <a href="testimonials.html" class="nav-item" data-i18n="nav.testimonials">
+                    <i class="fas fa-quote-right" aria-hidden="true"></i> Testimonials
+                </a>
+                <a href="categories.html" class="nav-item" data-i18n="nav.categories">
+                    <i class="fas fa-folder-open" aria-hidden="true"></i> Categories
+                </a>
+                <a href="media.html" class="nav-item" data-i18n="nav.media">
+                    <i class="fas fa-images" aria-hidden="true"></i> Media Library
+                </a>
+                <a href="blog.html" class="nav-item" data-i18n="nav.blog">
+                    <i class="fas fa-blog" aria-hidden="true"></i> Articles
+                </a>
+                <a href="news.html" class="nav-item active" data-i18n="nav.news">
+                    <i class="fas fa-newspaper" aria-hidden="true"></i> News
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.system">System</div>
+                <a href="users.html" class="nav-item" data-i18n="nav.users">
+                    <i class="fas fa-users" aria-hidden="true"></i> User Management
+                </a>
+                <a href="blocklist.html" class="nav-item" data-i18n="nav.blocklist">
+                    <i class="fas fa-ban" aria-hidden="true"></i> IP Blocklist
+                </a>
+                <a href="activity-log.html" class="nav-item" data-i18n="nav.activity_log">
+                    <i class="fas fa-history" aria-hidden="true"></i> Activity Log
+                </a>
+                <a href="settings.html" class="nav-item" data-i18n="nav.settings">
+                    <i class="fas fa-cog" aria-hidden="true"></i> Settings
+                </a>
+                <a href="change-password.html" class="nav-item" data-i18n="nav.change_password">
+                    <i class="fas fa-key" aria-hidden="true"></i> Change Password
+                </a>
+            </div>
+            <div class="nav-section">
+                <a href="../index.html" class="nav-item" target="_blank" data-i18n="nav.view_website">
+                    <i class="fas fa-external-link-alt" aria-hidden="true"></i> View Website
+                </a>
+                <a href="#" class="nav-item" onclick="AdminCore.logout()" data-i18n="nav.logout">
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <header class="admin-header">
+            <div class="header-left">
+                <h1><span data-i18n="page.news">News Management</span></h1>
+            </div>
+            <div class="header-right">
+                <div class="user-menu">
+                    <div class="user-avatar" id="user-avatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="user-name">Admin</div>
+                        <div class="user-role" id="user-role">Administrator</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="admin-content">
+            <div id="alert-container"></div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <div class="search-box">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                    <input type="text" id="search-news" placeholder="Search news...">
+                </div>
+                <button class="btn btn-outline" onclick="WFXMarkdownImporter.downloadTemplate()" title="Download the standard Markdown article template">
+                    <i class="fas fa-download" aria-hidden="true"></i> Template
+                </button>
+                <button class="btn btn-outline" onclick="openBatchUpload()" title="Upload multiple Markdown files at once">
+                    <i class="fas fa-layer-group" aria-hidden="true"></i> Batch Upload
+                </button>
+                <button class="btn btn-primary" onclick="openNewsModal()">
+                    <i class="fas fa-plus" aria-hidden="true"></i> Add News Article
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-newspaper" aria-hidden="true"></i> All News Articles</h3>
+                    <span id="news-count">0 articles</span>
+                </div>
+                <div class="card-body" style="padding: 0;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Author</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="news-table">
+                            <tr><td colspan="6" style="text-align: center; padding: 40px;">No news yet. Add your first article!</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- News Modal -->
+    <div class="modal-overlay" id="news-modal">
+        <div class="modal" style="max-width: 900px;">
+            <div class="modal-header">
+                <h3 id="modal-title">Add News Article</h3>
+                <button class="modal-close" onclick="closeNewsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="news-form">
+                    <input type="hidden" id="news-id">
+                    
+                    <div class="form-group">
+                        <label class="form-label">Title *</label>
+                        <input type="text" class="form-control" id="news-title" required placeholder="Enter news title">
+                    </div>
+                    
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <select class="form-control" id="news-category">
+                                <!-- Options populated dynamically from Categories admin -->
+                            </select>
+                            <small style="color: var(--gray); font-size: 0.85rem;">
+                                Manage categories in <a href="categories.html" style="color: var(--primary);">Categories</a>
+                            </small>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Status</label>
+                            <select class="form-control" id="news-status">
+                                <option value="draft">Draft</option>
+                                <option value="published">Published</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                            <input type="checkbox" id="news-pinned" style="width:auto; margin:0;">
+                            <span><i class="fas fa-thumbtack" aria-hidden="true"></i> Pin to top and feature in the homepage "What's New" section</span>
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Excerpt</label>
+                        <textarea class="form-control" id="news-excerpt" rows="2" placeholder="Brief summary of the news"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Content (Markdown supported) *</label>
+                        <div style="margin-bottom: 8px; font-size: 0.85rem; color: var(--gray);">
+                            <i class="fas fa-info-circle" aria-hidden="true"></i>
+                            Use the toolbar OR write Markdown directly (# heading, **bold**, [link](url), etc.). Toggle source view for raw markdown.
+                        </div>
+                        <textarea class="form-control" id="news-content" rows="20" placeholder="Write your article content here. Markdown syntax is supported."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Featured Image URL</label>
+                        <input type="url" class="form-control" id="news-image" placeholder="https://example.com/image.jpg">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeNewsModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveNews()">Save Article</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="modal-overlay" id="delete-modal">
+        <div class="modal" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Delete Article</h3>
+                <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete "<strong id="delete-title"></strong>"?</p>
+                <p style="color: var(--admin-danger); margin-top: 10px;">This action cannot be undone.</p>
+                <input type="hidden" id="delete-news-id">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/cms-sync.js?v=20260609c"></script>
+    <script src="js/admin-core.js?v=20260609c"></script>
+    <script src="js/markdown-editor.js?v=20260609c"></script>
+    <script src="js/markdown-importer.js"></script>
+    <script>
+        if (!AdminCore.checkAuth()) {
+            window.location.href = 'index.html';
+        }
+
+        const currentUser = AdminCore.getCurrentUser();
+        if (currentUser) {
+            document.getElementById('user-name').textContent = currentUser.name || currentUser.username;
+            document.getElementById('user-role').textContent = currentUser.role === 'super_admin' ? 'Super Admin' : 'Editor';
+            document.getElementById('user-avatar').textContent = (currentUser.name || currentUser.username).charAt(0).toUpperCase();
+        }
+
+        function categoryLabel(value) {
+            try {
+                const categories = JSON.parse(localStorage.getItem('wfx_categories') || '{}').news || [];
+                const match = categories.find(category => category.slug === value || category.name === value);
+                return match ? match.name : value;
+            } catch (e) {
+                return value;
+            }
+        }
+
+        function loadNews() {
+            const news = AdminCore.getNews();
+            // Pinned articles first, then newest
+            news.sort((a, b) => {
+                if (!!b.is_pinned !== !!a.is_pinned) return (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0);
+                return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+            });
+            const tbody = document.getElementById('news-table');
+            document.getElementById('news-count').textContent = `${news.length} articles`;
+            
+            if (news.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px;">No news yet. Add your first article!</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = news.map(item => `
+                <tr>
+                    <td>
+                        ${item.is_pinned ? '<i class="fas fa-thumbtack" style="color:#0284c7; margin-right:6px;" title="Pinned"></i>' : ''}<strong>${item.title}</strong>
+                        ${item.excerpt ? `<div style="font-size: 0.85rem; color: var(--admin-gray); margin-top: 5px;">${item.excerpt.substring(0, 60)}...</div>` : ''}
+                    </td>
+                    <td>${categoryLabel(item.category) || '-'}</td>
+                    <td>${item.author}</td>
+                    <td><span class="status-badge status-${item.status}">${item.status}</span></td>
+                    <td>${AdminCore.formatDate(item.createdAt)}</td>
+                    <td>
+                        <div style="display: flex; gap: 5px;">
+                            <button class="btn btn-sm btn-secondary btn-icon" onclick="editNews(${item.id})" title="Edit">
+                                <i class="fas fa-edit" aria-hidden="true"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger btn-icon" onclick="deleteNews(${item.id}, '${item.title.replace(/'/g, "\\'")}')" title="Delete">
+                                <i class="fas fa-trash" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        // Pull fresh server-side data first, then render
+        (async function() {
+            if (window.WFX_CMS_SYNC && window.WFX_CMS_SYNC.pullAll) {
+                try { await window.WFX_CMS_SYNC.pullAll(); } catch (e) {}
+            }
+            loadNews();
+        })();
+
+        // Load categories dynamically from the Categories admin page
+        function loadNewsCategoriesIntoDropdown() {
+            const select = document.getElementById('news-category');
+            if (!select) return;
+
+            let cats = [];
+            try {
+                const stored = JSON.parse(localStorage.getItem('wfx_categories') || '{}');
+                cats = stored.news || [];
+            } catch (e) {}
+
+            // Fallback if categories haven't been initialized yet
+            if (cats.length === 0) {
+                cats = [
+                    { name: 'CNC Processes & Machines',    slug: 'cnc-processes' },
+                    { name: 'Materials Knowledge Hub',     slug: 'materials' },
+                    { name: 'Engineering Drawings & DFM',  slug: 'drawings-dfm' },
+                    { name: 'Surface Finishing',           slug: 'surface-finishing' },
+                    { name: 'Related Processes & Quality', slug: 'related-processes' }
+                ];
+            }
+
+            const currentValue = select.value;
+            // Use DOM construction (XSS-safe) instead of template-literal innerHTML
+            select.textContent = '';
+            cats.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.slug;
+                opt.textContent = c.name;
+                select.appendChild(opt);
+            });
+            if (currentValue) select.value = currentValue;
+        }
+        loadNewsCategoriesIntoDropdown();
+
+        document.getElementById('search-news').addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const news = AdminCore.getNews();
+            const filtered = news.filter(n => 
+                n.title.toLowerCase().includes(query) ||
+                (n.content && n.content.toLowerCase().includes(query))
+            );
+            
+            const tbody = document.getElementById('news-table');
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px;">No news found</td></tr>';
+            } else {
+                tbody.innerHTML = filtered.map(item => `
+                    <tr>
+                        <td><strong>${item.title}</strong></td>
+                        <td>${categoryLabel(item.category) || '-'}</td>
+                        <td>${item.author}</td>
+                        <td><span class="status-badge status-${item.status}">${item.status}</span></td>
+                        <td>${AdminCore.formatDate(item.createdAt)}</td>
+                        <td>
+                            <div style="display: flex; gap: 5px;">
+                                <button class="btn btn-sm btn-secondary btn-icon" onclick="editNews(${item.id})"><i class="fas fa-edit" aria-hidden="true"></i></button>
+                                <button class="btn btn-sm btn-danger btn-icon" onclick="deleteNews(${item.id}, '${item.title.replace(/'/g, "\\'")}')"><i class="fas fa-trash" aria-hidden="true"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        });
+
+        // Initialize TinyMCE Markdown editor on page load
+        let mdEditor = null;
+        (async function() {
+            try {
+                mdEditor = await WFXMarkdownEditor.init('#news-content');
+            } catch (e) {
+                console.warn('TinyMCE failed to load (will use plain textarea):', e.message);
+            }
+        })();
+
+        // Legacy: keep formatText for any contenteditable spots that might still exist
+        function formatText(command, value = null) {
+            if (command === 'createLink') {
+                value = prompt('Enter URL:');
+                if (!value) return;
+            }
+            document.execCommand(command, false, value);
+        }
+
+        // Batch upload Markdown files → create multiple news articles at once
+        function openBatchUpload() {
+            if (!window.WFXMarkdownImporter) {
+                showAlert('Markdown importer not loaded', 'danger');
+                return;
+            }
+            WFXMarkdownImporter.openBatchUpload(
+                function(newsData) {
+                    return AdminCore.addNews(newsData);
+                },
+                { kind: 'news', onComplete: loadNews }
+            );
+        }
+
+        function openNewsModal() {
+            document.getElementById('modal-title').textContent = 'Add News Article';
+            document.getElementById('news-form').reset();
+            document.getElementById('news-id').value = '';
+            if (mdEditor) {
+                mdEditor.clear();
+            } else {
+                document.getElementById('news-content').value = '';
+            }
+            // Attach markdown-file importer (idempotent — only injects once)
+            if (window.WFXMarkdownImporter) {
+                const form = document.getElementById('news-form');
+                WFXMarkdownImporter.attachUploadButton(form, {
+                    title:    'news-title',
+                    category: 'news-category',
+                    excerpt:  'news-excerpt',
+                    cover:    'news-image',
+                    status:   'news-status',
+                    content:  'news-content'
+                });
+            }
+            document.getElementById('news-modal').classList.add('active');
+        }
+
+        function editNews(newsId) {
+            const news = AdminCore.getNews();
+            const item = news.find(n => n.id === newsId);
+
+            if (item) {
+                document.getElementById('modal-title').textContent = 'Edit News Article';
+                document.getElementById('news-id').value = item.id;
+                document.getElementById('news-title').value = item.title;
+                document.getElementById('news-category').value = item.category || '';
+                document.getElementById('news-status').value = item.status;
+                document.getElementById('news-pinned').checked = !!(item.is_pinned);
+                document.getElementById('news-excerpt').value = item.excerpt || '';
+                // Content is now stored as Markdown — load it into the editor
+                if (mdEditor) {
+                    mdEditor.setMarkdown(item.content || '');
+                } else {
+                    document.getElementById('news-content').value = item.content || '';
+                }
+                document.getElementById('news-image').value = item.featuredImage || '';
+                document.getElementById('news-modal').classList.add('active');
+            }
+        }
+
+        function closeNewsModal() {
+            document.getElementById('news-modal').classList.remove('active');
+        }
+
+        function saveNews() {
+            const newsId = document.getElementById('news-id').value;
+            // Always store as Markdown — clean, portable, version-controllable
+            const contentMd = mdEditor
+                ? mdEditor.getMarkdown()
+                : document.getElementById('news-content').value;
+            const newsData = {
+                title: document.getElementById('news-title').value,
+                category: document.getElementById('news-category').value,
+                status: document.getElementById('news-status').value,
+                excerpt: document.getElementById('news-excerpt').value,
+                content: contentMd,
+                content_format: 'markdown',  // Hint for renderers
+                featuredImage: document.getElementById('news-image').value,
+                is_pinned: document.getElementById('news-pinned').checked
+            };
+            
+            if (!newsData.title) {
+                showAlert('Title is required', 'danger');
+                return;
+            }
+            
+            let result;
+            if (newsId) {
+                result = AdminCore.updateNews(parseInt(newsId), newsData);
+            } else {
+                result = AdminCore.addNews(newsData);
+            }
+            
+            if (result.success) {
+                showAlert(newsId ? 'Article updated successfully' : 'Article created successfully', 'success');
+                closeNewsModal();
+                loadNews();
+            }
+        }
+
+        function deleteNews(newsId, title) {
+            document.getElementById('delete-news-id').value = newsId;
+            document.getElementById('delete-title').textContent = title;
+            document.getElementById('delete-modal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('delete-modal').classList.remove('active');
+        }
+
+        function confirmDelete() {
+            const newsId = parseInt(document.getElementById('delete-news-id').value);
+            AdminCore.deleteNews(newsId);
+            showAlert('Article deleted successfully', 'success');
+            closeDeleteModal();
+            loadNews();
+        }
+
+        function showAlert(message, type) {
+            const container = document.getElementById('alert-container');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}" aria-hidden="true"></i> ${message}`;
+            container.appendChild(alert);
+            setTimeout(() => alert.remove(), 3000);
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('action') === 'new') openNewsModal();
+        if (urlParams.get('edit')) editNews(parseInt(urlParams.get('edit')));
+    </script>
+</body>
+</html>

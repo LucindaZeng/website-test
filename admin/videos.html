@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Manager | WFX Admin</title>
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        .video-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; align-items:start; }
+        .video-card { background:#fff; border:1px solid #e2e8f0; border-radius:14px; overflow:hidden; box-shadow:0 3px 12px rgba(15,23,42,.06); }
+        .video-card-head { min-height:82px; padding:20px 22px; display:flex; justify-content:space-between; gap:16px; align-items:flex-start; border-bottom:1px solid #e2e8f0; }
+        .video-card-head h2 { margin:0 0 5px; font-size:1.15rem; color:#0f172a; }
+        .video-card-head p { margin:0; color:#64748b; font-size:.86rem; line-height:1.45; }
+        .location-badge { flex:none; padding:5px 10px; border-radius:999px; background:#dbeafe; color:#1d4ed8; font-size:.74rem; font-weight:700; }
+        .video-preview { aspect-ratio:16/9; background:#020617; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+        .video-preview video, .video-preview iframe { width:100%; height:100%; border:0; object-fit:contain; }
+        .video-preview-placeholder { color:#94a3b8; text-align:center; }
+        .video-preview-placeholder i { display:block; font-size:2.5rem; margin-bottom:10px; }
+        .video-card-body { padding:22px; }
+        .field { margin-bottom:18px; }
+        .field label { display:block; margin-bottom:7px; color:#334155; font-size:.86rem; font-weight:650; }
+        .field input, .field textarea { width:100%; padding:11px 13px; border:1px solid #cbd5e1; border-radius:8px; font:inherit; }
+        .field small { display:block; margin-top:6px; color:#64748b; line-height:1.4; }
+        .upload-row { display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center; }
+        .upload-row input[type=file] { padding:8px; background:#f8fafc; }
+        .status { min-height:20px; margin-top:7px; font-size:.82rem; color:#64748b; }
+        .text-card { margin-top:24px; }
+        @media (max-width:1000px) { .video-grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+    <aside class="admin-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../images/logo.png" alt="WFX">
+            <h2 data-i18n="nav.panel_title">Admin Panel</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.main">Main</div>
+                <a href="dashboard.html" class="nav-item" data-i18n="nav.dashboard"><i class="fas fa-home" aria-hidden="true"></i> Dashboard</a>
+                <a href="quotes.html" class="nav-item" data-i18n="nav.quotes"><i class="fas fa-file-invoice-dollar" aria-hidden="true"></i> Quotes</a>
+                <a href="requests.html" class="nav-item" data-i18n="nav.requests"><i class="fas fa-inbox" aria-hidden="true"></i> Requests</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.content">Content Management</div>
+                <a href="videos.html" class="nav-item active" data-i18n="nav.video_manager"><i class="fas fa-video" aria-hidden="true"></i> Video Manager</a>
+                <a href="pages.html" class="nav-item" data-i18n="nav.pages"><i class="fas fa-file-alt" aria-hidden="true"></i> Pages &amp; Text</a>
+                <a href="page-images.html" class="nav-item" data-i18n="nav.page_images"><i class="fas fa-image" aria-hidden="true"></i> Page Images</a>
+                <a href="collections.html" class="nav-item" data-i18n="nav.collections"><i class="fas fa-layer-group" aria-hidden="true"></i> Page Collections</a>
+                <a href="products.html" class="nav-item" data-i18n="nav.products"><i class="fas fa-boxes" aria-hidden="true"></i> Industry Products</a>
+                <a href="testimonials.html" class="nav-item" data-i18n="nav.testimonials"><i class="fas fa-quote-right" aria-hidden="true"></i> Testimonials</a>
+                <a href="categories.html" class="nav-item" data-i18n="nav.categories"><i class="fas fa-folder-open" aria-hidden="true"></i> Categories</a>
+                <a href="media.html" class="nav-item" data-i18n="nav.media"><i class="fas fa-images" aria-hidden="true"></i> Media Library</a>
+                <a href="blog.html" class="nav-item" data-i18n="nav.blog"><i class="fas fa-file-lines" aria-hidden="true"></i> Articles</a>
+                <a href="news.html" class="nav-item" data-i18n="nav.news"><i class="fas fa-newspaper" aria-hidden="true"></i> News</a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title" data-i18n="nav.section.system">System</div>
+                <a href="users.html" class="nav-item" data-i18n="nav.users"><i class="fas fa-users" aria-hidden="true"></i> User Management</a>
+                <a href="blocklist.html" class="nav-item" data-i18n="nav.blocklist"><i class="fas fa-ban" aria-hidden="true"></i> IP Blocklist</a>
+                <a href="activity-log.html" class="nav-item" data-i18n="nav.activity_log"><i class="fas fa-history" aria-hidden="true"></i> Activity Log</a>
+                <a href="settings.html" class="nav-item" data-i18n="nav.settings"><i class="fas fa-cog" aria-hidden="true"></i> Settings</a>
+            </div>
+            <div class="nav-section">
+                <a href="../index.html" class="nav-item" target="_blank" data-i18n="nav.view_website"><i class="fas fa-external-link-alt" aria-hidden="true"></i> View Website</a>
+                <a href="#" class="nav-item" onclick="AdminCore.logout()" data-i18n="nav.logout"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout</a>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <div class="header-left">
+                <h1><i class="fas fa-video" aria-hidden="true"></i> <span data-i18n="page.video_manager">Video Manager</span></h1>
+                <p style="margin:5px 0 0;color:#64748b;">Assign videos to their exact website locations.</p>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-primary" id="save-btn"><i class="fas fa-save" aria-hidden="true"></i> Save Video Settings</button>
+            </div>
+        </header>
+
+        <div class="admin-content">
+            <div id="alert-container"></div>
+            <div class="video-grid">
+                <section class="video-card">
+                    <div class="video-card-head">
+                        <div>
+                            <h2><i class="fas fa-film" aria-hidden="true"></i> Hero Background Video</h2>
+                            <p>Muted, looping video behind the homepage headline.</p>
+                        </div>
+                        <span class="location-badge">index.html / Hero</span>
+                    </div>
+                    <div class="video-preview" id="hero-preview"></div>
+                    <div class="video-card-body">
+                        <div class="field">
+                            <label for="hero-url">Video URL or uploaded file</label>
+                            <input id="hero-url" type="text" value="/images/hero-video-optimized.webm">
+                            <small>Use MP4/WebM. The homepage poster remains visible on mobile and reduced-motion devices.</small>
+                        </div>
+                        <div class="field">
+                            <label>Upload replacement</label>
+                            <div class="upload-row">
+                                <input id="hero-file" type="file" accept=".mp4,.webm,.mov,.m4v">
+                                <button class="btn btn-secondary" type="button" data-upload="hero"><i class="fas fa-upload" aria-hidden="true"></i> Upload</button>
+                            </div>
+                            <div class="status" id="hero-status"></div>
+                        </div>
+                        <button class="btn btn-secondary" type="button" data-preview="hero"><i class="fas fa-play" aria-hidden="true"></i> Refresh Preview</button>
+                    </div>
+                </section>
+
+                <section class="video-card">
+                    <div class="video-card-head">
+                        <div>
+                            <h2><i class="fas fa-building" aria-hidden="true"></i> Company Introduction Video</h2>
+                            <p>Video shown in the homepage factory tour section.</p>
+                        </div>
+                        <span class="location-badge">index.html / Company Video</span>
+                    </div>
+                    <div class="video-preview" id="company-preview"></div>
+                    <div class="video-card-body">
+                        <div class="field">
+                            <label for="company-url">YouTube URL or uploaded video</label>
+                            <input id="company-url" type="text" value="https://youtu.be/xOvLkmzvKwc">
+                        </div>
+                        <div class="field">
+                            <label>Upload replacement video</label>
+                            <div class="upload-row">
+                                <input id="company-file" type="file" accept=".mp4,.webm,.mov,.m4v">
+                                <button class="btn btn-secondary" type="button" data-upload="company"><i class="fas fa-upload" aria-hidden="true"></i> Upload</button>
+                            </div>
+                            <div class="status" id="company-status"></div>
+                        </div>
+                        <div class="field">
+                            <label for="poster-url">Poster image</label>
+                            <input id="poster-url" type="text" value="/images/company-video-poster.jpg">
+                        </div>
+                        <div class="field">
+                            <label>Upload poster image</label>
+                            <div class="upload-row">
+                                <input id="poster-file" type="file" accept=".jpg,.jpeg,.png,.webp">
+                                <button class="btn btn-secondary" type="button" data-upload="poster"><i class="fas fa-upload" aria-hidden="true"></i> Upload</button>
+                            </div>
+                            <div class="status" id="poster-status"></div>
+                        </div>
+                        <button class="btn btn-secondary" type="button" data-preview="company"><i class="fas fa-play" aria-hidden="true"></i> Refresh Preview</button>
+                    </div>
+                </section>
+            </div>
+
+            <section class="video-card text-card">
+                <div class="video-card-head">
+                    <div>
+                        <h2><i class="fas fa-align-left" aria-hidden="true"></i> Company Video Text</h2>
+                        <p>Optional heading and description used beside the company video where supported.</p>
+                    </div>
+                </div>
+                <div class="video-card-body" style="display:grid;grid-template-columns:1fr 2fr;gap:20px;">
+                    <div class="field" style="margin:0;">
+                        <label for="video-title">Section title</label>
+                        <input id="video-title" type="text" value="See Our Capabilities">
+                    </div>
+                    <div class="field" style="margin:0;">
+                        <label for="video-description">Section description</label>
+                        <textarea id="video-description" rows="3">Take a virtual tour of our manufacturing facility and production capabilities.</textarea>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="js/cms-sync.js?v=20260609c"></script>
+    <script src="js/admin-core.js?v=20260609c"></script>
+    <script>
+    (function () {
+        if (!AdminCore.checkAuth()) return;
+
+        let pageContent = {};
+        let contentVersion = null;
+
+        function csrf() {
+            return window.WFX_CSRF_TOKEN || localStorage.getItem('wfx_csrf_token') || '';
+        }
+
+        function showAlert(message, type) {
+            const box = document.createElement('div');
+            box.className = 'alert alert-' + (type || 'success');
+            box.textContent = message;
+            document.getElementById('alert-container').appendChild(box);
+            setTimeout(() => box.remove(), 5000);
+        }
+
+        function youtubeEmbed(url) {
+            const match = String(url || '').match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?v=|embed\/))([^?&/]+)/i);
+            return match ? 'https://www.youtube-nocookie.com/embed/' + match[1] + '?rel=0&modestbranding=1' : '';
+        }
+
+        function renderPreview(kind) {
+            const host = document.getElementById(kind + '-preview');
+            const url = document.getElementById(kind + '-url').value.trim();
+            host.innerHTML = '';
+            if (!url) {
+                host.innerHTML = '<div class="video-preview-placeholder"><i class="fas fa-video"></i>No video selected</div>';
+                return;
+            }
+            const embed = youtubeEmbed(url);
+            if (embed) {
+                const frame = document.createElement('iframe');
+                frame.src = embed;
+                frame.title = kind === 'hero' ? 'Hero video preview' : 'Company video preview';
+                frame.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+                frame.allowFullscreen = true;
+                host.appendChild(frame);
+                return;
+            }
+            const video = document.createElement('video');
+            video.controls = true;
+            video.preload = 'metadata';
+            video.src = url;
+            if (kind === 'company') video.poster = document.getElementById('poster-url').value.trim();
+            host.appendChild(video);
+        }
+
+        async function upload(kind) {
+            const fileInput = document.getElementById(kind + '-file');
+            const status = document.getElementById(kind + '-status');
+            const file = fileInput.files[0];
+            if (!file) {
+                status.textContent = 'Choose a file first.';
+                return;
+            }
+            status.textContent = 'Uploading...';
+            const form = new FormData();
+            form.append('file', file);
+            form.append('folder', kind === 'poster' ? 'pages/index/video-poster' : 'videos');
+            try {
+                const response = await fetch('/api/media', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'X-CSRF-Token': csrf() },
+                    body: form
+                });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok || !result.ok) throw new Error(result.error || 'Upload failed');
+                document.getElementById(kind === 'poster' ? 'poster-url' : kind + '-url').value = result.url;
+                status.textContent = 'Uploaded: ' + result.url;
+                fileInput.value = '';
+                renderPreview(kind === 'poster' ? 'company' : kind);
+            } catch (error) {
+                status.textContent = error.message;
+            }
+        }
+
+        async function load() {
+            try {
+                const response = await fetch('/api/cms/content/page_content', { credentials: 'same-origin' });
+                const result = await response.json();
+                pageContent = result.value && typeof result.value === 'object' ? result.value : {};
+                contentVersion = result.version == null ? null : result.version;
+                const index = pageContent.index || {};
+                const hero = index.hero || {};
+                const company = index.companyVideo || {};
+                document.getElementById('hero-url').value = hero.videoUrl || '/images/hero-video-optimized.webm';
+                document.getElementById('company-url').value = company.videoUrl || 'https://youtu.be/xOvLkmzvKwc';
+                document.getElementById('poster-url').value = company.posterUrl || '/images/company-video-poster.jpg';
+                document.getElementById('video-title').value = company.title || 'See Our Capabilities';
+                document.getElementById('video-description').value = company.description || 'Take a virtual tour of our manufacturing facility and production capabilities.';
+            } catch (error) {
+                showAlert('Could not load saved video settings. Showing website defaults.', 'danger');
+            }
+            renderPreview('hero');
+            renderPreview('company');
+        }
+
+        async function save() {
+            const index = pageContent.index = pageContent.index || {};
+            index.hero = index.hero || {};
+            index.companyVideo = index.companyVideo || {};
+            index.hero.videoUrl = document.getElementById('hero-url').value.trim();
+            index.companyVideo.videoUrl = document.getElementById('company-url').value.trim();
+            index.companyVideo.posterUrl = document.getElementById('poster-url').value.trim();
+            index.companyVideo.title = document.getElementById('video-title').value.trim();
+            index.companyVideo.description = document.getElementById('video-description').value.trim();
+
+            const button = document.getElementById('save-btn');
+            button.disabled = true;
+            try {
+                const response = await fetch('/api/cms/content/page_content', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf() },
+                    body: JSON.stringify({ value: pageContent, expected_version: contentVersion })
+                });
+                const result = await response.json().catch(() => ({}));
+                if (!response.ok || !result.ok) throw new Error(result.message || result.error || 'Save failed');
+                contentVersion = result.version;
+                showAlert('Video settings saved. Reload the homepage to verify the changes.');
+            } catch (error) {
+                showAlert(error.message, 'danger');
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        document.querySelectorAll('[data-upload]').forEach(button => button.addEventListener('click', () => upload(button.dataset.upload)));
+        document.querySelectorAll('[data-preview]').forEach(button => button.addEventListener('click', () => renderPreview(button.dataset.preview)));
+        document.getElementById('save-btn').addEventListener('click', save);
+        load();
+    })();
+    </script>
+</body>
+</html>

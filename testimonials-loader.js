@@ -44,10 +44,19 @@
 
     function apply(items) {
         var slider = document.getElementById('testimonials-slider');
-        if (!slider || !Array.isArray(items) || !items.length) return;
+        if (!slider || !Array.isArray(items)) return;
+        if (!items.length) {
+            var section = slider.closest('.testimonials');
+            if (section) section.hidden = true;
+            return;
+        }
         // Only valid entries
         var valid = items.filter(function (t) { return t && t.quote && t.author; });
-        if (!valid.length) return;
+        if (!valid.length) {
+            var invalidSection = slider.closest('.testimonials');
+            if (invalidSection) invalidSection.hidden = true;
+            return;
+        }
         slider.innerHTML = valid.map(buildCard).join('\n');
 
         // Re-init the slider behavior now that cards were rebuilt.
@@ -58,6 +67,12 @@
 
     function load() {
         if (!document.getElementById('testimonials-slider')) return;
+        var cms = window.__WFX_CMS__;
+        if (cms && Object.prototype.hasOwnProperty.call(cms, 'testimonials')
+                && cms.testimonials !== null && cms.testimonials !== undefined) {
+            apply(cms.testimonials);
+            return;
+        }
         fetch('/api/cms/content/testimonials')
             .then(function (r) { return r.ok ? r.json() : null; })
             .then(function (j) {
