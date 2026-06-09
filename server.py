@@ -1778,6 +1778,48 @@ def cms_replace_collection(page, collection, items):
         conn.close()
 
 
+def ensure_cms_schema():
+    """Create the cms_collections table if it doesn't exist, so a fresh deploy
+    never needs the migration run by hand (migrations/2026-06-add-cms-collections.sql).
+
+    Uses CREATE TABLE IF NOT EXISTS only: it's idempotent and writes NO data, so
+    running it on every startup is safe and can never duplicate anything. If the
+    table already exists it's a no-op. Best-effort — a failure here must not stop
+    the server from serving.
+
+    Scope note: only this table is auto-created here. Other migrations
+    (ALTER ADD COLUMN without IF NOT EXISTS, the DELIMITER trigger file, one-time
+    data fixes) are NOT auto-run — they aren't idempotent and must be applied
+    deliberately. This covers the table the CMS collections feature needs.
+    """
+    if not (DB_CONFIG and MYSQL_AVAILABLE):
+        return
+    conn = get_db_connection()
+    if not conn:
+        return
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS cms_collections (
+                id          INT AUTO_INCREMENT PRIMARY KEY,
+                page        VARCHAR(64)  NOT NULL,
+                collection  VARCHAR(64)  NOT NULL,
+                item_data   JSON         NOT NULL,
+                sort_order  INT          NOT NULL DEFAULT 0,
+                created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                                  ON UPDATE CURRENT_TIMESTAMP,
+                INDEX idx_page_collection (page, collection, sort_order)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        """)
+        conn.commit()
+        print("  ✓  CMS schema ready (cms_collections table present)")
+    except mysql.connector.Error as e:
+        print(f"  ⚠  CMS schema check skipped: {e}")
+    finally:
+        conn.close()
+
+
 def cms_autosync_collections(write_files=True):
     """Keep the admin/CMS lists in sync with the public .html pages — WITHOUT
     ever writing to the database, so the auto-sync can never create duplicate rows.
@@ -4112,9 +4154,11 @@ def main():
 ║        /api/cms/* (CMS), /api/users/* (RBAC)
 ╚═══════════════════════════════════════════════════════════════╝
 """)
-    # Connect each page's editable lists into the DB + admin on every start, so
-    # a freshly-deployed site never has "content on the page but none in the
-    # admin". Best-effort and self-guarded — never blocks serving.
+    # On every start: make sure the CMS table exists (no manual migration needed),
+    # then refresh the page-content defaults from the .html files so the admin
+    # always matches the pages. Both are best-effort and never block serving;
+    # neither writes content rows, so they can't create duplicate data.
+    ensure_cms_schema()
     cms_autosync_collections()
 
     # Don't auto-open browser in production or when binding to non-loopback
