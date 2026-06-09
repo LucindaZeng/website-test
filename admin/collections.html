@@ -88,7 +88,7 @@
         </div>
     </main>
 
-    <script src="js/admin-core.js?v=20260609d"></script>
+    <script src="js/admin-core.js?v=20260609e"></script>
     <script src="js/page-schemas.js?v=20260609"></script>
     <script>
     (function () {
@@ -121,19 +121,50 @@
             dirtyEl.style.display = v ? 'inline' : 'none';
         }
 
+        // Pages that have their OWN dedicated sidebar manager. They get a tailored
+        // header/title, and are kept OUT of the generic "Page Collections" page
+        // dropdown — so each has exactly one entry point and there's no duplicate,
+        // conflicting place to edit the same list.
+        const DEDICATED = {
+            'faq':          { title: 'FAQ Manager',  icon: 'fas fa-question-circle' },
+            'case-studies': { title: 'Case Studies', icon: 'fas fa-briefcase' }
+        };
+
         // ── Populate page + collection selectors from the schema ──
         function initSelectors() {
-            pageSel.innerHTML = '<option value="">— Select page —</option>';
+            const params = new URLSearchParams(window.location.search);
+            const requestedPage = params.get('page');
+            const isDedicatedView = Object.prototype.hasOwnProperty.call(DEDICATED, requestedPage);
+
+            // Tailor the header + tab title for a dedicated view (FAQ / Case Studies).
+            const header = DEDICATED[requestedPage];
+            if (header) {
+                const h1 = document.querySelector('.admin-header h1');
+                if (h1) {
+                    const icon = h1.querySelector('i');
+                    if (icon) icon.className = header.icon;
+                    Array.from(h1.childNodes).forEach(n => {
+                        if (n.nodeType === Node.TEXT_NODE) n.remove();
+                    });
+                    h1.appendChild(document.createTextNode(' ' + header.title));
+                }
+                document.title = header.title + ' | WFX Admin';
+            }
+
+            // Build the page dropdown:
+            //   • dedicated view → only its own page (and lock the selector)
+            //   • generic view   → every page EXCEPT the dedicated ones
+            pageSel.innerHTML = isDedicatedView ? '' : '<option value="">— Select page —</option>';
             Object.keys(SCHEMAS).forEach(p => {
+                if (isDedicatedView ? (p !== requestedPage) : !!DEDICATED[p]) return;
                 const o = document.createElement('option');
                 o.value = p; o.textContent = SCHEMAS[p].label || p;
                 pageSel.appendChild(o);
             });
+            pageSel.disabled = isDedicatedView;   // a dedicated manager edits only its page
             collSel.innerHTML = '';
             collSel.disabled = true;
 
-            const params = new URLSearchParams(window.location.search);
-            const requestedPage = params.get('page');
             if (requestedPage && SCHEMAS[requestedPage]) {
                 pageSel.value = requestedPage;
                 pageSel.dispatchEvent(new Event('change'));

@@ -7,7 +7,9 @@ FROM python:3.11-slim
 # External dependencies used by server.py:
 # - mysql-connector-python: CMS/database access
 # - Pillow: convert uploaded raster images to WebP in /api/media
-RUN pip install --no-cache-dir mysql-connector-python Pillow
+# - beautifulsoup4: re-read the .html pages on startup so each page's editable
+#   lists stay connected to the DB + admin (cms_autosync_collections / sync.py)
+RUN pip install --no-cache-dir mysql-connector-python Pillow beautifulsoup4
 
 WORKDIR /app
 
