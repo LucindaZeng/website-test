@@ -1778,6 +1778,90 @@ def cms_replace_collection(page, collection, items):
         conn.close()
 
 
+def ensure_cms_schema():
+    """Create the cms_collections table if it doesn't exist, so a fresh deploy
+    never needs the migration run by hand (migrations/2026-06-add-cms-collections.sql).
+
+    Uses CREATE TABLE IF NOT EXISTS only: it's idempotent and writes NO data, so
+    running it on every startup is safe and can never duplicate anything. If the
+    table already exists it's a no-op. Best-effort — a failure here must not stop
+    the server from serving.
+
+    Scope note: only this table is auto-created here. Other migrations
+    (ALTER ADD COLUMN without IF NOT EXISTS, the DELIMITER trigger file, one-time
+    data fixes) are NOT auto-run — they aren't idempotent and must be applied
+    deliberately. This covers the table the CMS collections feature needs.
+    """
+    if not (DB_CONFIG and MYSQL_AVAILABLE):
+        return
+    conn = get_db_connection()
+    if not conn:
+        return
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS cms_collections (
+                id          INT AUTO_INCREMENT PRIMARY KEY,
+                page        VARCHAR(64)  NOT NULL,
+                collection  VARCHAR(64)  NOT NULL,
+                item_data   JSON         NOT NULL,
+                sort_order  INT          NOT NULL DEFAULT 0,
+                created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                                  ON UPDATE CURRENT_TIMESTAMP,
+                INDEX idx_page_collection (page, collection, sort_order)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        """)
+        conn.commit()
+        print("  ✓  CMS schema ready (cms_collections table present)")
+    except mysql.connector.Error as e:
+        print(f"  ⚠  CMS schema check skipped: {e}")
+    finally:
+        conn.close()
+
+
+def cms_autosync_collections(write_files=True):
+    """Keep the admin/CMS lists in sync with the public .html pages — WITHOUT
+    ever writing to the database, so the auto-sync can never create duplicate rows.
+
+    Runs on every server start (and via `python3 sync.py`). It regenerates
+    migrations/collection-defaults.json (+ seed-collections.sql) from the current
+    *.html pages. Both the admin (cms_list_collection) and the public-page
+    injection (cms_list_all_collections) already fall back to these defaults for
+    any collection that has NO saved rows — so refreshing this one file is all it
+    takes to keep the front-end and the back-end showing the same content after
+    the site's files are updated. No manual seeding step is needed.
+
+    The database is deliberately left untouched. The ONLY rows in cms_collections
+    are the ones an editor saves in the admin, written atomically by
+    cms_replace_collection (DELETE then re-INSERT). Because this function never
+    INSERTs, there is no code path here that can double-insert a page's content —
+    re-running it any number of times cannot duplicate data.
+
+    Best-effort and fully guarded: a failure here must NEVER stop serving. Needs
+    BeautifulSoup; if unavailable, the committed defaults file (shipped in the
+    image) is used as-is.
+    """
+    if not write_files:
+        return
+    base = os.path.dirname(os.path.abspath(__file__))
+    try:
+        import importlib.util
+        seed_path = os.path.join(base, 'migrations', 'seed_collections.py')
+        spec = importlib.util.spec_from_file_location('wfx_seed_collections', seed_path)
+        seed = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(seed)
+        sql, summary, defaults = seed.build_sql()  # raises if BeautifulSoup is missing
+        with open(COLLECTION_DEFAULTS_FILE, 'w', encoding='utf-8') as f:
+            json.dump(defaults, f, ensure_ascii=False, indent=2)
+            f.write('\n')
+        with open(os.path.join(base, 'migrations', 'seed-collections.sql'), 'w', encoding='utf-8') as f:
+            f.write(sql)
+        print(f"  ✓  CMS defaults refreshed from HTML ({len(summary)} lists) — admin now matches the pages")
+    except Exception as e:
+        print(f"  ⚠  CMS defaults not regenerated (keeping committed file): {e}")
+
+
 def _normalize_news_row(row, news_type='news'):
     item = dict(row or {})
     for key, value in list(item.items()):
@@ -4070,6 +4154,13 @@ def main():
 ║        /api/cms/* (CMS), /api/users/* (RBAC)
 ╚═══════════════════════════════════════════════════════════════╝
 """)
+    # On every start: make sure the CMS table exists (no manual migration needed),
+    # then refresh the page-content defaults from the .html files so the admin
+    # always matches the pages. Both are best-effort and never block serving;
+    # neither writes content rows, so they can't create duplicate data.
+    ensure_cms_schema()
+    cms_autosync_collections()
+
     # Don't auto-open browser in production or when binding to non-loopback
     if not args.no_browser and not args.production and args.host in ('127.0.0.1', 'localhost'):
         webbrowser.open(f'http://localhost:{args.port}')

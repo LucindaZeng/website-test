@@ -862,7 +862,26 @@ document.addEventListener('DOMContentLoaded', function() {
     AdminCore.loadCustomLogos();
     AdminCore.enhanceAdminNavigation();
     AdminCore.applyRoleBasedNav();
+    AdminCore.markActiveNav();
 });
+
+// Highlight the sidebar item for the page we are actually on. Some views are
+// deep links into a shared page (e.g. FAQ Manager and Case Studies both live in
+// collections.html, distinguished only by ?page=…). The static `active` class in
+// each page's HTML can't tell those apart, so it would leave "Page Collections"
+// lit while the user is in FAQ Manager. Recomputing from pathname+search here
+// keeps the highlight correct for both plain pages and deep-linked views.
+AdminCore.markActiveNav = function () {
+    const file = (window.location.pathname.split('/').pop() || 'index.html');
+    const fullKey = file + window.location.search;   // e.g. "collections.html?page=faq"
+    const links = Array.prototype.slice.call(document.querySelectorAll('.sidebar-nav .nav-item'));
+    links.forEach(a => a.classList.remove('active'));
+    // Prefer an exact match including the query string (deep-linked view wins),
+    // then fall back to the plain filename link (generic page, no query).
+    let match = links.find(a => (a.getAttribute('href') || '') === fullKey);
+    if (!match) match = links.find(a => (a.getAttribute('href') || '') === file);
+    if (match) match.classList.add('active');
+};
 
 AdminCore.enhanceAdminNavigation = function() {
     document.querySelectorAll('.sidebar-nav').forEach(nav => {

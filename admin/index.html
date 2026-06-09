@@ -180,7 +180,7 @@
     </div>
 
     <script src="js/cms-sync.js?v=20260609c"></script>
-    <script src="js/admin-core.js?v=20260609d"></script>
+    <script src="js/admin-core.js?v=20260609e"></script>
     <script>
         // If already logged in (server session OR local fallback), redirect
         (async function checkExistingSession() {
@@ -189,7 +189,7 @@
                 if (r.ok) {
                     const j = await r.json();
                     if (j.ok) {
-                        window.location.href = 'dashboard.html';
+                        window.location.href = 'https://wanfuxin-dg.com/admin/dashboard.html';
                         return;
                     }
                 }
@@ -237,7 +237,7 @@
                     // (Forced first-login password change has been removed —
                     // admin logs straight into the dashboard.)
                     AdminCore.logAction('login', 'User logged in', { username });
-                    window.location.href = 'dashboard.html';
+                    window.location.href = 'https://wanfuxin-dg.com/admin/dashboard.html';
                     return;
                 }
                 if (r.status === 429) {

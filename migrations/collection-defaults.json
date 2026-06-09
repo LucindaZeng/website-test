@@ -951,42 +951,42 @@
         "title": "Aerospace Parts",
         "description": "ISO9001 & IATF16949 certified manufacturing for flight-critical components. We deliver precision parts for commercial aviation, defense, and space applications with rigorous quality standards.",
         "link": "aerospace.html",
-        "image": "images/content/Aerospace_Parts_800x600.webp",
+        "image": "/images/content/Aerospace_Parts_800x600.webp",
         "icon": "fas fa-plane"
       },
       {
         "title": "Liquid Cooling Parts",
         "description": "High-precision thermal management components for data centers, EVs, and high-performance computing. Expert in complex cooling channel machining and heat sink manufacturing.",
         "link": "liquid-cooling.html",
-        "image": "images/content/Liquid_Cooling_Parts_800x600.webp",
+        "image": "/images/content/Liquid_Cooling_Parts_800x600.webp",
         "icon": "fas fa-tint"
       },
       {
         "title": "Medical Devices",
         "description": "Precision manufacturing for surgical instruments, implants, and diagnostic equipment. Cleanroom-compatible processes with full traceability documentation.",
         "link": "medical.html",
-        "image": "images/content/Medical_Devices_800x600.webp",
+        "image": "/images/content/Medical_Devices_800x600.webp",
         "icon": "fas fa-heartbeat"
       },
       {
         "title": "Electronics",
         "description": "Precision enclosures, heat sinks, and mechanical components for consumer electronics, telecommunications, and semiconductor equipment manufacturing.",
         "link": "electronics.html",
-        "image": "images/content/Electronics_Semiconductors_800x600.webp",
+        "image": "/images/content/Electronics_Semiconductors_800x600.webp",
         "icon": "fas fa-microchip"
       },
       {
         "title": "Industrial Equipment",
         "description": "Heavy-duty components for manufacturing machinery, pumps, valves, and industrial automation systems. Built for durability and performance in demanding environments.",
         "link": "industrial.html",
-        "image": "images/content/Industrial_Equipment_800x600.webp",
+        "image": "/images/content/Industrial_Equipment_800x600.webp",
         "icon": "fas fa-cogs"
       },
       {
         "title": "Robotics & Automation",
         "description": "High-precision components for robotic arms, actuators, and automated systems. Supporting the next generation of manufacturing and service robotics.",
         "link": "robotics.html",
-        "image": "images/content/Robotics_Automation_800x600.webp",
+        "image": "/images/content/Robotics_Automation_800x600.webp",
         "icon": "fas fa-robot"
       }
     ]
