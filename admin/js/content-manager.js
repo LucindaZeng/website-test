@@ -39,7 +39,7 @@ const PageContentManager = {
                         id: 'cnc-milling',
                         title: 'CNC Milling',
                         description: '3-axis to 6-axis milling capabilities for complex geometries. Ideal for prototypes, fixtures, and production parts with tight tolerances.',
-                        image: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&h=300&fit=crop',
+                        image: '/images/content/CNC_Milling_800x600.webp',
                         features: ['Parts in as fast as 1 day', 'Tolerances to ±0.005mm'],
                         link: 'cnc-milling.html'
                     },
@@ -47,7 +47,7 @@ const PageContentManager = {
                         id: 'cnc-turning',
                         title: 'CNC Turning',
                         description: 'High-precision turned parts with live tooling capabilities. Perfect for shafts, bushings, and rotational components.',
-                        image: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=400&h=300&fit=crop',
+                        image: '/images/content/CNC_Turning_800x600.webp',
                         features: ['Swiss-style turning', 'Multi-axis live tooling'],
                         link: 'cnc-turning.html'
                     },
@@ -55,7 +55,7 @@ const PageContentManager = {
                         id: '5-axis',
                         title: '5-Axis Machining',
                         description: 'Complex geometries in single setups. Reduce lead times and improve accuracy with simultaneous 5-axis machining.',
-                        image: 'https://images.unsplash.com/photo-1581091226817-a6a2a5aee158?w=400&h=300&fit=crop',
+                        image: '/images/content/5-Axis_Machining_800x600.webp',
                         features: ['Complex geometries', 'Single setup machining'],
                         link: '5-axis.html'
                     },
@@ -63,7 +63,7 @@ const PageContentManager = {
                         id: 'precision-inspection',
                         title: 'Precision Inspection',
                         description: 'CMM inspection and quality verification for all critical dimensions. Full inspection reports available.',
-                        image: 'https://images.unsplash.com/photo-1537462715879-360eeb61a0ad?w=400&h=300&fit=crop',
+                        image: '/images/content/Precision_Inspection_800x600.webp',
                         features: ['CMM inspection', 'Full quality reports'],
                         link: 'precision-inspection.html'
                     }
@@ -113,7 +113,7 @@ const PageContentManager = {
             intro: {
                 title: 'Our Story',
                 content: 'Founded in 2007, WFX (Wanfuxin) has grown from a small machine shop to a world-class precision manufacturing facility. With over 50 CNC machines and 200+ skilled employees, we serve customers across aerospace, medical, automotive, and electronics industries.',
-                image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&h=400&fit=crop'
+                image: '/images/content/about-hero-image-1200x800.webp'
             },
             values: [
                 { icon: 'fas fa-bullseye', title: 'Precision', description: 'Tolerances down to ±0.005mm' },
@@ -182,42 +182,42 @@ const PageContentManager = {
                     id: 'aerospace',
                     title: 'Aerospace Parts',
                     description: 'AS9100D certified manufacturing for flight-critical components.',
-                    image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&h=400&fit=crop',
+                    image: '/images/content/Aerospace_Parts_800x600.webp',
                     link: 'aerospace.html'
                 },
                 {
                     id: 'liquid-cooling',
                     title: 'Liquid Cooling Parts',
                     description: 'High-precision thermal management components for data centers and EVs.',
-                    image: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=600&h=400&fit=crop',
+                    image: '/images/content/Liquid_Cooling_Parts_800x600.webp',
                     link: 'liquid-cooling.html'
                 },
                 {
                     id: 'medical',
                     title: 'Medical Devices',
                     description: 'ISO 13485 compliant manufacturing for surgical instruments and implants.',
-                    image: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=600&h=400&fit=crop',
+                    image: '/images/content/Medical_Devices_800x600.webp',
                     link: 'medical.html'
                 },
                 {
                     id: 'electronics',
                     title: 'Electronics',
                     description: 'Precision enclosures and heat sinks for consumer electronics.',
-                    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&h=400&fit=crop',
+                    image: '/images/content/Electronics_Semiconductors_800x600.webp',
                     link: 'electronics.html'
                 },
                 {
                     id: 'industrial',
                     title: 'Industrial Equipment',
                     description: 'Heavy-duty components for manufacturing machinery.',
-                    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&h=400&fit=crop',
+                    image: '/images/content/Industrial_Equipment_800x600.webp',
                     link: 'industrial.html'
                 },
                 {
                     id: 'robotics',
                     title: 'Robotics & Automation',
                     description: 'High-precision components for robotic arms and actuators.',
-                    image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&h=400&fit=crop',
+                    image: '/images/content/Robotics_Automation_800x600.webp',
                     link: 'robotics.html'
                 }
             ]
@@ -238,63 +238,63 @@ const PageContentManager = {
                     id: 'anodizing',
                     title: 'Anodizing',
                     description: 'Electrochemical process that creates a durable, corrosion-resistant oxide layer on aluminum parts.',
-                    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop',
+                    image: '/images/content/metals-alloys-card-800x600.webp',
                     features: ['Type II: 8-25μm thickness', 'Type III: 25-100μm thickness', 'Various colors available']
                 },
                 {
                     id: 'sandblasting',
                     title: 'Sandblasting / Bead Blasting',
                     description: 'Surface preparation process using high-pressure abrasive media.',
-                    image: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=600&h=400&fit=crop',
+                    image: '/images/content/Production_Capabilities_800x600.webp',
                     features: ['Uniform matte finish', 'Removes machining marks', 'Various grit sizes']
                 },
                 {
                     id: 'painting',
                     title: 'Spray Painting',
                     description: 'Liquid coating application providing excellent color matching.',
-                    image: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=600&h=400&fit=crop',
+                    image: '/images/content/facility-image-800x600.webp',
                     features: ['Unlimited colors', 'Gloss/matte options', 'UV resistant']
                 },
                 {
                     id: 'powder-coating',
                     title: 'Powder Coating',
                     description: 'Dry finishing process with excellent durability.',
-                    image: 'https://images.unsplash.com/photo-1567789884554-0b844b597180?w=600&h=400&fit=crop',
+                    image: '/images/content/Industrial_Equipment_800x600.webp',
                     features: ['60-80μm thickness', 'Superior durability', 'Eco-friendly']
                 },
                 {
                     id: 'passivation',
                     title: 'Passivation',
                     description: 'Chemical treatment for stainless steel corrosion protection.',
-                    image: 'https://images.unsplash.com/photo-1587293852726-70cdb56c2866?w=600&h=400&fit=crop',
+                    image: '/images/content/Quality_Assurance_800x600.webp',
                     features: ['ASTM A967 compliant', 'No dimensional change', 'Food-grade safe']
                 },
                 {
                     id: 'polishing',
                     title: 'Polishing',
                     description: 'Mechanical or electrochemical process for mirror finishes.',
-                    image: 'https://images.unsplash.com/photo-1558618047-f4b511ce8e17?w=600&h=400&fit=crop',
+                    image: '/images/content/Precision_Inspection_800x600.webp',
                     features: ['Ra down to 0.1μm', 'Mirror finish', 'Electropolishing available']
                 },
                 {
                     id: 'pvd',
                     title: 'PVD Coating',
                     description: 'Physical Vapor Deposition for ultra-hard coatings.',
-                    image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=600&h=400&fit=crop',
+                    image: '/images/content/testing-lab-800x600.webp',
                     features: ['Hardness up to 2500 HV', 'Decorative colors', 'Wear resistant']
                 },
                 {
                     id: 'electroplating',
                     title: 'Electroplating',
                     description: 'Electrochemical deposition of metal coatings.',
-                    image: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600&h=400&fit=crop',
+                    image: '/images/content/metals-alloys-card-800x600.webp',
                     features: ['Nickel, Chrome, Zinc', '5-50μm thickness', 'RoHS compliant']
                 },
                 {
                     id: 'e-coating',
                     title: 'E-Coating (Electrophoretic)',
                     description: 'Immersion coating process for uniform coverage.',
-                    image: 'https://images.unsplash.com/photo-1581092335397-9583eb92d232?w=600&h=400&fit=crop',
+                    image: '/images/content/Production_Capabilities_800x600.webp',
                     features: ['15-35μm thickness', 'Complete coverage', 'Excellent corrosion protection']
                 }
             ]

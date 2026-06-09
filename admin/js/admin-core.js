@@ -80,18 +80,18 @@ const AdminCore = {
         companyVideo: 'company-video.mp4',
         companyVideoPoster: '../images/company-video-poster.jpg',
         services: {
-            cncMilling: 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&h=300&fit=crop',
-            cncTurning: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=400&h=300&fit=crop',
-            fiveAxis: 'https://images.unsplash.com/photo-1581091226817-a6a2a5aee158?w=400&h=300&fit=crop',
-            precisionInspection: 'https://images.unsplash.com/photo-1537462715879-360eeb61a0ad?w=400&h=300&fit=crop'
+            cncMilling: '/images/content/CNC_Milling_800x600.webp',
+            cncTurning: '/images/content/CNC_Turning_800x600.webp',
+            fiveAxis: '/images/content/5-Axis_Machining_800x600.webp',
+            precisionInspection: '/images/content/Precision_Inspection_800x600.webp'
         },
         industries: {
-            aerospace: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=300&fit=crop',
+            aerospace: '/images/content/Aerospace_Parts_800x600.webp',
             automotive: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400&h=300&fit=crop',
-            medical: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop',
-            electronics: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=300&fit=crop',
-            robotics: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&h=300&fit=crop',
-            industrial: 'https://images.unsplash.com/photo-1581091226817-a6a2a5aee158?w=400&h=300&fit=crop'
+            medical: '/images/content/Medical_Devices_800x600.webp',
+            electronics: '/images/content/Electronics_Semiconductors_800x600.webp',
+            robotics: '/images/content/Robotics_Automation_800x600.webp',
+            industrial: '/images/content/Industrial_Equipment_800x600.webp'
         }
     },
 
