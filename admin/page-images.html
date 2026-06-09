@@ -26,6 +26,10 @@
         .upload-row { display:grid; grid-template-columns:1fr auto; gap:9px; }
         .upload-row input { min-width:0; }
         .status { min-height:20px; margin-top:7px; color:#64748b; font-size:.82rem; }
+        .upload-hint { margin:0 0 11px; padding:9px 12px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; color:#1e3a8a; font-size:.82rem; line-height:1.45; }
+        .upload-hint i { margin-right:5px; }
+        .rec-size { display:inline-block; margin-top:4px; color:#2563eb; font-weight:600; font-size:.76rem; }
+        .rec-size i { margin-right:4px; }
     </style>
 </head>
 <body>
@@ -105,6 +109,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Upload replacement</label>
+                    <div class="upload-hint" id="upload-hint" style="display:none;"></div>
                     <div class="upload-row">
                         <input class="form-control" id="image-file" type="file" accept=".jpg,.jpeg,.png,.webp,.gif">
                         <button class="btn btn-secondary" id="upload-btn" type="button"><i class="fas fa-upload" aria-hidden="true"></i> Upload</button>
@@ -217,6 +222,30 @@
             return values[page] && values[page][key] ? values[page][key] : PAGES[page].images[key][2];
         }
 
+        // Recommended upload size for an image slot. Most default assets encode
+        // their intended pixels in the filename (…_800x600.webp); the couple of
+        // full-bleed posters that don't get an explicit recommendation here.
+        const RECOMMENDED_OVERRIDE = {
+            'index/hero-poster': '1920x1080',
+            'about/tour-poster': '1920x1080'
+        };
+        function recommendedSize(page, key) {
+            let raw = RECOMMENDED_OVERRIDE[page + '/' + key];
+            if (!raw) {
+                const definition = PAGES[page] && PAGES[page].images[key];
+                const match = definition && /(\d{2,5})\s*[x×]\s*(\d{2,5})/i.exec(definition[2] || '');
+                if (match) raw = match[1] + 'x' + match[2];
+            }
+            if (!raw) return null;
+            const parts = raw.toLowerCase().split('x');
+            const w = parseInt(parts[0], 10), h = parseInt(parts[1], 10);
+            return (w && h) ? { w: w, h: h } : null;
+        }
+        function aspectRatio(w, h) {
+            const g = (function gcd(a, b) { return b ? gcd(b, a % b) : a; })(w, h);
+            return (w / g) + ':' + (h / g);
+        }
+
         function showAlert(message, type) {
             const alert = document.createElement('div');
             alert.className = 'alert alert-' + (type || 'success');
@@ -250,7 +279,16 @@
                     const title = document.createElement('h3');
                     title.textContent = definition[0];
                     const location = document.createElement('p');
-                    location.textContent = definition[1];
+                    location.appendChild(document.createTextNode(definition[1]));
+                    const recommended = recommendedSize(page, key);
+                    if (recommended) {
+                        location.appendChild(document.createElement('br'));
+                        const size = document.createElement('span');
+                        size.className = 'rec-size';
+                        size.innerHTML = '<i class="fas fa-ruler-combined" aria-hidden="true"></i> Recommended ' +
+                            recommended.w + ' × ' + recommended.h + ' px';
+                        location.appendChild(size);
+                    }
                     const button = document.createElement('button');
                     button.className = 'btn btn-secondary';
                     button.innerHTML = '<i class="fas fa-edit" aria-hidden="true"></i> Replace Image';
@@ -272,6 +310,16 @@
             document.getElementById('modal-preview').src = imageUrl(page, key);
             document.getElementById('upload-status').textContent = '';
             document.getElementById('image-file').value = '';
+            const recommended = recommendedSize(page, key);
+            const hint = document.getElementById('upload-hint');
+            if (recommended) {
+                hint.innerHTML = '<i class="fas fa-ruler-combined" aria-hidden="true"></i> Recommended size: <strong>' +
+                    recommended.w + ' × ' + recommended.h + ' px</strong> (' + aspectRatio(recommended.w, recommended.h) +
+                    ') &middot; JPG / PNG / WebP. Match this size for the sharpest result.';
+                hint.style.display = '';
+            } else {
+                hint.style.display = 'none';
+            }
             document.getElementById('edit-modal').classList.add('active');
         }
 
@@ -369,6 +417,27 @@
         filter.addEventListener('change', render);
         document.getElementById('image-url').addEventListener('input', event => {
             document.getElementById('modal-preview').src = event.target.value;
+        });
+        document.getElementById('image-file').addEventListener('change', function () {
+            const file = this.files[0];
+            const status = document.getElementById('upload-status');
+            if (!file) { status.textContent = ''; return; }
+            const probe = new Image();
+            probe.onload = function () {
+                let message = 'Selected image: ' + probe.naturalWidth + ' × ' + probe.naturalHeight + ' px';
+                const recommended = current && recommendedSize(current.page, current.key);
+                if (recommended) {
+                    const arFile = probe.naturalWidth / probe.naturalHeight;
+                    const arRec = recommended.w / recommended.h;
+                    if (Math.abs(arFile - arRec) > 0.05) {
+                        message += ' — note: different shape from the recommended ' + aspectRatio(recommended.w, recommended.h);
+                    }
+                }
+                status.textContent = message;
+                URL.revokeObjectURL(probe.src);
+            };
+            probe.onerror = function () { URL.revokeObjectURL(probe.src); };
+            probe.src = URL.createObjectURL(file);
         });
         document.getElementById('upload-btn').addEventListener('click', upload);
         document.getElementById('apply-btn').addEventListener('click', applyChange);
