@@ -4,8 +4,10 @@
 
 FROM python:3.11-slim
 
-# Only external dependency server.py needs
-RUN pip install --no-cache-dir mysql-connector-python
+# External dependencies used by server.py:
+# - mysql-connector-python: CMS/database access
+# - Pillow: convert uploaded raster images to WebP in /api/media
+RUN pip install --no-cache-dir mysql-connector-python Pillow
 
 WORKDIR /app
 
