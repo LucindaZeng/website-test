@@ -1862,6 +1862,153 @@ def cms_autosync_collections(write_files=True):
         print(f"  ⚠  CMS defaults not regenerated (keeping committed file): {e}")
 
 
+DEFAULT_TESTIMONIALS = [
+    {
+        'quote': 'WFX consistently delivers precision parts that meet our tight specifications. Their 300+ CNC machines and 24/7 production capability means we can count on reliable turnaround for volume orders.',
+        'author': 'Molex Dongguan',
+        'subtitle': 'Awarded WFX "Best Quality Heat Sink Supplier"',
+        'stars': 5,
+    },
+    {
+        'quote': 'The instant quoting system saves us hours every week. We can iterate on designs quickly and get accurate pricing immediately. Their 5-axis capabilities have opened up new design possibilities for our medical devices.',
+        'author': 'Electronics OEM Customer',
+        'subtitle': 'European Technology Company',
+        'stars': 5,
+    },
+    {
+        'quote': 'From prototyping to production runs, WFX has been a dependable partner. Their self-built 20,000 sqm facility and in-house anodizing capability means we get complete parts without managing multiple vendors. Quality and communication are top-notch.',
+        'author': 'Industrial Equipment Customer',
+        'subtitle': 'Domestic Manufacturing Partner',
+        'stars': 5,
+    },
+]
+
+
+DEFAULT_BLOG_POSTS = [
+    {
+        'id': 1,
+        'title': 'New DMG MORI 5-Axis Machines Expand Our Capabilities',
+        'slug': 'new-dmg-mori-5-axis-machines-expand-our-capabilities',
+        'category': 'cnc-processes',
+        'excerpt': "We've added three new DMG MORI DMU 50 5-axis machining centers to our facility, enabling even more complex geometries and tighter tolerances.",
+        'content': "We've added three new DMG MORI DMU 50 5-axis machining centers to our facility, enabling even more complex geometries and tighter tolerances.",
+        'image_url': '/images/content/5-Axis_Machining_800x600.webp',
+        'author': 'WFX Team',
+        'published_at': '2025-03-10T00:00:00',
+        'created_at': '2025-03-10T00:00:00',
+        'updated_at': '2025-03-10T00:00:00',
+        'status': 'published',
+        'is_published': 1,
+        'is_pinned': True,
+    },
+    {
+        'id': 2,
+        'title': 'IATF16949 Recertification Completed Successfully',
+        'slug': 'iatf16949-recertification-completed-successfully',
+        'category': 'related-processes',
+        'excerpt': 'Our commitment to automotive industry quality standards has been reaffirmed with a successful IATF16949 audit.',
+        'content': 'Our commitment to automotive industry quality standards has been reaffirmed with a successful IATF16949 audit.',
+        'image_url': '/images/content/Quality_Assurance_800x600.webp',
+        'author': 'WFX Team',
+        'published_at': '2025-02-20T00:00:00',
+        'created_at': '2025-02-20T00:00:00',
+        'updated_at': '2025-02-20T00:00:00',
+        'status': 'published',
+        'is_published': 1,
+        'is_pinned': False,
+    },
+    {
+        'id': 3,
+        'title': '24/7 Lights-Out Manufacturing Now Fully Operational',
+        'slug': '24-7-lights-out-manufacturing-now-fully-operational',
+        'category': 'related-processes',
+        'excerpt': 'Expanded automation allows us to run production around the clock, significantly reducing lead times for our customers.',
+        'content': 'Expanded automation allows us to run production around the clock, significantly reducing lead times for our customers.',
+        'image_url': '/images/content/Manufacturing_Headquarters_800x600.webp',
+        'author': 'WFX Team',
+        'published_at': '2025-01-15T00:00:00',
+        'created_at': '2025-01-15T00:00:00',
+        'updated_at': '2025-01-15T00:00:00',
+        'status': 'published',
+        'is_published': 1,
+        'is_pinned': False,
+    },
+    {
+        'id': 4,
+        'title': 'Design for Manufacturability: Top 10 Tips',
+        'slug': 'design-for-manufacturability-top-10-tips',
+        'category': 'drawings-dfm',
+        'excerpt': 'Learn how to optimize your designs for CNC machining with these expert tips that can reduce costs and lead times.',
+        'content': 'Learn how to optimize your designs for CNC machining with these expert tips that can reduce costs and lead times.',
+        'image_url': '/images/content/CNC_Milling_800x600.webp',
+        'author': 'WFX Team',
+        'published_at': '2024-12-05T00:00:00',
+        'created_at': '2024-12-05T00:00:00',
+        'updated_at': '2024-12-05T00:00:00',
+        'status': 'published',
+        'is_published': 1,
+        'is_pinned': False,
+    },
+    {
+        'id': 5,
+        'title': 'Choosing the Right Aluminum Alloy for Your Project',
+        'slug': 'choosing-the-right-aluminum-alloy-for-your-project',
+        'category': 'materials',
+        'excerpt': 'A comprehensive guide to aluminum alloys commonly used in CNC machining and their ideal applications.',
+        'content': 'A comprehensive guide to aluminum alloys commonly used in CNC machining and their ideal applications.',
+        'image_url': '/images/content/metals-alloys-card-800x600.webp',
+        'author': 'WFX Team',
+        'published_at': '2024-11-18T00:00:00',
+        'created_at': '2024-11-18T00:00:00',
+        'updated_at': '2024-11-18T00:00:00',
+        'status': 'published',
+        'is_published': 1,
+        'is_pinned': False,
+    },
+    {
+        'id': 6,
+        'title': 'Understanding CMM Inspection and Quality Reports',
+        'slug': 'understanding-cmm-inspection-and-quality-reports',
+        'category': 'related-processes',
+        'excerpt': 'Learn how coordinate measuring machines work and how to interpret the inspection reports we provide.',
+        'content': 'Learn how coordinate measuring machines work and how to interpret the inspection reports we provide.',
+        'image_url': '/images/content/Quality_Assurance_800x600.webp',
+        'author': 'WFX Team',
+        'published_at': '2024-10-25T00:00:00',
+        'created_at': '2024-10-25T00:00:00',
+        'updated_at': '2024-10-25T00:00:00',
+        'status': 'published',
+        'is_published': 1,
+        'is_pinned': False,
+    },
+]
+
+_NEWS_EMPTY_SENTINEL = {'__wfx_empty__': True}
+
+
+def _clone_json(value):
+    return json.loads(json.dumps(value, ensure_ascii=False))
+
+
+def _default_content_value(key):
+    if key == 'testimonials':
+        return _clone_json(DEFAULT_TESTIMONIALS)
+    return None
+
+
+def _default_news_rows(news_type):
+    if news_type == 'blog':
+        return [_normalize_news_row(row, news_type) for row in _clone_json(DEFAULT_BLOG_POSTS)]
+    return []
+
+
+def _is_news_empty_sentinel(items):
+    return (
+        isinstance(items, list) and len(items) == 1 and
+        isinstance(items[0], dict) and items[0].get('__wfx_empty__') is True
+    )
+
+
 def _normalize_news_row(row, news_type='news'):
     item = dict(row or {})
     for key, value in list(item.items()):
@@ -1918,22 +2065,28 @@ def cms_list_news(news_type='news', published_only=True, limit=100):
     """Fetch news/blog posts with public and admin field aliases."""
     full_items = cms_get(f'{news_type}_items', None)
     if isinstance(full_items, list):
-        rows = [_normalize_news_row(row, news_type) for row in full_items if isinstance(row, dict)]
-        if published_only:
-            rows = [row for row in rows if row.get('is_published')]
-        rows.sort(
-            key=lambda row: (
-                bool(row.get('is_pinned')),
-                str(row.get('published_at') or ''),
-                int(row.get('id') or 0),
-            ),
-            reverse=True,
-        )
-        return rows[:limit]
+        if _is_news_empty_sentinel(full_items):
+            return []
+        if full_items:
+            rows = [_normalize_news_row(row, news_type) for row in full_items if isinstance(row, dict)]
+            if published_only:
+                rows = [row for row in rows if row.get('is_published')]
+            rows.sort(
+                key=lambda row: (
+                    bool(row.get('is_pinned')),
+                    str(row.get('published_at') or ''),
+                    int(row.get('id') or 0),
+                ),
+                reverse=True,
+            )
+            return rows[:limit]
 
     conn = get_db_connection()
     if not conn:
-        return []
+        rows = _default_news_rows(news_type)
+        if published_only:
+            rows = [row for row in rows if row.get('is_published')]
+        return rows[:limit]
     try:
         cursor = conn.cursor(dictionary=True)
         sql = "SELECT * FROM cms_news WHERE type = %s"
@@ -1944,10 +2097,19 @@ def cms_list_news(news_type='news', published_only=True, limit=100):
         params.append(limit)
         cursor.execute(sql, params)
         rows = cursor.fetchall()
-        return [_normalize_news_row(row, news_type) for row in rows]
+        normalized = [_normalize_news_row(row, news_type) for row in rows]
+        if normalized:
+            return normalized
+        defaults = _default_news_rows(news_type)
+        if published_only:
+            defaults = [row for row in defaults if row.get('is_published')]
+        return defaults[:limit]
     except mysql.connector.Error as e:
         print(f"  ✗  list news failed: {e}")
-        return []
+        rows = _default_news_rows(news_type)
+        if published_only:
+            rows = [row for row in rows if row.get('is_published')]
+        return rows[:limit]
     finally:
         conn.close()
 
@@ -2020,7 +2182,8 @@ def cms_replace_news(news_type, posts):
                 1 if p.get('is_pinned', False) else 0,
             ))
         conn.commit()
-        return cms_set(f'{news_type}_items', normalized_posts)
+        stored_items = normalized_posts if normalized_posts else [_clone_json(_NEWS_EMPTY_SENTINEL)]
+        return cms_set(f'{news_type}_items', stored_items)
     except mysql.connector.Error as e:
         print(f"  ✗  replace news failed: {e}")
         return False
@@ -2046,7 +2209,7 @@ def cms_load_all_for_injection():
         'homepage_news_titles': cms_get('homepage_news_titles', []),
         'branding':           cms_get('branding', {}),
         'categories':         cms_get('categories', {}),
-        'testimonials':       cms_get('testimonials', None),
+        'testimonials':       cms_get('testimonials', _default_content_value('testimonials')),
     }
 
 
@@ -2966,7 +3129,7 @@ class WFXHandler(SimpleHTTPRequestHandler):
             return
 
         if resource == 'content' and len(parts) == 4:
-            value, version = cms_get_with_version(parts[3])
+            value, version = cms_get_with_version(parts[3], _default_content_value(parts[3]))
             self._send_json(200, {'ok': True, 'value': value, 'version': version})
             return
 
