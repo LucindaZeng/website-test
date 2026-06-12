@@ -1164,7 +1164,7 @@ ContentLoader.init();
                 "author": { "@type": "Organization", "name": "WFX Wanfuxin" },
                 "publisher": {
                     "@type": "Organization", "name": "WFX Wanfuxin",
-                    "logo": { "@type": "ImageObject", "url": "https://wanfuxin-dg.com/images/logo.png" }
+                    "logo": { "@type": "ImageObject", "url": "https://wanfuxin-dg.com/images/logo/logo.webp" }
                 },
                 "mainEntityOfPage": window.location.href
             };

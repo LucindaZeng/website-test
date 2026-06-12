@@ -19,7 +19,7 @@
     <!-- Sidebar -->
     <aside class="admin-sidebar" id="sidebar">
         <div class="sidebar-header">
-            <img src="../images/logo.png" alt="WFX">
+            <img src="../images/logo/logo.webp" alt="WFX">
             <h2 data-i18n="nav.panel_title">Admin Panel</h2>
         </div>
         <nav class="sidebar-nav">
@@ -218,7 +218,7 @@
                                 Recommended: PNG with transparent background, ~290×50 pixels
                             </p>
                             <div class="logo-preview" id="main-logo-preview" style="background: #f8f9fa; border: 2px dashed #dee2e6; border-radius: 12px; padding: 20px; text-align: center; min-height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
-                                <img src="../images/logo.png" alt="Main Logo" style="max-width: 100%; max-height: 80px;" id="main-logo-img">
+                                <img src="../images/logo/logo.webp" alt="Main Logo" style="max-width: 100%; max-height: 80px;" id="main-logo-img">
                             </div>
                             <div style="display: flex; gap: 10px;">
                                 <label class="btn btn-secondary" style="cursor: pointer; margin: 0;">
@@ -845,7 +845,7 @@
                     delete next.footer_logo_url;
                     await saveBranding(next);
                     localStorage.removeItem('wfx_custom_logo');
-                    document.getElementById('main-logo-img').src = '../images/logo.png';
+                    document.getElementById('main-logo-img').src = '../images/logo/logo.webp';
                     document.getElementById('main-logo-preview').style.borderColor = '#dee2e6';
                     AdminCore.logAction('logo_reset', 'Reset main logo to default');
                     showAlert('Main logo reset in the website CMS.', 'success');
@@ -883,7 +883,7 @@
                     await saveBranding(next);
                     localStorage.removeItem('wfx_custom_logo');
                     localStorage.removeItem('wfx_custom_favicon');
-                    document.getElementById('main-logo-img').src = '../images/logo.png';
+                    document.getElementById('main-logo-img').src = '../images/logo/logo.webp';
                     document.getElementById('favicon-32-img').src = '../images/favicon-32x32.png';
                     document.getElementById('favicon-180-img').src = '../images/apple-touch-icon.png';
                     document.getElementById('main-logo-preview').style.borderColor = '#dee2e6';

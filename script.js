@@ -103,14 +103,14 @@ function initHeroVideo() {
 function initCustomLogos() {
     // Prefer the server-side branding (window.__WFX_CMS__.branding) so the logo
     // set in Admin shows for ALL visitors. Fall back to the legacy localStorage
-    // value (admin's own browser only), then to the default images/logo.png.
+    // value (admin's own browser only), then to the default images/logo/logo.webp.
     const branding = (window.__WFX_CMS__ && window.__WFX_CMS__.branding) || {};
     const mainLogo = branding.logo_url || localStorage.getItem('wfx_custom_logo');
     const footerLogo = branding.footer_logo_url || mainLogo;
 
     if (mainLogo) {
         document.querySelectorAll('a.logo .logo-img, a.logo img').forEach(img => {
-            if (img.src.includes('/images/logo.png') || img.classList.contains('logo-img')) {
+            if (img.src.includes('/images/logo/logo.webp') || img.classList.contains('logo-img')) {
                 img.src = mainLogo;
             }
         });
